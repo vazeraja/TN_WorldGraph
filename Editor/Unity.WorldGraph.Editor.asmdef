@@ -1,15 +1,15 @@
 {
     "name": "Unity.WorldGraph.Editor",
-    "rootNamespace": "ThunderNut.WorldGraph.Core.Editor",
+    "rootNamespace": "ThunderNut.WorldGraph.Editor",
     "references": [
-        "GUID:ed9244c96843d054689840b7ad41187c",
+        "GUID:4988cf9794f41d64c884876ab6574b89",
         "GUID:be0903cd8e1546f498710afdc59db5eb",
-        "GUID:4988cf9794f41d64c884876ab6574b89"
+        "GUID:ed9244c96843d054689840b7ad41187c"
     ],
-    "includePlatforms": [],
-    "excludePlatforms": [
+    "includePlatforms": [
         "Editor"
     ],
+    "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": false,
     "precompiledReferences": [],

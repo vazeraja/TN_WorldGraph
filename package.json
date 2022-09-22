@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "displayName": "WorldGraph: A Scene Management System",
   "description": "Creates Functionality for scene management similar to the Unity animator",
-  "unity": "2021.1",
+  "unity": "2022.1",
   "author": {
     "name": "thundernut",
     "email": "vazeraja@gmail.com",

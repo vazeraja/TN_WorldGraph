@@ -1,6 +1,6 @@
 {
     "name": "Unity.WorldGraph",
-    "rootNamespace": "ThunderNut.WorldGraph.Core",
+    "rootNamespace": "ThunderNut.WorldGraph",
     "references": [],
     "includePlatforms": [],
     "excludePlatforms": [],
