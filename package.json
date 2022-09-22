@@ -1,8 +1,8 @@
 {
-  "name": "com.thundernut.scenemanagement",
+  "name": "com.thundernut.worldgraph",
   "version": "1.0.0",
-  "displayName": "Scene Management System",
-  "description": "Upgrade to the Unity SceneAsset object",
+  "displayName": "WorldGraph: A Scene Management System",
+  "description": "Creates Functionality for scene management similar to the Unity animator",
   "unity": "2021.1",
   "author": {
     "name": "thundernut",
