@@ -1,3 +1,10 @@
+# 1.0.0 (2022-09-22)
+
+
+### Bug Fixes
+
+* init ([e807b92](https://github.com/vazeraja/TN_WorldGraph/commit/e807b9286c6de7ca68a8f4a4dcd35322f42298e6))
+
 ## [1.0.36](https://github.com/vazeraja/TN_SceneManagement/compare/v1.0.35...v1.0.36) (2022-09-19)
 
 
