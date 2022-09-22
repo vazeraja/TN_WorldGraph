@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using ThunderNut.WorldGraph.Handles;
@@ -59,7 +58,7 @@ namespace ThunderNut.WorldGraph.Editor {
             if (_settingsMenuDropdown) {
                 EditorGUILayout.Space(10);
                 EditorGUILayout.LabelField("Initialization", EditorStyles.boldLabel);
-                EditorGUILayout.PropertyField(serializedObject.FindProperty("settingA"));
+                EditorGUILayout.PropertyField(serializedObject.FindProperty("activeSceneHandle"));
                 EditorGUILayout.PropertyField(serializedObject.FindProperty("settingB"));
                 EditorGUILayout.PropertyField(serializedObject.FindProperty("settingC"));
 
@@ -130,7 +129,6 @@ namespace ThunderNut.WorldGraph.Editor {
                             _draggedStartID = i;
                             e.Use();
                         }
-
                         break;
                 }
 
