@@ -2,6 +2,7 @@
 using UnityEditor;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace ThunderNut.WorldGraph.Editor {
 
@@ -22,8 +23,6 @@ namespace ThunderNut.WorldGraph.Editor {
             this.window = window;
             this.graph = graph;
             this.assetName = assetName;
-            
-            
         }
         
         public void Dispose() { }

@@ -1,0 +1,11 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="True">
+    <Style src="project://database/Assets/TN_WorldGraph/Editor/Resources/UXML/WorldGraphEditorWindow.uss?fileID=7433441132597879392&amp;guid=dbecc8edfef9a1f44b6fb6455709925d&amp;type=3#WorldGraphEditorWindow" />
+    <uie:Toolbar name="toolbar">
+        <uie:ToolbarButton tabindex="-1" text="Show In Project" display-tooltip-when-elided="true" name="show-in-project-button" style="-unity-text-align: middle-left; border-left-color: rgb(32, 32, 32); border-right-color: rgb(32, 32, 32); border-top-color: rgb(32, 32, 32); border-bottom-color: rgb(32, 32, 32);" />
+        <uie:ToolbarSpacer />
+        <uie:ToolbarButton tabindex="-1" text="Refresh" display-tooltip-when-elided="true" name="refresh-button" style="-unity-text-align: middle-left; border-left-color: rgb(32, 32, 32); border-right-color: rgb(32, 32, 32); border-top-color: rgb(32, 32, 32); border-bottom-color: rgb(32, 32, 32);" />
+        <uie:ToolbarSpacer />
+        <uie:ToolbarButton tabindex="-1" text="Show Graph Settings" display-tooltip-when-elided="true" name="settings-button" style="-unity-text-align: middle-left; border-left-color: rgb(32, 32, 32); border-right-color: rgb(32, 32, 32); border-top-color: rgb(32, 32, 32); border-bottom-color: rgb(32, 32, 32);" />
+    </uie:Toolbar>
+    <ui:VisualElement name="content" style="border-left-color: rgb(32, 32, 32); border-right-color: rgb(32, 32, 32); border-top-color: rgb(32, 32, 32); border-bottom-color: rgb(32, 32, 32);" />
+</ui:UXML>

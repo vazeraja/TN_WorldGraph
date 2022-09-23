@@ -21,6 +21,14 @@ namespace ThunderNut.WorldGraph.Editor {
 
             return true;
         }
+        
+        public static void PingAsset(string selectedGuid) {
+            string path = AssetDatabase.GUIDToAssetPath(selectedGuid);
+            if (selectedGuid == null) return;
+            var asset = AssetDatabase.LoadAssetAtPath<UnityEngine.Object>(path);
+            EditorGUIUtility.PingObject(asset);
+            Selection.activeObject = asset;
+        }
 
         [OnOpenAsset(0)]
         public static bool OnBaseGraphOpened(int instanceID, int line) {

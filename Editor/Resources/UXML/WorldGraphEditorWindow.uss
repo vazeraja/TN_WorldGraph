@@ -1,0 +1,17 @@
+#content {
+    flex-direction: row;
+    flex: 1;
+}
+
+#content > #GraphView {
+    flex: 1;
+    background-color: rgb(32, 32, 32);
+}
+
+ToolbarButton:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+ToolbarButton:active {
+    background-color: rgba(255, 255, 255, 0.15);
+}
