@@ -7,6 +7,8 @@ namespace ThunderNut.WorldGraph.Handles {
     [Path("Special/BattleHandle", "Battle")]
     public class BattleHandle : SceneHandle {
         public override Color HandleColor => Color.yellow;
+        
+        public override SceneType SceneType => SceneType.Cutscene;
     }
 
 }

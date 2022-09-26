@@ -1,4 +1,6 @@
-﻿using UnityEditor;
+﻿using System.IO;
+using System.Text;
+using UnityEditor;
 using UnityEditor.Callbacks;
 using UnityEngine;
 
@@ -20,6 +22,20 @@ namespace ThunderNut.WorldGraph.Editor {
             window.Focus();
 
             return true;
+        }
+        
+        public static string SafeReadAllText(string assetPath)
+        {
+            string result = null;
+            try
+            {
+                result = File.ReadAllText(assetPath, Encoding.UTF8);
+            }
+            catch
+            {
+                result = null;
+            }
+            return result;
         }
         
         public static void PingAsset(string selectedGuid) {

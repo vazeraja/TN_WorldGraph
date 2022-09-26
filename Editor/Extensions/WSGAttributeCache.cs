@@ -8,8 +8,8 @@ using ThunderNut.WorldGraph.Handles;
 namespace ThunderNut.WorldGraph.Editor {
     
     [InitializeOnLoad]
-    public class WGAttributeCache {
-        static WGAttributeCache() {
+    public class WSGAttributeCache {
+        static WSGAttributeCache() {
             ReCacheKnownNodeTypes();
         }
 

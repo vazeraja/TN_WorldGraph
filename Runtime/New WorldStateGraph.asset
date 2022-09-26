@@ -10,5 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2fecb29774f349ce9c57fb8bb103593d, type: 3}
-  m_Name: WorldStateGraph
+  m_Name: New WorldStateGraph
   m_EditorClassIdentifier: 
+  SceneStateData: []
+  StateTransitions: []
+  ExposedParameters: []
+  m_IsDirty: 0
+  references:
+    version: 2
+    RefIds: []

@@ -14,6 +14,8 @@ namespace ThunderNut.WorldGraph.Handles {
         [Tooltip("The color of this scene handle to display in the inspector")]
         public virtual Color HandleColor => Color.white;
 
+        public virtual SceneType SceneType => SceneType.Default;
+
         public SceneReference scene;
 
     }

@@ -15,3 +15,91 @@ ToolbarButton:hover {
 ToolbarButton:active {
     background-color: rgba(255, 255, 255, 0.15);
 }
+
+#button-container {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: stretch;
+    flex-grow: 1;
+}
+
+#resizeBorderFrame > .resize {
+    background-color: rgba(0, 0, 0, 0);
+    position: absolute;
+}
+
+#resizeBorderFrame > .resize.vertical {
+    cursor: resize-vertical;
+    height: 10px;
+    left: 10px;
+    right: 10px;
+    padding-top: 0;
+    padding-bottom: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+#resizeBorderFrame > .resize.horizontal {
+    cursor: resize-horizontal;
+    width: 10px;
+    top: 10px;
+    bottom: 10px;
+    padding-left: 0;
+    padding-right: 0;
+    margin-left: 0;
+    margin-right: 0;
+}
+
+#resizeBorderFrame > .resize.diagonal {
+    width: 10px;
+    height: 6px;
+}
+
+#resizeBorderFrame > .resize.diagonal.top-left {
+    cursor: resize-up-left;
+    top: 0;
+    left: 0;
+}
+
+#resizeBorderFrame > .resize.diagonal.top-right {
+    cursor: resize-up-right;
+    top: 0;
+    right: 0;
+}
+
+#resizeBorderFrame > .resize.diagonal.bottom-left {
+    cursor: resize-up-right;
+    bottom: 0;
+    left: 0;
+}
+
+#resizeBorderFrame > .resize.diagonal.bottom-right {
+    cursor: resize-up-left;
+    bottom: 0;
+    right: 0;
+}
+
+#resizeBorderFrame > .resize.vertical.top {
+    top: 0;
+}
+
+#resizeBorderFrame > .resize.vertical.bottom {
+    bottom: 0;
+}
+
+#resizeBorderFrame > .resize.horizontal.left {
+    left: 0;
+}
+
+#resizeBorderFrame > .resize.horizontal.right {
+    right: 0;
+}
+
+.resizeBorderFrame {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+}

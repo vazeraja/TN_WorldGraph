@@ -35,7 +35,7 @@ namespace ThunderNut.WorldGraph.Editor {
             }
 
             typeDisplays.Add("Add new SceneHandle...");
-            typeDisplays.AddRange(WGAttributeCache.knownNodeTypes.Select(type => type.Name));
+            typeDisplays.AddRange(WSGAttributeCache.knownNodeTypes.Select(type => type.Name));
 
             _playingStyle = new GUIStyle {normal = {textColor = Color.yellow}};
         }
@@ -58,6 +58,7 @@ namespace ThunderNut.WorldGraph.Editor {
             if (_settingsMenuDropdown) {
                 EditorGUILayout.Space(10);
                 EditorGUILayout.LabelField("Initialization", EditorStyles.boldLabel);
+                EditorGUILayout.PropertyField(serializedObject.FindProperty("stateGraph"));
                 EditorGUILayout.PropertyField(serializedObject.FindProperty("activeSceneHandle"));
                 EditorGUILayout.PropertyField(serializedObject.FindProperty("settingB"));
                 EditorGUILayout.PropertyField(serializedObject.FindProperty("settingC"));
@@ -106,7 +107,7 @@ namespace ThunderNut.WorldGraph.Editor {
                 SceneHandle handle = property.objectReferenceValue as SceneHandle;
                 handle!.hideFlags = debugView ? HideFlags.None : HideFlags.HideInInspector;
 
-                Undo.RecordObject(handle, "Modified Feedback");
+                Undo.RecordObject(handle, "Modified SceneHandle");
 
                 int id = i;
                 bool isExpanded = property.isExpanded;
@@ -201,7 +202,7 @@ namespace ThunderNut.WorldGraph.Editor {
                 if (newItem >= 1) {
                     Debug.Log(typeDisplays[newItem]);
 
-                    var type = WGAttributeCache.knownNodeTypes.ToList().Find(x => x.Name == typeDisplays[newItem]);
+                    var type = WSGAttributeCache.knownNodeTypes.ToList().Find(x => x.Name == typeDisplays[newItem]);
                     AddSceneHandle(type);
                 }
             }
@@ -284,32 +285,32 @@ namespace ThunderNut.WorldGraph.Editor {
             EditorGUILayout.EndHorizontal();
         }
 
-        protected virtual SceneHandle AddSceneHandle(Type type) {
+        public SceneHandle AddSceneHandle(Type type) {
             GameObject gameObject = (target as WorldGraph)?.gameObject;
 
-            SceneHandle newFeedback = Undo.AddComponent(gameObject, type) as SceneHandle;
-            newFeedback!.hideFlags = debugView ? HideFlags.None : HideFlags.HideInInspector;
-            newFeedback.Label = type.Name;
+            SceneHandle sceneHandle = Undo.AddComponent(gameObject, type) as SceneHandle;
+            sceneHandle!.hideFlags = debugView ? HideFlags.None : HideFlags.HideInInspector;
+            sceneHandle.Label = type.Name;
 
-            AddEditor(newFeedback);
+            AddEditor(sceneHandle);
 
             sceneHandles.arraySize++;
-            sceneHandles.GetArrayElementAtIndex(sceneHandles.arraySize - 1).objectReferenceValue = newFeedback;
+            sceneHandles.GetArrayElementAtIndex(sceneHandles.arraySize - 1).objectReferenceValue = sceneHandle;
 
-            return newFeedback;
+            return sceneHandle;
         }
 
-        protected virtual void RemoveSceneHandle(int id) {
+        private void RemoveSceneHandle(int id) {
             SerializedProperty property = sceneHandles.GetArrayElementAtIndex(id);
-            SceneHandle feedback = property.objectReferenceValue as SceneHandle;
+            SceneHandle sceneHandle = property.objectReferenceValue as SceneHandle;
 
-            (target as WorldGraph)?.SceneHandles.Remove(feedback);
+            (target as WorldGraph)?.SceneHandles.Remove(sceneHandle);
 
-            _editors.Remove(feedback!);
-            Undo.DestroyObjectImmediate(feedback);
+            _editors.Remove(sceneHandle!);
+            Undo.DestroyObjectImmediate(sceneHandle);
         }
 
-        private void AddEditor(SceneHandle handle) {
+        public void AddEditor(SceneHandle handle) {
             if (handle == null) return;
             if (_editors.ContainsKey(handle)) return;
 
