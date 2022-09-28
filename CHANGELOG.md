@@ -1,3 +1,10 @@
+## [1.0.1](https://github.com/vazeraja/TN_WorldGraph/compare/v1.0.0...v1.0.1) (2022-09-26)
+
+
+### Bug Fixes
+
+* update world graph functionality to use save and load ([73cb14a](https://github.com/vazeraja/TN_WorldGraph/commit/73cb14ab87a80d838ea27946ab4569e3668d7364))
+
 # 1.0.0 (2022-09-22)
 
 
