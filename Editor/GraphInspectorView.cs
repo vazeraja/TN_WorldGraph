@@ -30,11 +30,11 @@ namespace ThunderNut.WorldGraph.Editor {
 
             content = new VisualElement {name = "middle"};
             {
-                previewTextureView = CreatePreview(Texture2D.redTexture);
-                m_PreviewScrollPosition = new Vector2(0f, 0f);
-                content.Add(previewTextureView);
-
-                content.AddManipulator(new Scrollable((x) => { }));
+                // previewTextureView = CreatePreview(Texture2D.redTexture);
+                // m_PreviewScrollPosition = new Vector2(0f, 0f);
+                // content.Add(previewTextureView);
+                //
+                // content.AddManipulator(new Scrollable((x) => { }));
             }
             Add(content);
 

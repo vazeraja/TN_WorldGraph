@@ -36,7 +36,13 @@ GraphInspectorView > #top > #title {
 GraphInspectorView > #middle {
     background-color: rgb(43, 43, 43);
     flex-grow: 1;
-    flex-direction: row;
+}
+GraphInspectorView > #middle > #InspectorContent {
+    flex: 1;
+}
+
+GraphInspectorView > #middle > #InspectorContent > #content {
+    flex-direction: column;
 }
 
 GraphInspectorView > #middle > #preview {

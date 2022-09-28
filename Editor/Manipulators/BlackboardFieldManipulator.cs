@@ -28,7 +28,7 @@ namespace ThunderNut.WorldGraph.Editor {
         }
 
         public BlackboardFieldManipulator(VisualElement root) {
-            target = root.Q<VisualElement>(className: "drop-area");
+            target = root;
             graphView = root as WSGGraphView;
         }
 
@@ -55,8 +55,8 @@ namespace ThunderNut.WorldGraph.Editor {
             var graphMousePosition = graphView.contentViewContainer.WorldToLocal(windowMousePosition);
 
             foreach (var selectedElement in selection.OfType<BlackboardField>()) {
-                // ExposedParameter parameter = (ExposedParameter) selectedElement.userData;
-                // graphView.CreateParameterGraphNode(parameter, graphMousePosition);
+                ExposedParameter parameter = (ExposedParameter) selectedElement.userData;
+                graphView.CreateParameterNode(parameter, graphMousePosition);
             }
         }
 

@@ -53,12 +53,12 @@ namespace ThunderNut.WorldGraph.Editor {
             Rect helpBoxRect = GUILayoutUtility.GetLastRect();
 
             // -------------------------------------------- Settings dropdown --------------------------------------------
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("stateGraph"));
 
             _settingsMenuDropdown = EditorGUILayout.Foldout(_settingsMenuDropdown, "Settings", true, EditorStyles.foldout);
             if (_settingsMenuDropdown) {
                 EditorGUILayout.Space(10);
                 EditorGUILayout.LabelField("Initialization", EditorStyles.boldLabel);
-                EditorGUILayout.PropertyField(serializedObject.FindProperty("stateGraph"));
                 EditorGUILayout.PropertyField(serializedObject.FindProperty("activeSceneHandle"));
                 EditorGUILayout.PropertyField(serializedObject.FindProperty("settingB"));
                 EditorGUILayout.PropertyField(serializedObject.FindProperty("settingC"));

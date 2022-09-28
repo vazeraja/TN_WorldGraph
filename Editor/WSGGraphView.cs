@@ -27,6 +27,7 @@ namespace ThunderNut.WorldGraph.Editor {
 
         private EdgeConnectorListener m_EdgeConnectorListener;
         private WSGSearcherProvider m_SearchWindowProvider;
+        private BlackboardFieldManipulator m_BlackboardFieldManipulator;
 
         public string AssetName {
             get => assetName;
@@ -63,12 +64,22 @@ namespace ThunderNut.WorldGraph.Editor {
             size = new Vector2(20, 30)
         };
 
+        private VisualElement _RootElement;
+        private Label titleLabel;
+        private ScrollView inspectorContentContainer;
+
         public WSGGraphView(WorldGraphEditorWindow window, WorldStateGraph graph, string assetName) {
             this.window = window;
             stateGraph = graph;
 
             window.m_BlackboardButton.RegisterValueChangedCallback(UpdateUserViewBlackboardSettings);
             window.m_GraphInspectorButton.RegisterValueChangedCallback(UpdateUserViewInspectorSettings);
+
+            this.AddManipulator(new ContentDragger());
+            this.AddManipulator(new SelectionDragger());
+            this.AddManipulator(new RectangleSelector());
+            this.AddManipulator(new ClickSelector());
+            SetupZoom(0.05f, 8);
 
             string serializedSettings = EditorUserSettings.GetConfigValue(k_UserViewSettings);
             m_UserViewSettings = JsonUtility.FromJson<UserViewSettings>(serializedSettings) ?? new UserViewSettings();
@@ -87,6 +98,14 @@ namespace ThunderNut.WorldGraph.Editor {
             changeCheck = UpdateSubWindowsVisibility;
             graphViewChanged = OnGraphViewChanged;
 
+            _RootElement = new VisualElement {name = "InspectorContent"};
+            var visualTreeAsset = Resources.Load<VisualTreeAsset>($"UXML/InspectorContainer");
+            _RootElement.styleSheets.Add(Resources.Load<StyleSheet>("UXML/InspectorContainer"));
+            visualTreeAsset.CloneTree(_RootElement);
+            titleLabel = _RootElement.Q<Label>("title-label");
+            inspectorContentContainer = _RootElement.Q<ScrollView>("content-container");
+            inspectorView.content.Add(_RootElement);
+
             m_SearchWindowProvider = ScriptableObject.CreateInstance<WSGSearcherProvider>();
             m_SearchWindowProvider.Initialize(window, this, CreateNode);
             nodeCreationRequest = c => {
@@ -99,6 +118,7 @@ namespace ThunderNut.WorldGraph.Editor {
             };
 
             m_EdgeConnectorListener = new EdgeConnectorListener(window, m_SearchWindowProvider);
+            m_BlackboardFieldManipulator = new BlackboardFieldManipulator(this);
         }
 
         public override List<Port> GetCompatiblePorts(Port startPort, NodeAdapter nodeAdapter) {
@@ -107,6 +127,36 @@ namespace ThunderNut.WorldGraph.Editor {
                     ((WSGPortView) endPort).PortData.PortDirection != ((WSGPortView) startPort).PortData.PortDirection &&
                     ((WSGPortView) endPort).PortData.PortType == ((WSGPortView) startPort).PortData.PortType)
                 .ToList();
+        }
+
+        private GraphViewChange OnGraphViewChanged(GraphViewChange graphViewChange) {
+            graphViewChange.elementsToRemove?.ForEach(elem => {
+                stateGraph.RegisterCompleteObjectUndo("Removed Elements");
+                switch (elem) {
+                    case WSGNodeView nodeView:
+                        stateGraph.SceneStateData.Remove(nodeView.stateData);
+                        break;
+                    case Edge edge:
+                        break;
+                    case BlackboardField blackboardField:
+                        ExposedParameter exposedParameter = (ExposedParameter) blackboardField.userData;
+
+                        if (GetNodeByGuid(exposedParameter.GUID) is WSGParameterNodeView paramNode) {
+                            RemoveParameterNode(paramNode);
+                        }
+
+                        stateGraph.RemoveParameter(exposedParameter);
+                        break;
+                    case WSGParameterNodeView parameterNodeView:
+                        stateGraph.RemoveExposedParameterViewData(parameterNodeView.GetViewData());
+                        break;
+                }
+            });
+            graphViewChange.movedElements?.ForEach(elem => { stateGraph.RegisterCompleteObjectUndo("Moved Elements"); });
+            graphViewChange.edgesToCreate?.ForEach(elem => { stateGraph.RegisterCompleteObjectUndo("Edge Created"); });
+
+
+            return graphViewChange;
         }
 
         public void Initialize() {
@@ -121,10 +171,24 @@ namespace ThunderNut.WorldGraph.Editor {
                 WSGEdgeView graphEdge = outputView.output.ConnectTo<WSGEdgeView>(inputView.input);
                 AddElement(graphEdge);
             }
-            
+
             // ------------------ Create Parameters ------------------
             foreach (var exposedParam in stateGraph.ExposedParameters) {
                 CreateBlackboardField(exposedParam);
+            }
+
+            // ------------------ Connect Parameters  ------------------
+            foreach (var parameterViewData in stateGraph.ExposedParameterViewData) {
+                var parameterView = CreateParameterNode(parameterViewData);
+
+                if (parameterViewData.ConnectedNode != null) {
+                    WSGNodeView baseView = (WSGNodeView) GetNodeByGuid(parameterViewData.ConnectedNode.GUID);
+                    List<WSGPortView> ports = baseView.inputContainer.Query<WSGPortView>().ToList();
+                    var portToConnect = ports.Find(port => port.PortData.GUID == parameterViewData.ConnectedPortGUID);
+
+                    WSGEdgeView edge = ((WSGPortView) parameterView.output).ConnectTo<WSGEdgeView>(portToConnect);
+                    AddElement(edge);
+                }
             }
 
             ports.OfType<WSGPortView>().ToList().ForEach(RegisterPortBehavior);
@@ -150,12 +214,12 @@ namespace ThunderNut.WorldGraph.Editor {
             {
                 exposedParametersBlackboard.Add(new BlackboardSection {title = "Exposed Variables"});
                 exposedParametersBlackboard.editTextRequested = (_blackboard, element, newValue) => {
-                    // var param = (ExposedParameter) ((BlackboardField) element).userData;
-                    // var paramNode = graphElements.OfType<ExposedParameterNodeView>().ToList()
-                    //     .Find(view => (ExposedParameter) view.userData == param);
-                    //
-                    // param.Name = newValue;
-                    // if (paramNode != null) paramNode.output.portName = newValue;
+                    var param = (ExposedParameter) ((BlackboardField) element).userData;
+                    var paramNode = graphElements.OfType<WSGParameterNodeView>().ToList()
+                        .Find(view => (ExposedParameter) view.userData == param);
+
+                    param.Name = newValue;
+                    if (paramNode != null) paramNode.output.portName = newValue;
 
                     ((BlackboardField) element).text = newValue;
                 };
@@ -185,27 +249,73 @@ namespace ThunderNut.WorldGraph.Editor {
 
             Add(exposedParametersBlackboard);
         }
-        
+
         public void CreateBlackboardField(ExposedParameter parameter) {
             stateGraph.RegisterCompleteObjectUndo("Created BlackboardField");
 
             var blackboardField = new WSGBlackboardField(parameter);
             exposedParametersBlackboard.Add(blackboardField);
+        }
 
-            // UpdateSerializedProperties();
+        public void CreateParameterNode(ExposedParameter parameter, Vector2 position) {
+            stateGraph.RegisterCompleteObjectUndo("Created Parameter Node");
+
+            var outputPort = new PortData {
+                PortColor = new Color(0.52f, 0.89f, 0.91f),
+                PortDirection = "Output",
+                PortCapacity = "Single",
+                PortType = PortType.Parameter,
+            };
+            var outputPortView = new WSGPortView(outputPort, m_EdgeConnectorListener);
+            RegisterPortBehavior(outputPortView);
+
+            var viewData = new ExposedParameterViewData {
+                Parameter = parameter,
+                Position = position
+            };
+            stateGraph.AddExposedParameterViewData(viewData);
+            var parameterNodeView = new WSGParameterNodeView(viewData, outputPortView);
+
+            AddElement(parameterNodeView);
+        }
+
+        private WSGParameterNodeView CreateParameterNode(ExposedParameterViewData viewData) {
+            var outputPort = new PortData {
+                PortColor = new Color(0.52f, 0.89f, 0.91f),
+                PortDirection = "Output",
+                PortCapacity = "Single",
+                PortType = PortType.Parameter,
+            };
+            var outputPortView = new WSGPortView(outputPort, m_EdgeConnectorListener);
+            var parameterNodeView = new WSGParameterNodeView(viewData, outputPortView);
+            AddElement(parameterNodeView);
+
+            return parameterNodeView;
+        }
+
+        private void RemoveParameterNode(WSGParameterNodeView view) {
+            string portGuid = view.GetViewData().ConnectedPortGUID;
+            if (portGuid != null) {
+                Edge connectedEdge = edges.ToList().Find(edge => ((WSGPortView) edge.input).PortData.GUID == portGuid);
+                connectedEdge.input.Disconnect(connectedEdge);
+                connectedEdge.output.Disconnect(connectedEdge);
+            }
+
+            stateGraph.RemoveExposedParameterViewData(view.GetViewData());
+            RemoveElement(view);
         }
 
         public void RegisterPortBehavior(WSGPortView worldGraphPort) {
             // ------------ Dragging an edge disconnects both ports ------------
             worldGraphPort.OnConnected += (node, port, edge) => {
+                stateGraph.RegisterCompleteObjectUndo("Port Connected");
+
                 WSGPortView outputPort = (WSGPortView) edge.output;
                 WSGPortView inputPort = (WSGPortView) edge.input;
 
                 // ReSharper disable once SwitchStatementHandlesSomeKnownEnumValuesWithDefault
                 switch (port.PortData.PortType) {
                     case PortType.Default when port.direction == Direction.Output: {
-                        stateGraph.RegisterCompleteObjectUndo("Created Transition");
-
                         var output = (WSGNodeView) outputPort.node;
                         var input = (WSGNodeView) inputPort.node;
 
@@ -218,25 +328,25 @@ namespace ThunderNut.WorldGraph.Editor {
                         break;
                     }
                     case PortType.Parameter when node is WSGParameterNodeView propertyNodeView:
-                        // var param = propertyNodeView.GetViewData();
-                        // var inputNodeView = (WSGNodeView) inputPort.node;
-                        //
-                        // param.ConnectedNode = inputNodeView.sceneHandle;
-                        // param.ConnectedPortGUID = inputPort.PortData.GUID;
+                        var param = propertyNodeView.GetViewData();
+                        var inputNodeView = (WSGNodeView) inputPort.node;
+
+                        param.ConnectedNode = inputNodeView.stateData;
+                        param.ConnectedPortGUID = inputPort.PortData.GUID;
                         break;
                 }
 
                 // UpdateSerializedProperties();
             };
             worldGraphPort.OnDisconnected += (node, port, edge) => {
+                stateGraph.RegisterCompleteObjectUndo("Port Disconnected");
+
                 WSGPortView outputPort = (WSGPortView) edge.output;
                 WSGPortView inputPort = (WSGPortView) edge.input;
 
                 // ReSharper disable once SwitchStatementHandlesSomeKnownEnumValuesWithDefault
                 switch (port.PortData.PortType) {
                     case PortType.Default when port.direction == Direction.Output: {
-                        stateGraph.RegisterCompleteObjectUndo("Removed Transition");
-
                         var output = (WSGNodeView) outputPort.node;
                         var input = (WSGNodeView) inputPort.node;
 
@@ -252,45 +362,15 @@ namespace ThunderNut.WorldGraph.Editor {
                     case PortType.Parameter when node is WSGNodeView nodeView:
                         break;
                     case PortType.Parameter when node is WSGParameterNodeView propertyNodeView:
-                        // var param = propertyNodeView.GetViewData();
-                        //
-                        // param.ConnectedNode = null;
-                        // param.ConnectedPortGUID = null;
+                        var param = propertyNodeView.GetViewData();
+
+                        param.ConnectedNode = null;
+                        param.ConnectedPortGUID = null;
                         break;
                 }
 
                 // UpdateSerializedProperties();
             };
-        }
-
-        private GraphViewChange OnGraphViewChanged(GraphViewChange graphViewChange) {
-            graphViewChange.elementsToRemove?.ForEach(elem => {
-                stateGraph.RegisterCompleteObjectUndo("Removed Elements");
-                switch (elem) {
-                    case WSGNodeView nodeView:
-                        stateGraph.SceneStateData.Remove(nodeView.stateData);
-                        break;
-                    // case WorldGraphEdge edge:
-                    //     break;
-                    case BlackboardField blackboardField:
-                        ExposedParameter exposedParameter = (ExposedParameter) blackboardField.userData;
-                    
-                        // if (GetNodeByGuid(exposedParameter.GUID) is WSGParameterNodeView paramNode) {
-                        //     RemoveParameterGraphNode(paramNode);
-                        // }
-                        
-                        stateGraph.RemoveParameter(exposedParameter);
-                        break;
-                    // case WSGParameterNodeView parameterNodeView:
-                    //     graph.RemoveExposedParameterViewData(parameterNodeView.GetViewData());
-                    //     break;
-                }
-            });
-            graphViewChange.movedElements?.ForEach(elem => { stateGraph.RegisterCompleteObjectUndo("Moved Elements"); });
-            graphViewChange.edgesToCreate?.ForEach(elem => { stateGraph.RegisterCompleteObjectUndo("Edge Created"); });
-
-
-            return graphViewChange;
         }
 
         private void CreateNode(Type type, Vector2 pos) {
@@ -312,23 +392,64 @@ namespace ThunderNut.WorldGraph.Editor {
 
             AddElement(element);
         }
-        
-        // public void RemoveParameterGraphNode(WSGParameterNodeView view) {
-        //     string portGuid = view.GetViewData().ConnectedPortGUID;
-        //     if (portGuid != null) {
-        //         Edge connectedEdge = edges.ToList().Find(edge => ((WorldGraphPort) edge.input).PortData.GUID == portGuid);
-        //         connectedEdge.input.Disconnect(connectedEdge);
-        //         connectedEdge.output.Disconnect(connectedEdge);
-        //     }
-        //
-        //     graph.RemoveExposedParameterViewData(view.GetViewData());
-        //     RemoveElement(view);
-        //
-        //     UpdateSerializedProperties();
-        // }
 
         public void UpdateSerializedProperties() {
             serializedGraph = new SerializedObject(stateGraph);
+        }
+
+        public void DrawPropertiesInInspector(SceneStateData stateData) {
+            inspectorContentContainer.Clear();
+
+            if (worldGraph == null) {
+                inspectorContentContainer.Add(new Label("Select WorldGraph in Inspector"));
+                ClearSelection();
+                return;
+            }
+
+            var match = worldGraph.SceneHandles.Find(x => x.StateData.GUID == stateData.GUID);
+            var handleEditor = UnityEditor.Editor.CreateEditor(match);
+
+            titleLabel.text = $"{match.Label} Node";
+            IMGUIContainer GUIContainer = new IMGUIContainer(() => { handleEditor.OnInspectorGUI(); });
+
+            inspectorContentContainer.Add(GUIContainer);
+        }
+
+        public void DrawPropertiesInInspector(ExposedParameter parameter) {
+            inspectorContentContainer.Clear();
+
+            if (worldGraph == null) {
+                inspectorContentContainer.Add(new Label("Select WorldGraph in Inspector"));
+                ClearSelection();
+                return;
+            }
+
+            var graph = new SerializedObject(stateGraph);
+            var match = GetPropertyMatch(graph.FindProperty("ExposedParameters"), parameter);
+            titleLabel.text = $"{match.displayName} Parameter";
+            IMGUIContainer GUIContainer = new IMGUIContainer(() => {
+                match.serializedObject.Update();
+
+                EditorGUILayout.PropertyField(match.FindPropertyRelative("Name"));
+                EditorGUILayout.PropertyField(match.FindPropertyRelative("Reference"));
+                EditorGUILayout.PropertyField(match.FindPropertyRelative("Exposed"));
+
+                match.serializedObject.ApplyModifiedProperties();
+            });
+            inspectorContentContainer.Add(GUIContainer);
+
+        }
+
+
+        private static SerializedProperty GetPropertyMatch(SerializedProperty property, object referenceValue) {
+            for (var i = 0; i < property.arraySize; i++) {
+                var iProp = property.GetArrayElementAtIndex(i);
+                if (iProp.managedReferenceValue == referenceValue) {
+                    return iProp;
+                }
+            }
+
+            return null;
         }
 
         #region Serialize Window Layouts
@@ -393,6 +514,10 @@ namespace ThunderNut.WorldGraph.Editor {
         public void Dispose() {
             window.m_BlackboardButton.UnregisterValueChangedCallback(UpdateUserViewBlackboardSettings);
             window.m_GraphInspectorButton.UnregisterValueChangedCallback(UpdateUserViewInspectorSettings);
+
+            _RootElement = null;
+            titleLabel = null;
+            inspectorContentContainer = null;
 
             nodeCreationRequest = null;
 

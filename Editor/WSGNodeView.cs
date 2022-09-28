@@ -119,7 +119,7 @@ namespace ThunderNut.WorldGraph.Editor {
 
             inputContainer.Add(parameterPort);
             graphView.RegisterPortBehavior(parameterPort);
-            ScreenCapture.CaptureScreenshot("Assets/TN_SceneManagement/Editor/Resources/temp.png", 1);
+            graphView.stateGraph.RegisterCompleteObjectUndo("Parameter Port Created");
         }
         
         private void SetupTitleField() {
@@ -172,7 +172,11 @@ namespace ThunderNut.WorldGraph.Editor {
                 }
             }
         }
-        
+
+        public override void OnSelected() {
+            base.OnSelected();
+            graphView.DrawPropertiesInInspector(stateData);
+        }
 
         public override void SetPosition(Rect newPos) {
             base.SetPosition(newPos);

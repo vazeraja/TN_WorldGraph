@@ -16,6 +16,8 @@ namespace ThunderNut.WorldGraph.Handles {
 
         public virtual SceneType SceneType => SceneType.Default;
 
+        public SceneStateData StateData;
+
         public SceneReference scene;
 
     }

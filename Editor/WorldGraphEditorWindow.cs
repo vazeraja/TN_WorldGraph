@@ -40,7 +40,7 @@ namespace ThunderNut.WorldGraph.Editor {
             private set => m_Selected = value;
         }
 
-        [SerializeField] private WorldGraph m_WorldGraph;
+        private WorldGraph m_WorldGraph;
 
         private WorldStateGraph loadedGraph;
 
@@ -78,17 +78,14 @@ namespace ThunderNut.WorldGraph.Editor {
                     m_ShowInProjectButton.clicked += PingAsset;
                     m_RefreshButton.clicked += Refresh;
 
-                    m_GraphView.AddManipulator(new ContentDragger());
-                    m_GraphView.AddManipulator(new SelectionDragger());
-                    m_GraphView.AddManipulator(new RectangleSelector());
-                    m_GraphView.AddManipulator(new ClickSelector());
-                    m_GraphView.SetupZoom(0.05f, 8);
-                    m_GraphView.AddToClassList("drop-area");
-
                     m_GraphView.Initialize();
 
                     m_GraphView.RegisterCallback<GeometryChangedEvent>(OnGeometryChanged);
                     m_FrameAllAfterLayout = true;
+                    
+                    stateGraph.isDirty = false;
+                    hasUnsavedChanges = false;
+                    SaveAsset();
 
                     m_Content.Add(m_GraphView);
                 }
@@ -106,17 +103,19 @@ namespace ThunderNut.WorldGraph.Editor {
                 m_MessageLabel.text = "Cannot edit multiple WorldGraph's at once";
                 return;
             }
+            
+            if (m_WorldGraph.StateGraph == null) {
+                m_WorldGraph.StateGraph = loadedGraph;
+            }
 
-            m_MessageLabel.text = $"{m_WorldGraph.name} selected";
-
-            if (GraphsAreDifferent(stateGraph, m_WorldGraph.StateGraph)) {
+            if (GraphHasChangedSinceLastSerialization()) {
                 if (EditorUtility.DisplayDialog("StateGraph's are different", "Do you want to assign the new State Graph?",
                     "Save and Assign Changes", "Don't Assign")) {
                     SaveAsset();
                     m_WorldGraph.StateGraph = loadedGraph;
                 }
             }
-
+            m_MessageLabel.text = $"{m_WorldGraph.name} selected";
             graphView.worldGraph = m_WorldGraph;
         }
 
@@ -128,28 +127,11 @@ namespace ThunderNut.WorldGraph.Editor {
         }
 
         private void OnDisable() {
-            stateGraph = null;
             graphView = null;
         }
 
         private void OnDestroy() {
-            WorldGraphEditorWindow newWindow = null;
-            if (!PromptSaveIfDirtyOnQuit()) {
-                newWindow = CreateWindow<WorldGraphEditorWindow>(typeof(WorldGraphEditorWindow), typeof(SceneView));
-                newWindow.Initialize(this);
-            }
-            else {
-                Undo.ClearUndo(stateGraph);
-            }
-
-            stateGraph = null;
-            graphView = null;
-
-            // show new window if we have one
-            if (newWindow != null) {
-                newWindow.Show();
-                newWindow.Focus();
-            }
+            HandleWindowClosed();
         }
 
         public void CreateGUI() {
@@ -204,7 +186,7 @@ namespace ThunderNut.WorldGraph.Editor {
                             graphChanged ? "Discard Changes And Reload" : "Reload",
                             "Don't Reload")) {
                             // clear graph, trigger reload
-                            stateGraph = null;
+                            graphView = null;
                         }
                     }
                 }
@@ -266,7 +248,7 @@ namespace ThunderNut.WorldGraph.Editor {
 
                 selectedGuid = assetGuid;
                 string graphName = Path.GetFileNameWithoutExtension(path);
-                
+
                 loadedGraph = asset;
                 loadedGraph.name = graphName;
                 loadedGraph.hideFlags = HideFlags.HideAndDontSave;
@@ -284,8 +266,7 @@ namespace ThunderNut.WorldGraph.Editor {
                 }
 
                 graphView = new WSGGraphView(this, stateGraph, graphName) {name = "GraphView", viewDataKey = assetGuid};
-
-                SaveAsset();
+                
                 UpdateTitle();
                 Repaint();
             }
@@ -355,8 +336,7 @@ namespace ThunderNut.WorldGraph.Editor {
             // -------------------- Serialize StateGraph data for GraphView -------------------- 
             m_LastSerializedFileContents = EditorJsonUtility.ToJson(stateGraph, true);
             EditorUserSettings.SetConfigValue(k_SaveDataKey, m_LastSerializedFileContents);
-            Debug.Log(m_LastSerializedFileContents);
-            
+
             // -------------------- Deserialize StateGraph data into StateGraph Asset -------------------- 
             EditorJsonUtility.FromJsonOverwrite(m_LastSerializedFileContents, loadedGraph);
             loadedGraph.name = Path.GetFileNameWithoutExtension(AssetDatabase.GetAssetPath(loadedGraph));
@@ -374,6 +354,26 @@ namespace ThunderNut.WorldGraph.Editor {
         public override void SaveChanges() {
             base.SaveChanges();
             SaveAsset();
+        }
+
+        private void HandleWindowClosed() {
+            WorldGraphEditorWindow newWindow = null;
+            if (!PromptSaveIfDirtyOnQuit()) {
+                newWindow = CreateWindow<WorldGraphEditorWindow>(typeof(WorldGraphEditorWindow), typeof(SceneView));
+                newWindow.Initialize(this);
+            }
+            else {
+                Undo.ClearUndo(stateGraph);
+            }
+
+            stateGraph = null;
+            graphView = null;
+
+            // show new window if we have one
+            if (newWindow != null) {
+                newWindow.Show();
+                newWindow.Focus();
+            }
         }
 
         private bool PromptSaveIfDirtyOnQuit() {

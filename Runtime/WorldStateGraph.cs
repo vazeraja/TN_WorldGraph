@@ -67,6 +67,7 @@ namespace ThunderNut.WorldGraph {
     public class WorldStateGraph : ScriptableObject {
         public List<SceneStateData> SceneStateData = new List<SceneStateData>();
         public List<StateTransition> StateTransitions = new List<StateTransition>();
+        public List<ExposedParameterViewData> ExposedParameterViewData = new List<ExposedParameterViewData>();
         [SerializeReference] public List<ExposedParameter> ExposedParameters = new List<ExposedParameter>();
 
         [SerializeField] private bool m_IsDirty;
@@ -129,6 +130,14 @@ namespace ThunderNut.WorldGraph {
 
         public void RemoveParameter(ExposedParameter parameter) {
             ExposedParameters.Remove(parameter);
+        }
+        
+        public void AddExposedParameterViewData(ExposedParameterViewData viewData) {
+            ExposedParameterViewData.Add(viewData);
+        }
+
+        public void RemoveExposedParameterViewData(ExposedParameterViewData viewData) {
+            ExposedParameterViewData.Remove(viewData);
         }
     }
 
