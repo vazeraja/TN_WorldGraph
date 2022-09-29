@@ -42,7 +42,8 @@ namespace ThunderNut.WorldGraph.Editor {
 
         private WorldGraph m_WorldGraph;
 
-        private WorldStateGraph loadedGraph;
+        [SerializeField] private WorldStateGraph loadedGraph;
+        public WorldStateGraph LoadedGraph => loadedGraph;
 
         [SerializeField] private WorldStateGraph m_StateGraph;
         private WorldStateGraph stateGraph {
@@ -82,7 +83,7 @@ namespace ThunderNut.WorldGraph.Editor {
 
                     m_GraphView.RegisterCallback<GeometryChangedEvent>(OnGeometryChanged);
                     m_FrameAllAfterLayout = true;
-                    
+
                     stateGraph.isDirty = false;
                     hasUnsavedChanges = false;
                     SaveAsset();
@@ -103,7 +104,7 @@ namespace ThunderNut.WorldGraph.Editor {
                 m_MessageLabel.text = "Cannot edit multiple WorldGraph's at once";
                 return;
             }
-            
+
             if (m_WorldGraph.StateGraph == null) {
                 m_WorldGraph.StateGraph = loadedGraph;
             }
@@ -115,6 +116,7 @@ namespace ThunderNut.WorldGraph.Editor {
                     m_WorldGraph.StateGraph = loadedGraph;
                 }
             }
+
             m_MessageLabel.text = $"{m_WorldGraph.name} selected";
             graphView.worldGraph = m_WorldGraph;
         }
@@ -170,29 +172,29 @@ namespace ThunderNut.WorldGraph.Editor {
                 updateTitle = true;
             }
 
-            if (m_AssetMaybeChangedOnDisk) {
-                m_AssetMaybeChangedOnDisk = false;
-
-                if (stateGraph != null) {
-                    if (FileOnDiskHasChanged()) {
-                        bool graphChanged = GraphHasChangedSinceLastSerialization();
-
-                        if (EditorUtility.DisplayDialog(
-                            "Graph has changed on disk",
-                            AssetDatabase.GUIDToAssetPath(selectedGuid) + "\n\n" +
-                            (graphChanged
-                                ? "Do you want to reload it and lose the changes made in the graph?"
-                                : "Do you want to reload it?"),
-                            graphChanged ? "Discard Changes And Reload" : "Reload",
-                            "Don't Reload")) {
-                            // clear graph, trigger reload
-                            graphView = null;
-                        }
-                    }
-                }
-
-                updateTitle = true;
-            }
+            // if (m_AssetMaybeChangedOnDisk) {
+            //     m_AssetMaybeChangedOnDisk = false;
+            //
+            //     if (stateGraph != null) {
+            //         if (FileOnDiskHasChanged()) {
+            //             bool graphChanged = GraphHasChangedSinceLastSerialization();
+            //
+            //             if (EditorUtility.DisplayDialog(
+            //                 "Graph has changed on disk",
+            //                 AssetDatabase.GUIDToAssetPath(selectedGuid) + "\n\n" +
+            //                 (graphChanged
+            //                     ? "Do you want to reload it and lose the changes made in the graph?"
+            //                     : "Do you want to reload it?"),
+            //                 graphChanged ? "Discard Changes And Reload" : "Reload",
+            //                 "Don't Reload")) {
+            //                 // clear graph, trigger reload
+            //                 graphView = null;
+            //             }
+            //         }
+            //     }
+            //
+            //     updateTitle = true;
+            // }
 
             try {
                 if (stateGraph == null && selectedGuid != null) {
@@ -266,7 +268,7 @@ namespace ThunderNut.WorldGraph.Editor {
                 }
 
                 graphView = new WSGGraphView(this, stateGraph, graphName) {name = "GraphView", viewDataKey = assetGuid};
-                
+
                 UpdateTitle();
                 Repaint();
             }
@@ -340,6 +342,7 @@ namespace ThunderNut.WorldGraph.Editor {
             // -------------------- Deserialize StateGraph data into StateGraph Asset -------------------- 
             EditorJsonUtility.FromJsonOverwrite(m_LastSerializedFileContents, loadedGraph);
             loadedGraph.name = Path.GetFileNameWithoutExtension(AssetDatabase.GetAssetPath(loadedGraph));
+            loadedGraph.StateTransitions.ForEach(transition => { transition.StateGraph = loadedGraph; });
 
             hasUnsavedChanges = false;
             stateGraph.isDirty = false;

@@ -140,11 +140,12 @@ namespace ThunderNut.WorldGraph.Editor {
                         break;
                     case BlackboardField blackboardField:
                         ExposedParameter exposedParameter = (ExposedParameter) blackboardField.userData;
-
+            
                         if (GetNodeByGuid(exposedParameter.GUID) is WSGParameterNodeView paramNode) {
                             RemoveParameterNode(paramNode);
                         }
-
+                        
+                        ClearGraphInspector();
                         stateGraph.RemoveParameter(exposedParameter);
                         break;
                     case WSGParameterNodeView parameterNodeView:
@@ -165,10 +166,13 @@ namespace ThunderNut.WorldGraph.Editor {
                 AddElement(element);
             }
 
-            foreach (var edge in stateGraph.StateTransitions) {
-                WSGNodeView outputView = (WSGNodeView) GetNodeByGuid(edge.OutputStateGUID);
-                WSGNodeView inputView = (WSGNodeView) GetNodeByGuid(edge.InputStateGUID);
+            foreach (var transition in stateGraph.StateTransitions) {
+                WSGNodeView outputView = (WSGNodeView) GetNodeByGuid(transition.OutputStateGUID);
+                WSGNodeView inputView = (WSGNodeView) GetNodeByGuid(transition.InputStateGUID);
+                
                 WSGEdgeView graphEdge = outputView.output.ConnectTo<WSGEdgeView>(inputView.input);
+                graphEdge.userData = transition;
+                
                 AddElement(graphEdge);
             }
 
@@ -178,7 +182,7 @@ namespace ThunderNut.WorldGraph.Editor {
             }
 
             // ------------------ Connect Parameters  ------------------
-            foreach (var parameterViewData in stateGraph.ExposedParameterViewData) {
+            foreach (ExposedParameterViewData parameterViewData in stateGraph.ExposedParameterViewData) {
                 var parameterView = CreateParameterNode(parameterViewData);
 
                 if (parameterViewData.ConnectedNode != null) {
@@ -187,6 +191,7 @@ namespace ThunderNut.WorldGraph.Editor {
                     var portToConnect = ports.Find(port => port.PortData.GUID == parameterViewData.ConnectedPortGUID);
 
                     WSGEdgeView edge = ((WSGPortView) parameterView.output).ConnectTo<WSGEdgeView>(portToConnect);
+
                     AddElement(edge);
                 }
             }
@@ -320,8 +325,9 @@ namespace ThunderNut.WorldGraph.Editor {
                         var input = (WSGNodeView) inputPort.node;
 
                         // output.stateData.Children.Add(input.stateData);
-                        stateGraph.CreateTransition(output.stateData, input.stateData);
-
+                        var transition = stateGraph.CreateTransition(output.stateData, input.stateData);
+                        edge.userData = transition;
+                        
                         break;
                     }
                     case PortType.Parameter when node is WSGNodeView nodeView: {
@@ -351,11 +357,9 @@ namespace ThunderNut.WorldGraph.Editor {
                         var input = (WSGNodeView) inputPort.node;
 
                         // output.stateData.Children.Remove(input.stateData);
-
-                        var edgeToRemove = stateGraph.StateTransitions.Find(
-                            transition => transition.OutputStateGUID == output.stateData.GUID &&
-                                          transition.InputStateGUID == input.stateData.GUID);
-                        stateGraph.RemoveTransition(edgeToRemove);
+                        
+                        ClearGraphInspector();
+                        stateGraph.RemoveTransition(edge.userData as Transition);
 
                         break;
                     }
@@ -402,7 +406,6 @@ namespace ThunderNut.WorldGraph.Editor {
 
             if (worldGraph == null) {
                 inspectorContentContainer.Add(new Label("Select WorldGraph in Inspector"));
-                ClearSelection();
                 return;
             }
 
@@ -418,15 +421,10 @@ namespace ThunderNut.WorldGraph.Editor {
         public void DrawPropertiesInInspector(ExposedParameter parameter) {
             inspectorContentContainer.Clear();
 
-            if (worldGraph == null) {
-                inspectorContentContainer.Add(new Label("Select WorldGraph in Inspector"));
-                ClearSelection();
-                return;
-            }
-
             var graph = new SerializedObject(stateGraph);
             var match = GetPropertyMatch(graph.FindProperty("ExposedParameters"), parameter);
-            titleLabel.text = $"{match.displayName} Parameter";
+            
+            titleLabel.text = $"{match.FindPropertyRelative("Name").stringValue} Parameter";
             IMGUIContainer GUIContainer = new IMGUIContainer(() => {
                 match.serializedObject.Update();
 
@@ -438,6 +436,27 @@ namespace ThunderNut.WorldGraph.Editor {
             });
             inspectorContentContainer.Add(GUIContainer);
 
+        }
+
+        public void DrawPropertiesInInspector(Transition transition) {
+            inspectorContentContainer.Clear();
+
+            var graph = new SerializedObject(stateGraph);
+            var match = GetPropertyMatch(graph.FindProperty("StateTransitions"), transition);
+            
+            titleLabel.text = transition.ToString();
+            IMGUIContainer GUIContainer = new IMGUIContainer(() => {
+                match.serializedObject.Update();
+                
+                EditorGUILayout.PropertyField(match);
+
+                match.serializedObject.ApplyModifiedProperties();
+            });
+            inspectorContentContainer.Add(GUIContainer);
+        }
+
+        private void ClearGraphInspector() {
+            inspectorContentContainer.Clear();
         }
 
 

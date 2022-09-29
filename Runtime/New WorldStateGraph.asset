@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   SceneStateData: []
   StateTransitions: []
-  ExposedParameterViewData: []
   ExposedParameters: []
+  ExposedParameterViewData: []
   m_IsDirty: 0
   references:
     version: 2

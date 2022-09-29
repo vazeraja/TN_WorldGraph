@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
@@ -66,9 +67,9 @@ namespace ThunderNut.WorldGraph {
     [CreateAssetMenu(fileName = "New WorldStateGraph", menuName = "WorldGraph/StateGraph", order = 0)]
     public class WorldStateGraph : ScriptableObject {
         public List<SceneStateData> SceneStateData = new List<SceneStateData>();
-        public List<StateTransition> StateTransitions = new List<StateTransition>();
-        public List<ExposedParameterViewData> ExposedParameterViewData = new List<ExposedParameterViewData>();
+        [SerializeReference] public List<Transition> StateTransitions = new List<Transition>();
         [SerializeReference] public List<ExposedParameter> ExposedParameters = new List<ExposedParameter>();
+        public List<ExposedParameterViewData> ExposedParameterViewData = new List<ExposedParameterViewData>();
 
         [SerializeField] private bool m_IsDirty;
         public bool isDirty {
@@ -81,20 +82,14 @@ namespace ThunderNut.WorldGraph {
             m_IsDirty = true;
         }
 
-        public StateTransition CreateTransition(SceneStateData output, SceneStateData input) {
-            StateTransition edge = new StateTransition {
-                OutputStateGUID = output.GUID,
-                OutputState = output,
-                InputStateGUID = input.GUID,
-                InputState = input
-            };
-
+        public Transition CreateTransition(SceneStateData output, SceneStateData input) {
+            StateTransition edge = new StateTransition(this, output, input);
             StateTransitions.Add(edge);
             return edge;
         }
 
 
-        public void RemoveTransition(StateTransition edge) {
+        public void RemoveTransition(Transition edge) {
             StateTransitions.Remove(edge);
         }
 
