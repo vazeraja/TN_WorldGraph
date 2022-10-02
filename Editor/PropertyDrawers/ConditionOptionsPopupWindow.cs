@@ -9,40 +9,14 @@ namespace ThunderNut.WorldGraph.Editor {
         private readonly SearchField m_SearchField;
 
         private readonly WGSimpleTreeView multiColumnTreeView;
-        private readonly TreeViewState multiColumnTreeViewState;
 
         private bool m_ShouldClose;
         public float Width;
 
-        public ConditionOptionsPopupWindow(List<ExposedParameter> parameters, SerializedProperty parameterProperty,
-            SerializedProperty valueProperty) {
+        public ConditionOptionsPopupWindow(WorldStateGraph graph, StateCondition condition) {
             m_SearchField = new SearchField();
-            multiColumnTreeView = WGSimpleTreeView.Create(ref multiColumnTreeViewState, parameters);
-            multiColumnTreeView.onDoubleClicked = parameter => {
-                parameterProperty.managedReferenceValue = parameter;
-                parameterProperty.serializedObject.ApplyModifiedProperties();
-                
-                switch (parameterProperty.managedReferenceValue) {
-                    case StringParameterField:
-                        valueProperty.managedReferenceValue = new StringCondition();
-                        valueProperty.serializedObject.ApplyModifiedProperties();
-                        break;
-                    case FloatParameterField:
-                        valueProperty.managedReferenceValue = new FloatCondition();
-                        valueProperty.serializedObject.ApplyModifiedProperties();
-                        break;
-                    case IntParameterField:
-                        valueProperty.managedReferenceValue = new IntCondition();
-                        valueProperty.serializedObject.ApplyModifiedProperties();
-                        break;
-                    case BoolParameterField:
-                        valueProperty.managedReferenceValue = new BoolCondition();
-                        valueProperty.serializedObject.ApplyModifiedProperties();
-                        break;
-                }
-                
-                ForceClose();
-            };
+            multiColumnTreeView = WGSimpleTreeView.Create(graph, condition);
+            multiColumnTreeView.onDoubleClicked = ForceClose;
         }
 
         public override void OnGUI(Rect rect) {

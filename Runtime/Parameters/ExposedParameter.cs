@@ -7,7 +7,7 @@ namespace ThunderNut.WorldGraph {
 
     [Serializable]
     public class ExposedParameterViewData {
-        [SerializeReference] private ExposedParameter parameter;
+        [SerializeField] private ExposedParameter parameter;
         public ExposedParameter Parameter {
             get => parameter;
             set => parameter = value;
@@ -32,17 +32,22 @@ namespace ThunderNut.WorldGraph {
         }
     }
 
-    [Serializable]
-    public class ExposedParameter : ISerializationCallbackReceiver {
+    public class ExposedParameter : ScriptableObject, ISerializationCallbackReceiver {
         public string GUID;
         public string Name;
         public string Reference;
         public bool Exposed;
         public string ParameterType;
 
-        public void OnBeforeSerialize() { }
+        private void OnEnable() {
+            name = Name;
+        }
 
-        public void OnAfterDeserialize() { }
+        public void OnBeforeSerialize() {
+        }
+
+        public void OnAfterDeserialize() {
+        }
     }
 
 }

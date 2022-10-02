@@ -63,24 +63,30 @@ namespace ThunderNut.WorldGraph {
         }
     }
 
+    #if UNITY_EDITOR
+    [CustomEditor(typeof(WorldStateGraph), true)]
+    public class WorldStateGraphEditor : Editor {
+        public override void OnInspectorGUI() {
+            serializedObject.Update();
+
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("SceneStateData"));
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("StateTransitions"));
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("ExposedParameters"));
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("ExposedParameterViewData"));
+
+            serializedObject.ApplyModifiedProperties();
+        }
+    }
+    #endif
 
     [CreateAssetMenu(fileName = "New WorldStateGraph", menuName = "WorldGraph/StateGraph", order = 0)]
     public class WorldStateGraph : ScriptableObject {
         public List<SceneStateData> SceneStateData = new List<SceneStateData>();
+
         [SerializeReference] public List<Transition> StateTransitions = new List<Transition>();
-        [SerializeReference] public List<ExposedParameter> ExposedParameters = new List<ExposedParameter>();
+
+        public List<ExposedParameter> ExposedParameters = new List<ExposedParameter>();
         public List<ExposedParameterViewData> ExposedParameterViewData = new List<ExposedParameterViewData>();
-
-        [SerializeField] private bool m_IsDirty;
-        public bool isDirty {
-            get => m_IsDirty;
-            set => m_IsDirty = value;
-        }
-
-        public void RegisterCompleteObjectUndo(string actionName) {
-            Undo.RegisterCompleteObjectUndo(this, actionName);
-            m_IsDirty = true;
-        }
 
         public Transition CreateTransition(SceneStateData output, SceneStateData input) {
             StateTransition edge = new StateTransition(this, output, input);
@@ -96,26 +102,47 @@ namespace ThunderNut.WorldGraph {
         public ExposedParameter CreateParameter(string type) {
             switch (type) {
                 case "String":
-                    var stringParameter = new StringParameterField();
+                    Undo.RecordObject(this, $"CreateParameter() :: String");
 
+                    var stringParameter = CreateInstance<StringParameterField>();
                     ExposedParameters.Add(stringParameter);
+                    if (!Application.isPlaying) AssetDatabase.AddObjectToAsset(stringParameter, this);
+
+                    Undo.RegisterCreatedObjectUndo(stringParameter, "StringParameterField SO Created");
+                    AssetDatabase.SaveAssets();
 
                     return stringParameter;
                 case "Float":
-                    var floatParameter = new FloatParameterField();
+                    Undo.RecordObject(this, $"CreateParameter() :: Float");
 
+                    var floatParameter = CreateInstance<FloatParameterField>();
                     ExposedParameters.Add(floatParameter);
+                    if (!Application.isPlaying) AssetDatabase.AddObjectToAsset(floatParameter, this);
+
+                    Undo.RegisterCreatedObjectUndo(floatParameter, "FloatParameterField SO Created");
+                    AssetDatabase.SaveAssets();
 
                     return floatParameter;
                 case "Int":
-                    var intParameter = new IntParameterField();
+                    Undo.RecordObject(this, $"CreateParameter() :: Int");
 
+                    var intParameter = CreateInstance<IntParameterField>();
                     ExposedParameters.Add(intParameter);
+                    if (!Application.isPlaying) AssetDatabase.AddObjectToAsset(intParameter, this);
+
+                    Undo.RegisterCreatedObjectUndo(intParameter, "IntParameterField SO Created");
+                    AssetDatabase.SaveAssets();
 
                     return intParameter;
                 case "Bool":
-                    var boolParameter = new BoolParameterField();
+                    Undo.RecordObject(this, $"CreateParameter() :: Bool");
+
+                    var boolParameter = CreateInstance<BoolParameterField>();
                     ExposedParameters.Add(boolParameter);
+                    if (!Application.isPlaying) AssetDatabase.AddObjectToAsset(boolParameter, this);
+
+                    Undo.RegisterCreatedObjectUndo(boolParameter, "IntParameterField SO Created");
+                    AssetDatabase.SaveAssets();
 
                     return boolParameter;
                 default:
@@ -124,9 +151,14 @@ namespace ThunderNut.WorldGraph {
         }
 
         public void RemoveParameter(ExposedParameter parameter) {
+            Undo.RecordObject(this, $"RemoveParameter() :: {parameter.Name}");
+
             ExposedParameters.Remove(parameter);
+
+            Undo.DestroyObjectImmediate(parameter);
+            AssetDatabase.SaveAssets();
         }
-        
+
         public void AddExposedParameterViewData(ExposedParameterViewData viewData) {
             ExposedParameterViewData.Add(viewData);
         }

@@ -16,16 +16,17 @@ namespace ThunderNut.WorldGraph.Editor {
         public WSGPortView input;
         public WSGPortView output;
         public Color portColor;
-        
-        public WSGGraphView graphView => GetFirstAncestorOfType<WSGGraphView>();
+
+        public WSGGraphView graphView;
         private IEdgeConnectorListener connectorListener;
         
         private TextField titleTextField;
         private Button addParameterButton;
         private Button playSceneButton;
 
-        public WSGNodeView(SceneStateData stateData, IEdgeConnectorListener connectorListener) :
+        public WSGNodeView(WSGGraphView graphView, SceneStateData stateData, IEdgeConnectorListener connectorListener) :
             base(AssetDatabase.GetAssetPath(Resources.Load<VisualTreeAsset>("UXML/WGGraphNode"))) {
+            this.graphView = graphView;
             this.stateData = stateData;
             this.connectorListener = connectorListener;
             
@@ -67,11 +68,11 @@ namespace ThunderNut.WorldGraph.Editor {
                     portColor = new Color(0.12f, 0.44f, 0.81f);
 
                     if (loadedOutputPort == null) outputPortData = stateData.CreatePort(viewDataKey, true, true, false, portColor);
-                    output = new WSGPortView(loadedOutputPort ?? outputPortData, connectorListener, this);
+                    output = new WSGPortView(graphView, loadedOutputPort ?? outputPortData, connectorListener, this);
                     outputContainer.Add(output);
 
                     if (loadedInputPort == null) inputPortData = stateData.CreatePort(viewDataKey, false, true, false, portColor);
-                    input = new WSGPortView(loadedInputPort ?? inputPortData, connectorListener, this);
+                    input = new WSGPortView(graphView, loadedInputPort ?? inputPortData, connectorListener, this);
                     inputContainer.Add(input);
 
                     break;
@@ -80,11 +81,11 @@ namespace ThunderNut.WorldGraph.Editor {
                     portColor = new Color(0.94f, 0.7f, 0.31f);
 
                     if (loadedOutputPort == null) outputPortData = stateData.CreatePort(viewDataKey, true, true, false, portColor);
-                    output = new WSGPortView(loadedOutputPort ?? outputPortData, connectorListener, this);
+                    output = new WSGPortView(graphView, loadedOutputPort ?? outputPortData, connectorListener, this);
                     outputContainer.Add(output);
 
                     if (loadedInputPort == null) inputPortData = stateData.CreatePort(viewDataKey, false, true, false, portColor);
-                    input = new WSGPortView(loadedInputPort ?? inputPortData, connectorListener, this);
+                    input = new WSGPortView(graphView, loadedInputPort ?? inputPortData, connectorListener, this);
                     inputContainer.Add(input);
 
                     break;
@@ -93,11 +94,11 @@ namespace ThunderNut.WorldGraph.Editor {
                     portColor = new Color(0.81f, 0.29f, 0.28f);
 
                     if (loadedOutputPort == null) outputPortData = stateData.CreatePort(viewDataKey, true, true, false, portColor);
-                    output = new WSGPortView(loadedOutputPort ?? outputPortData, connectorListener, this);
+                    output = new WSGPortView(graphView, loadedOutputPort ?? outputPortData, connectorListener, this);
                     outputContainer.Add(output);
 
                     if (loadedInputPort == null) inputPortData = stateData.CreatePort(viewDataKey, false, true, false, portColor);
-                    input = new WSGPortView(loadedInputPort ?? inputPortData, connectorListener, this);
+                    input = new WSGPortView(graphView, loadedInputPort ?? inputPortData, connectorListener, this);
                     inputContainer.Add(input);
 
                     break;
@@ -107,7 +108,7 @@ namespace ThunderNut.WorldGraph.Editor {
         private void LoadParameterPorts(IEnumerable<PortData> portData) {
             foreach (var data in portData) {
                 if (data.PortType == PortType.Parameter) {
-                    var parameterPort = new WSGPortView(data, connectorListener, this);
+                    var parameterPort = new WSGPortView(graphView, data, connectorListener, this);
                     inputContainer.Add(parameterPort);
                 }
             }
@@ -115,13 +116,12 @@ namespace ThunderNut.WorldGraph.Editor {
         
         private void AddParameterPort() {
             var portData = stateData.CreatePort(viewDataKey, false, false, true, portColor);
-            var parameterPort = new WSGPortView(portData, connectorListener, this);
+            var parameterPort = new WSGPortView(graphView, portData, connectorListener, this);
+            graphView.RegisterPortBehavior(parameterPort);
 
             inputContainer.Add(parameterPort);
-            graphView.RegisterPortBehavior(parameterPort);
-            graphView.stateGraph.RegisterCompleteObjectUndo("Parameter Port Created");
         }
-        
+
         private void SetupTitleField() {
             Label titleLabel = this.Q<Label>("title-label");
             {
@@ -154,7 +154,6 @@ namespace ThunderNut.WorldGraph.Editor {
                 titleTextField.RegisterCallback<FocusOutEvent>(e => CloseAndSaveTitleEditor(titleTextField.value));
 
                 void CloseAndSaveTitleEditor(string newTitle) {
-                    graphView.stateGraph.RegisterCompleteObjectUndo("Renamed node " + newTitle);
                     // sceneHandle.HandleName = newTitle;
                     stateData.SceneName = newTitle;
                     

@@ -7,7 +7,6 @@ namespace ThunderNut.WorldGraph {
         NotEquals,
     }
     
-    [Serializable]
     public class StringParameterField : ParameterField<string> {
         public StringParamOptions options = StringParamOptions.Equals;
 

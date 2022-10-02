@@ -8,7 +8,6 @@ namespace ThunderNut.WorldGraph {
         Equals,
         NotEquals,
     }
-    [Serializable]
     public class IntParameterField : ParameterField<int> {
         public IntParamOptions options = IntParamOptions.Equals;
 

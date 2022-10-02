@@ -1,25 +1,45 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.Plastic.Antlr3.Runtime.Misc;
+using UnityEditor;
 using UnityEditor.IMGUI.Controls;
 using UnityEngine;
+using Action = System.Action;
 
 namespace ThunderNut.WorldGraph.Editor {
 
     public class WGSimpleTreeView : TreeView {
-        public Action<ExposedParameter> onDoubleClicked;
-        private List<ExposedParameter> data;
+        public Action onDoubleClicked;
+        private readonly List<ExposedParameter> data;
 
-        private WGSimpleTreeView(TreeViewState tvs, List<ExposedParameter> data) : base(tvs) {
-            this.data = data;
+        private WorldStateGraph graph;
+        private StateCondition condition;
+
+        private WGSimpleTreeView(WorldStateGraph graph, StateCondition condition) : base(
+            new TreeViewState()) {
+            this.graph = graph;
+            this.condition = condition;
+
+            data = graph.ExposedParameters;
+
             Reload();
         }
 
-        private WGSimpleTreeView(TreeViewState tvs, MultiColumnHeader header, List<ExposedParameter> exposedParameters) : base(tvs,
-            header) { }
-
         protected override void DoubleClickedItem(int id) {
-            onDoubleClicked?.Invoke(data[id]);
+            var exposedParam = data[id];
+            condition.parameter = exposedParam;
+
+            condition.value = condition.parameter switch {
+                StringParameterField => new StringCondition(),
+                FloatParameterField => new FloatCondition(),
+                IntParameterField => new IntCondition(),
+                BoolParameterField => new BoolCondition(),
+                _ => condition.value
+            };
+
+            onDoubleClicked?.Invoke();
+
             base.DoubleClickedItem(id);
         }
 
@@ -29,33 +49,17 @@ namespace ThunderNut.WorldGraph.Editor {
 
         protected override TreeViewItem BuildRoot() {
             var root = new TreeViewItem {id = 0, depth = -1, displayName = "Root"};
-            var allItems = data.Select((param, index) => new TreeViewItem(index, 0, param.Name)).ToList();
+            var allItems = data.Select((param, index) => {
+                var item = new TreeViewItem(index, 0, param.Name);
+                return item;
+            }).ToList();
 
             SetupParentsAndChildrenFromDepths(root, allItems);
             return root;
         }
 
-        public static WGSimpleTreeView Create(ref TreeViewState tvs, List<ExposedParameter> data) {
-            tvs ??= new TreeViewState();
-            return new WGSimpleTreeView(tvs, data);
-        }
-
-        public static WGSimpleTreeView Create(ref TreeViewState tvs, ref MultiColumnHeaderState mchs, List<ExposedParameter> data) {
-            tvs ??= new TreeViewState();
-
-            var newHeaderState = CreateHeaderState();
-            if (MultiColumnHeaderState.CanOverwriteSerializedFields(mchs, newHeaderState))
-                MultiColumnHeaderState.OverwriteSerializedFields(mchs, newHeaderState);
-            mchs = newHeaderState;
-
-            var header = new MultiColumnHeader(mchs);
-            return new WGSimpleTreeView(tvs, header, data);
-        }
-
-        private static MultiColumnHeaderState CreateHeaderState() {
-            var columns = new MultiColumnHeaderState.Column[] { };
-
-            return new MultiColumnHeaderState(columns);
+        public static WGSimpleTreeView Create(WorldStateGraph graph, StateCondition condition) {
+            return new WGSimpleTreeView(graph, condition);
         }
     }
 

@@ -7,7 +7,10 @@ namespace ThunderNut.WorldGraph {
     public class Condition {
         [SerializeReference] public ExposedParameter parameter;
         [SerializeReference] public ConditionValueBase value;
+    }
 
+    [Serializable]
+    public class StateCondition : Condition {
         public Func<bool> FloatIsGreaterThan() => () => ((FloatParameterField) parameter).Value > ((FloatCondition) value).Value;
         public Func<bool> FloatIsLessThan() => () => ((FloatParameterField) parameter).Value < ((FloatCondition) value).Value;
 

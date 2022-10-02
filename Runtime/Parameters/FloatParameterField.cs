@@ -7,7 +7,6 @@ namespace ThunderNut.WorldGraph {
         GreaterThan,
         LessThan
     }
-    [Serializable]
     public class FloatParameterField : ParameterField<float> {
         public FloatParamOptions options = FloatParamOptions.GreaterThan;
 

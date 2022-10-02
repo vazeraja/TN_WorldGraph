@@ -7,7 +7,6 @@ namespace ThunderNut.WorldGraph {
         False,
     }
     
-    [Serializable]
     public class BoolParameterField : ParameterField<bool> {
         public BoolParamOptions options = BoolParamOptions.True;
         

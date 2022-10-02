@@ -281,6 +281,10 @@ namespace ThunderNut.WorldGraph.Editor {
                         UnityEditorInternal.InternalEditorUtility.RepaintAllViews();
                     }
                 }
+                
+                if (GUILayout.Button("Initialize State Graph", EditorStyles.miniButtonMid)) {
+                    targetWorldGraph.Initialize();
+                }
             }
             EditorGUILayout.EndHorizontal();
         }

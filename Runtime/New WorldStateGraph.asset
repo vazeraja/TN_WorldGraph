@@ -1,5 +1,43 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-8134927616048475492
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b9f955d6d6e445649c41c48f6ce0e87a, type: 3}
+  m_Name: FloatParameter
+  m_EditorClassIdentifier: 
+  GUID: cd687202-2f12-4774-899d-ab18e0453518
+  Name: FloatParameter
+  Reference: _FloatParameter
+  Exposed: 1
+  ParameterType: Float
+  Value: 69
+  options: 0
+--- !u!114 &-6600766805904456912
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b82f64d5f4cf419c9025361c64b4568e, type: 3}
+  m_Name: BoolParameter
+  m_EditorClassIdentifier: 
+  GUID: 4eb9311e-310c-46dd-b3d9-d40386738d52
+  Name: BoolParameter
+  Reference: _BoolParameter
+  Exposed: 1
+  ParameterType: Bool
+  Value: 1
+  options: 0
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -12,11 +50,132 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2fecb29774f349ce9c57fb8bb103593d, type: 3}
   m_Name: New WorldStateGraph
   m_EditorClassIdentifier: 
-  SceneStateData: []
-  StateTransitions: []
-  ExposedParameters: []
+  SceneStateData:
+  - GUID: b824c18b-6f41-424e-90b1-848b602a306a
+    SceneName: Default Handle
+    SceneType: 0
+    Position: {x: 621, y: 19}
+    Ports:
+    - OwnerNodeGUID: b824c18b-6f41-424e-90b1-848b602a306a
+      GUID: 2c509299-9ebb-4f63-93bc-3ece1ded2b6a
+      PortDirection: Output
+      PortCapacity: Multi
+      PortType: 0
+      PortColor: {r: 0.12, g: 0.44, b: 0.81, a: 1}
+    - OwnerNodeGUID: b824c18b-6f41-424e-90b1-848b602a306a
+      GUID: ac831d67-5494-4d33-b02a-a1dc93cd810b
+      PortDirection: Input
+      PortCapacity: Multi
+      PortType: 0
+      PortColor: {r: 0.12, g: 0.44, b: 0.81, a: 1}
+  - GUID: 7fc9eda1-860f-43d9-962b-b0c765e8b5b1
+    SceneName: Cutscene Handle
+    SceneType: 1
+    Position: {x: 361, y: -26}
+    Ports:
+    - OwnerNodeGUID: 7fc9eda1-860f-43d9-962b-b0c765e8b5b1
+      GUID: 7eb308c2-2b88-4450-804a-b631f2490d3b
+      PortDirection: Output
+      PortCapacity: Multi
+      PortType: 0
+      PortColor: {r: 0.81, g: 0.29, b: 0.28, a: 1}
+    - OwnerNodeGUID: 7fc9eda1-860f-43d9-962b-b0c765e8b5b1
+      GUID: 91697b32-f785-4f4d-bc28-b32488c3bfa6
+      PortDirection: Input
+      PortCapacity: Multi
+      PortType: 0
+      PortColor: {r: 0.81, g: 0.29, b: 0.28, a: 1}
+  StateTransitions:
+  - rid: 3905336698537246971
+  ExposedParameters:
+  - {fileID: -8134927616048475492}
+  - {fileID: -6600766805904456912}
   ExposedParameterViewData: []
-  m_IsDirty: 0
   references:
     version: 2
-    RefIds: []
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
+    - rid: 3905336698537246971
+      type: {class: StateTransition, ns: ThunderNut.WorldGraph, asm: Unity.WorldGraph}
+      data:
+        StateGraph: {fileID: 11400000}
+        OutputStateGUID: 7fc9eda1-860f-43d9-962b-b0c765e8b5b1
+        InputStateGUID: b824c18b-6f41-424e-90b1-848b602a306a
+        OutputState:
+          GUID: 7fc9eda1-860f-43d9-962b-b0c765e8b5b1
+          SceneName: Cutscene Handle
+          SceneType: 1
+          Position: {x: 352, y: -36}
+          Ports:
+          - OwnerNodeGUID: 7fc9eda1-860f-43d9-962b-b0c765e8b5b1
+            GUID: 7eb308c2-2b88-4450-804a-b631f2490d3b
+            PortDirection: Output
+            PortCapacity: Multi
+            PortType: 0
+            PortColor: {r: 0.81, g: 0.29, b: 0.28, a: 1}
+          - OwnerNodeGUID: 7fc9eda1-860f-43d9-962b-b0c765e8b5b1
+            GUID: 91697b32-f785-4f4d-bc28-b32488c3bfa6
+            PortDirection: Input
+            PortCapacity: Multi
+            PortType: 0
+            PortColor: {r: 0.81, g: 0.29, b: 0.28, a: 1}
+        InputState:
+          GUID: b824c18b-6f41-424e-90b1-848b602a306a
+          SceneName: Default Handle
+          SceneType: 0
+          Position: {x: 612.6798, y: 3.159996}
+          Ports:
+          - OwnerNodeGUID: b824c18b-6f41-424e-90b1-848b602a306a
+            GUID: 2c509299-9ebb-4f63-93bc-3ece1ded2b6a
+            PortDirection: Output
+            PortCapacity: Multi
+            PortType: 0
+            PortColor: {r: 0.12, g: 0.44, b: 0.81, a: 1}
+          - OwnerNodeGUID: b824c18b-6f41-424e-90b1-848b602a306a
+            GUID: ac831d67-5494-4d33-b02a-a1dc93cd810b
+            PortDirection: Input
+            PortCapacity: Multi
+            PortType: 0
+            PortColor: {r: 0.12, g: 0.44, b: 0.81, a: 1}
+        conditions:
+        - rid: 3905336698537246975
+        - rid: 3905336698537247005
+        - rid: 3905336698537247011
+        - rid: 3905336698537247012
+        - rid: 3905336698537247014
+    - rid: 3905336698537246975
+      type: {class: StateCondition, ns: ThunderNut.WorldGraph, asm: Unity.WorldGraph}
+      data:
+        parameter: {fileID: -8134927616048475492}
+        value:
+          rid: 3905336698537246978
+    - rid: 3905336698537246978
+      type: {class: FloatCondition, ns: ThunderNut.WorldGraph, asm: Unity.WorldGraph}
+      data:
+        Value: 0
+        floatOptions: 0
+    - rid: 3905336698537247005
+      type: {class: StateCondition, ns: ThunderNut.WorldGraph, asm: Unity.WorldGraph}
+      data:
+        parameter: {fileID: 0}
+        value:
+          rid: -2
+    - rid: 3905336698537247011
+      type: {class: StateCondition, ns: ThunderNut.WorldGraph, asm: Unity.WorldGraph}
+      data:
+        parameter: {fileID: 0}
+        value:
+          rid: -2
+    - rid: 3905336698537247012
+      type: {class: StateCondition, ns: ThunderNut.WorldGraph, asm: Unity.WorldGraph}
+      data:
+        parameter: {fileID: 0}
+        value:
+          rid: -2
+    - rid: 3905336698537247014
+      type: {class: StateCondition, ns: ThunderNut.WorldGraph, asm: Unity.WorldGraph}
+      data:
+        parameter: {fileID: 0}
+        value:
+          rid: -2

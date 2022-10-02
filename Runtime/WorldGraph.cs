@@ -13,38 +13,35 @@ namespace ThunderNut.WorldGraph {
     [DisallowMultipleComponent]
     public class WorldGraph : MonoBehaviour {
         [SerializeField] private WorldStateGraph stateGraph;
-        public WorldStateGraph StateGraph {
-            get => stateGraph;
-            set {
-                stateGraph = value;
-                SceneHandles.Clear();
 
-                var stateData = stateGraph.SceneStateData;
-                var obj = gameObject;
+        public void Initialize() {
+            SceneHandles.Clear();
 
-                foreach (var data in stateData) {
-                    switch (data.SceneType) {
-                        case SceneType.Default:
-                            CreateSceneHandle(data, typeof(DefaultHandle));
-                            break;
-                        case SceneType.Cutscene:
-                            CreateSceneHandle(data, typeof(CutsceneHandle));
-                            break;
-                        case SceneType.Battle:
-                            CreateSceneHandle(data, typeof(BattleHandle));
-                            break;
-                        default:
-                            throw new ArgumentOutOfRangeException();
-                    }
+            var stateData = stateGraph.SceneStateData;
+            var obj = gameObject;
+
+            foreach (var data in stateData) {
+                switch (data.SceneType) {
+                    case SceneType.Default:
+                        CreateSceneHandle(data, typeof(DefaultHandle));
+                        break;
+                    case SceneType.Cutscene:
+                        CreateSceneHandle(data, typeof(CutsceneHandle));
+                        break;
+                    case SceneType.Battle:
+                        CreateSceneHandle(data, typeof(BattleHandle));
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
                 }
+            }
 
-                void CreateSceneHandle(SceneStateData data, Type type) {
-                    if (obj.AddComponent(type) is not SceneHandle sceneHandle) return;
-                    sceneHandle.Label = data.SceneType + "Handle";
-                    sceneHandle.StateData = data;
+            void CreateSceneHandle(SceneStateData data, Type type) {
+                if (obj.AddComponent(type) is not SceneHandle sceneHandle) return;
+                sceneHandle.Label = data.SceneType + "Handle";
+                sceneHandle.StateData = data;
 
-                    SceneHandles.Add(sceneHandle);
-                }
+                SceneHandles.Add(sceneHandle);
             }
         }
 
@@ -63,18 +60,10 @@ namespace ThunderNut.WorldGraph {
         private void Awake() {
             activeSceneHandle = SceneHandles.First();
             InitializeLookupTable();
+            SetCurrentTransitions();
 
             foreach (var (key, value) in allConditionsLookupTable) {
                 Debug.Log($"Transition: {key} with {value.Count} conditions");
-            }
-
-            currentTransitions = stateGraph.StateTransitions.FindAll(t => t.OutputState == activeSceneHandle.StateData);
-            foreach (var transition in currentTransitions) {
-                foreach (var pair in allConditionsLookupTable) {
-                    if (pair.Key == transition) {
-                        currentConditions.Add(pair.Value);
-                    }
-                }
             }
         }
 
@@ -84,7 +73,21 @@ namespace ThunderNut.WorldGraph {
             SetFloat("_FloatParameter", 7);
         }
 
-        public void CheckTransitions() {
+        private void SetCurrentTransitions() {
+            currentTransitions = stateGraph.StateTransitions.FindAll(
+                transition => transition.OutputState.GUID == activeSceneHandle.StateData.GUID
+            );
+
+            foreach (var transition in currentTransitions) {
+                foreach (var pair in allConditionsLookupTable) {
+                    if (pair.Key == transition) {
+                        currentConditions.Add(pair.Value);
+                    }
+                }
+            }
+        }
+
+        private void CheckTransitions() {
             for (var i = 0; i < currentConditions.Count; i++) {
                 var conditionsPerTransition = currentConditions[i];
                 var conditionsMet = new bool[conditionsPerTransition.Count];
@@ -104,7 +107,7 @@ namespace ThunderNut.WorldGraph {
             allConditionsLookupTable = new Dictionary<Transition, List<Func<bool>>>();
             foreach (var transition in stateGraph.StateTransitions) {
                 var conditionsToMeet = new List<Func<bool>>();
-                foreach (var condition in ((StateTransition) transition).conditions) {
+                foreach (var condition in ((StateTransition) transition).conditions.Cast<StateCondition>()) {
                     switch (condition.value) {
                         case StringCondition stringCondition:
                             switch (stringCondition.stringOptions) {

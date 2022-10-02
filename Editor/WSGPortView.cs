@@ -10,26 +10,27 @@ namespace ThunderNut.WorldGraph.Editor {
         public Node nodeView;
         
         public Button deleteParameterButton;
-        private WSGGraphView graphView => ((WSGNodeView) nodeView).graphView;
+        private WSGGraphView graphView;
 
         public event Action<Node, WSGPortView, Edge> OnConnected;
         public event Action<Node, WSGPortView, Edge> OnDisconnected;
 
-        public WSGPortView(PortData portData, IEdgeConnectorListener connectorListener, Node nodeView = null) : base(Orientation.Horizontal,
+        public WSGPortView(WSGGraphView graphView, PortData portData, IEdgeConnectorListener connectorListener, Node nodeView = null) : base(Orientation.Horizontal,
             portData.PortDirection == "Output" ? Direction.Output : Direction.Input,
             portData.PortCapacity == "Multi" ? Capacity.Multi : Capacity.Single, typeof(bool)) {
             m_EdgeConnector = new EdgeConnector<WSGEdgeView>(connectorListener);
             this.AddManipulator(m_EdgeConnector);
 
+            this.graphView = graphView;
+            this.nodeView = nodeView;
             PortData = portData;
             portColor = portData.PortColor;
             portName = portData.PortDirection;
-            this.nodeView = nodeView;
-            
-            CheckPortType(portData, nodeView);
+
+            Initialize(portData, nodeView);
         }
         
-        private void CheckPortType(PortData portData, Node nodeView) {
+        private void Initialize(PortData portData, Node nodeView) {
             if (portData.PortType == PortType.Parameter && nodeView != null) {
                 int outputPortCount = nodeView.inputContainer.Query("connector").ToList().Count;
                 portName = $"{portData.PortType.ToString()}({outputPortCount})";
@@ -47,8 +48,6 @@ namespace ThunderNut.WorldGraph.Editor {
             }
         }
         public void RemoveParameterPort(PortData portData) {
-            graphView.stateGraph.RegisterCompleteObjectUndo("Removed Port");
-            
             var Edges = graphView.edges.ToList();
             Edge connectedEdge = Edges.Find(edge => ((WSGPortView) edge.input).PortData.GUID == portData.GUID);
 
@@ -62,7 +61,7 @@ namespace ThunderNut.WorldGraph.Editor {
             ((WSGNodeView) nodeView).stateData.RemovePort(portData);
             nodeView.inputContainer.Remove(this);
         }
-        
+
         public override void Connect(Edge edge) {
             OnConnected?.Invoke(node, this, edge);
             base.Connect(edge);
