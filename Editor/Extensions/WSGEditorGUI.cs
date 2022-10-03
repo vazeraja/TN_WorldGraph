@@ -122,7 +122,7 @@ namespace ThunderNut.WorldGraph.Editor {
         public static Rect DrawSimpleHeader(ref bool expanded, ref bool activeField, string title, 
             Color feedbackColor, Action<GenericMenu> fillGenericMenu) {
             var e = Event.current;
-            // Initialize Rects
+            // InitializeFromStateGraph Rects
 
             var backgroundRect = GUILayoutUtility.GetRect(1f, 17f);
             var progressRect = GUILayoutUtility.GetRect(1f, 2f);
@@ -231,10 +231,9 @@ namespace ThunderNut.WorldGraph.Editor {
                 .Find(x => x.titleContent.ToString() == name);
         }
 
-        public static void RepaintInspector(Type t) {
+        public static void RepaintInspectors() {
             UnityEditor.Editor[] ed = Resources.FindObjectsOfTypeAll<UnityEditor.Editor>();
             foreach (var t1 in ed) {
-                if (t1.GetType() != t) continue;
                 t1.Repaint();
                 return;
             }

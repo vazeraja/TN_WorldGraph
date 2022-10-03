@@ -10,16 +10,15 @@ using UnityEngine.UIElements;
 namespace ThunderNut.WorldGraph.Editor {
 
     public sealed class WSGNodeView : Node {
-
         public readonly SceneStateData stateData;
-        
+
         public WSGPortView input;
         public WSGPortView output;
         public Color portColor;
 
         public WSGGraphView graphView;
         private IEdgeConnectorListener connectorListener;
-        
+
         private TextField titleTextField;
         private Button addParameterButton;
         private Button playSceneButton;
@@ -29,7 +28,7 @@ namespace ThunderNut.WorldGraph.Editor {
             this.graphView = graphView;
             this.stateData = stateData;
             this.connectorListener = connectorListener;
-            
+
             if (string.IsNullOrEmpty(stateData.SceneName)) {
                 stateData.SceneName = $"{stateData.SceneType.ToString()} Handle";
             }
@@ -44,12 +43,12 @@ namespace ThunderNut.WorldGraph.Editor {
             addParameterButton = this.Q<Button>("add-parameter-button");
             addParameterButton.style.backgroundImage = Resources.Load<Texture2D>("Sprite-0001");
             playSceneButton = this.Q<Button>("play-button");
-            
+
             SetupTitleField();
-            
+
             LoadDefaultPorts(stateData.Ports);
             LoadParameterPorts(stateData.Ports);
-            
+
             addParameterButton.clicked += AddParameterPort;
             // playSceneButton.clicked += PlayScene;
         }
@@ -104,7 +103,7 @@ namespace ThunderNut.WorldGraph.Editor {
                     break;
             }
         }
-        
+
         private void LoadParameterPorts(IEnumerable<PortData> portData) {
             foreach (var data in portData) {
                 if (data.PortType == PortType.Parameter) {
@@ -113,7 +112,7 @@ namespace ThunderNut.WorldGraph.Editor {
                 }
             }
         }
-        
+
         private void AddParameterPort() {
             var portData = stateData.CreatePort(viewDataKey, false, false, true, portColor);
             var parameterPort = new WSGPortView(graphView, portData, connectorListener, this);
@@ -156,7 +155,7 @@ namespace ThunderNut.WorldGraph.Editor {
                 void CloseAndSaveTitleEditor(string newTitle) {
                     // sceneHandle.HandleName = newTitle;
                     stateData.SceneName = newTitle;
-                    
+
                     // hide title TextBox
                     titleTextField.style.display = DisplayStyle.None;
                     titleLabel.style.display = DisplayStyle.Flex;
@@ -167,7 +166,7 @@ namespace ThunderNut.WorldGraph.Editor {
 
                 void UpdateTitle() {
                     // title = sceneHandle.HandleName ?? sceneHandle.GetType().Name;
-                    title = stateData.SceneName ?? $"{stateData.SceneType.ToString()} Handle"; 
+                    title = stateData.SceneName ?? $"{stateData.SceneType.ToString()} Handle";
                 }
             }
         }
@@ -179,9 +178,9 @@ namespace ThunderNut.WorldGraph.Editor {
 
         public override void SetPosition(Rect newPos) {
             base.SetPosition(newPos);
-            
-            stateData.Position.x = newPos.xMin;
-            stateData.Position.y = newPos.yMin;
+
+            stateData.Position = new Vector2(newPos.xMin, newPos.yMin);
         }
     }
+
 }

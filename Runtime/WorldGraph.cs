@@ -1,56 +1,32 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Codice.Client.Common;
 using ThunderNut.WorldGraph.Handles;
-using UnityEditor;
 using UnityEngine;
 
 namespace ThunderNut.WorldGraph {
+
+    public static class Helpers {
+        public static IEnumerable<T> SymmetricExcept<T>(this IEnumerable<T> seq1, IEnumerable<T> seq2) {
+            HashSet<T> hashSet = new HashSet<T>(seq1);
+            hashSet.SymmetricExceptWith(seq2);
+            return hashSet.Select(x => x);
+        }
+    }
 
     [AddComponentMenu("ThunderNut/WorldGraph/World Graph")]
     [DisallowMultipleComponent]
     public class WorldGraph : MonoBehaviour {
         [SerializeField] private WorldStateGraph stateGraph;
-
-        public void Initialize() {
-            SceneHandles.Clear();
-
-            var stateData = stateGraph.SceneStateData;
-            var obj = gameObject;
-
-            foreach (var data in stateData) {
-                switch (data.SceneType) {
-                    case SceneType.Default:
-                        CreateSceneHandle(data, typeof(DefaultHandle));
-                        break;
-                    case SceneType.Cutscene:
-                        CreateSceneHandle(data, typeof(CutsceneHandle));
-                        break;
-                    case SceneType.Battle:
-                        CreateSceneHandle(data, typeof(BattleHandle));
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException();
-                }
-            }
-
-            void CreateSceneHandle(SceneStateData data, Type type) {
-                if (obj.AddComponent(type) is not SceneHandle sceneHandle) return;
-                sceneHandle.Label = data.SceneType + "Handle";
-                sceneHandle.StateData = data;
-
-                SceneHandles.Add(sceneHandle);
-            }
-        }
+        public WorldStateGraph StateGraph => stateGraph;
 
         public List<SceneHandle> SceneHandles = new List<SceneHandle>();
+        public List<StateTransition> StateTransitions = new List<StateTransition>();
+
         public SceneHandle activeSceneHandle;
 
-        private Dictionary<Transition, List<Func<bool>>> allConditionsLookupTable = new Dictionary<Transition, List<Func<bool>>>();
-        public List<Transition> currentTransitions = new List<Transition>();
-        private List<List<Func<bool>>> currentConditions = new List<List<Func<bool>>>();
+        public List<StateTransition> currentTransitions;
+        private List<List<Func<bool>>> currentConditions;
 
         public string settingB;
         public string settingC;
@@ -59,31 +35,88 @@ namespace ThunderNut.WorldGraph {
 
         private void Awake() {
             activeSceneHandle = SceneHandles.First();
-            InitializeLookupTable();
-            SetCurrentTransitions();
 
-            foreach (var (key, value) in allConditionsLookupTable) {
-                Debug.Log($"Transition: {key} with {value.Count} conditions");
-            }
+            SetCurrentTransitions();
         }
 
         private void Update() {
-            CheckTransitions();
-
             SetFloat("_FloatParameter", 7);
+            SetBool("_BoolParameter", true);
+
+            CheckTransitions();
         }
 
         private void SetCurrentTransitions() {
-            currentTransitions = stateGraph.StateTransitions.FindAll(
-                transition => transition.OutputState.GUID == activeSceneHandle.StateData.GUID
-            );
+            currentTransitions = activeSceneHandle.StateTransitions;
 
+            currentConditions = new List<List<Func<bool>>>();
             foreach (var transition in currentTransitions) {
-                foreach (var pair in allConditionsLookupTable) {
-                    if (pair.Key == transition) {
-                        currentConditions.Add(pair.Value);
+                Debug.Log(transition.conditions.Count);
+                var conditionsToMeet = new List<Func<bool>>();
+                foreach (var condition in transition.conditions) {
+                    switch (condition.value) {
+                        case StringCondition stringCondition:
+                            switch (stringCondition.stringOptions) {
+                                case StringParamOptions.Equals:
+                                    conditionsToMeet.Add(condition.StringIsEqual());
+                                    break;
+                                case StringParamOptions.NotEquals:
+                                    conditionsToMeet.Add(condition.StringNotEqual());
+                                    break;
+                                default:
+                                    throw new ArgumentOutOfRangeException();
+                            }
+
+                            break;
+                        case FloatCondition floatCondition:
+                            switch (floatCondition.floatOptions) {
+                                case FloatParamOptions.GreaterThan:
+                                    conditionsToMeet.Add(condition.FloatIsGreaterThan());
+                                    break;
+                                case FloatParamOptions.LessThan:
+                                    conditionsToMeet.Add(condition.FloatIsLessThan());
+                                    break;
+                                default:
+                                    throw new ArgumentOutOfRangeException();
+                            }
+
+                            break;
+                        case IntCondition intCondition:
+                            switch (intCondition.intOptions) {
+                                case IntParamOptions.Equals:
+                                    conditionsToMeet.Add(condition.IntIsEqual());
+                                    break;
+                                case IntParamOptions.NotEquals:
+                                    conditionsToMeet.Add(condition.IntNotEqual());
+                                    break;
+                                case IntParamOptions.GreaterThan:
+                                    conditionsToMeet.Add(condition.IntIsGreaterThan());
+                                    break;
+                                case IntParamOptions.LessThan:
+                                    conditionsToMeet.Add(condition.IntIsLessThan());
+                                    break;
+                                default:
+                                    throw new ArgumentOutOfRangeException();
+                            }
+
+                            break;
+                        case BoolCondition boolCondition:
+                            switch (boolCondition.boolOptions) {
+                                case BoolParamOptions.True:
+                                    conditionsToMeet.Add(condition.BoolIsTrue());
+                                    break;
+                                case BoolParamOptions.False:
+                                    conditionsToMeet.Add(condition.BoolIsFalse());
+                                    break;
+                                default:
+                                    throw new ArgumentOutOfRangeException();
+                            }
+
+                            break;
                     }
                 }
+
+                currentConditions.Add(conditionsToMeet);
             }
         }
 
@@ -98,86 +131,7 @@ namespace ThunderNut.WorldGraph {
                 }
 
                 if (conditionsMet.All(x => x)) {
-                    Debug.Log($"All Conditions Met for Transition: {currentTransitions[i]}");
-                }
-            }
-        }
-
-        private void InitializeLookupTable() {
-            allConditionsLookupTable = new Dictionary<Transition, List<Func<bool>>>();
-            foreach (var transition in stateGraph.StateTransitions) {
-                var conditionsToMeet = new List<Func<bool>>();
-                foreach (var condition in ((StateTransition) transition).conditions.Cast<StateCondition>()) {
-                    switch (condition.value) {
-                        case StringCondition stringCondition:
-                            switch (stringCondition.stringOptions) {
-                                case StringParamOptions.Equals:
-                                    conditionsToMeet.Add(condition.StringIsEqual());
-                                    allConditionsLookupTable[transition] = conditionsToMeet;
-                                    break;
-                                case StringParamOptions.NotEquals:
-                                    conditionsToMeet.Add(condition.StringNotEqual());
-                                    allConditionsLookupTable[transition] = conditionsToMeet;
-                                    break;
-                                default:
-                                    throw new ArgumentOutOfRangeException();
-                            }
-
-                            break;
-                        case FloatCondition floatCondition:
-                            switch (floatCondition.floatOptions) {
-                                case FloatParamOptions.GreaterThan:
-                                    conditionsToMeet.Add(condition.FloatIsGreaterThan());
-                                    allConditionsLookupTable[transition] = conditionsToMeet;
-                                    break;
-                                case FloatParamOptions.LessThan:
-                                    conditionsToMeet.Add(condition.FloatIsLessThan());
-                                    allConditionsLookupTable[transition] = conditionsToMeet;
-                                    break;
-                                default:
-                                    throw new ArgumentOutOfRangeException();
-                            }
-
-                            break;
-                        case IntCondition intCondition:
-                            switch (intCondition.intOptions) {
-                                case IntParamOptions.Equals:
-                                    conditionsToMeet.Add(condition.IntIsEqual());
-                                    allConditionsLookupTable[transition] = conditionsToMeet;
-                                    break;
-                                case IntParamOptions.NotEquals:
-                                    conditionsToMeet.Add(condition.IntNotEqual());
-                                    allConditionsLookupTable[transition] = conditionsToMeet;
-                                    break;
-                                case IntParamOptions.GreaterThan:
-                                    conditionsToMeet.Add(condition.IntIsGreaterThan());
-                                    allConditionsLookupTable[transition] = conditionsToMeet;
-                                    break;
-                                case IntParamOptions.LessThan:
-                                    conditionsToMeet.Add(condition.IntIsLessThan());
-                                    allConditionsLookupTable[transition] = conditionsToMeet;
-                                    break;
-                                default:
-                                    throw new ArgumentOutOfRangeException();
-                            }
-
-                            break;
-                        case BoolCondition boolCondition:
-                            switch (boolCondition.boolOptions) {
-                                case BoolParamOptions.True:
-                                    conditionsToMeet.Add(condition.BoolIsTrue());
-                                    allConditionsLookupTable[transition] = conditionsToMeet;
-                                    break;
-                                case BoolParamOptions.False:
-                                    conditionsToMeet.Add(condition.BoolIsFalse());
-                                    allConditionsLookupTable[transition] = conditionsToMeet;
-                                    break;
-                                default:
-                                    throw new ArgumentOutOfRangeException();
-                            }
-
-                            break;
-                    }
+                    Debug.Log($"All Conditions Met for Transition: {currentTransitions[i].Label}");
                 }
             }
         }
@@ -200,11 +154,6 @@ namespace ThunderNut.WorldGraph {
         public void SetBool(string name, bool value) {
             var match = (BoolParameterField) stateGraph.ExposedParameters.ToList().Find(param => param.Reference == name);
             match.Value = value;
-        }
-
-        private T GetComponentByName<T>(string name) where T : SceneHandle {
-            var components = GetComponents<T>().ToList();
-            return components.Find(component => component.Label == name);
         }
     }
 

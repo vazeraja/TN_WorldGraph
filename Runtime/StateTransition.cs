@@ -6,7 +6,7 @@ using UnityEngine;
 namespace ThunderNut.WorldGraph {
 
     [Serializable]
-    public class Transition : ISerializationCallbackReceiver {
+    public class TransitionData : ISerializationCallbackReceiver, IEquatable<TransitionData> {
         public WorldStateGraph StateGraph;
 
         public string OutputStateGUID;
@@ -14,7 +14,7 @@ namespace ThunderNut.WorldGraph {
         public SceneStateData OutputState;
         public SceneStateData InputState;
 
-        public Transition(WorldStateGraph graph, SceneStateData output, SceneStateData input) {
+        public TransitionData(WorldStateGraph graph, SceneStateData output, SceneStateData input) {
             StateGraph = graph;
             OutputStateGUID = output.GUID;
             OutputState = output;
@@ -32,16 +32,44 @@ namespace ThunderNut.WorldGraph {
         }
 
         public void OnAfterDeserialize() { }
-    }
 
-    [Serializable]
-    public class StateTransition : Transition {
-        
-        public StateTransition(WorldStateGraph graph, SceneStateData output, SceneStateData input) : base(graph, output, input) {
-            conditions = new List<Condition>();
+        public bool Equals(TransitionData other) {
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return Equals(StateGraph, other.StateGraph) && OutputStateGUID == other.OutputStateGUID &&
+                   InputStateGUID == other.InputStateGUID && Equals(OutputState, other.OutputState) &&
+                   Equals(InputState, other.InputState);
         }
 
-        [SerializeReference] public List<Condition> conditions;
+        public override bool Equals(object obj) {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            return obj.GetType() == this.GetType() && Equals((TransitionData) obj);
+        }
+
+        public override int GetHashCode() {
+            return HashCode.Combine(StateGraph, OutputStateGUID, InputStateGUID, OutputState, InputState);
+        }
+    }
+
+    public class StateTransition : MonoBehaviour {
+        public TransitionData TransitionData;
+
+        public bool Active = true;
+
+        private string m_Label;
+        public string Label {
+            get {
+                if (m_Label != null)
+                    return m_Label;
+
+                m_Label = TransitionData.ToString();
+                return TransitionData.ToString();
+            }
+            set => m_Label = value;
+        }
+
+        [SerializeReference] public List<StateCondition> conditions;
     }
 
 }

@@ -80,7 +80,7 @@ namespace ThunderNut.WorldGraph.Editor {
         }
 
         private static readonly ProfilerMarker GraphLoadMarker = new ProfilerMarker("GraphLoad");
-        private static readonly ProfilerMarker CreateGraphEditorViewMarker = new ProfilerMarker("CreateGraphEditorView");
+        private static readonly ProfilerMarker SelectionChangedMarker = new ProfilerMarker("CreateGraphEditorView");
 
         protected void OnEnable() {
             this.SetAntiAliasing(4);
@@ -162,7 +162,7 @@ namespace ThunderNut.WorldGraph.Editor {
         }
 
         private void SelectionChanged() {
-            using (CreateGraphEditorViewMarker.Auto()) {
+            using (SelectionChangedMarker.Auto()) {
                 if (Selection.activeGameObject == null || !Selection.activeGameObject.TryGetComponent(out m_WorldGraph)) {
                     // graphView.worldGraph = null;
                     m_MessageLabel.text = "WorldGraph not selected";

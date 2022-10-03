@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 namespace ThunderNut.WorldGraph {
@@ -29,19 +30,40 @@ namespace ThunderNut.WorldGraph {
     }
 
     [Serializable]
-    public class SceneStateData {
-        public string GUID;
-        public string SceneName;
-        public SceneType SceneType;
-        public Vector2 Position;
-        public List<PortData> Ports;
+    public class SceneStateData : IEquatable<SceneStateData> {
+        [SerializeField] private string m_GUID;
+        public string GUID => m_GUID;
+        
+        [SerializeField] private string m_SceneName;
+        public string SceneName {
+            get => m_SceneName;
+            set => m_SceneName = value;
+        }
+        
+        [SerializeField] private SceneType m_SceneType;
+        public SceneType SceneType {
+            get => m_SceneType;
+            set => m_SceneType = value;
+        }
+        
+        [SerializeField] private Vector2 m_Position;
+        public Vector2 Position {
+            get => m_Position;
+            set => m_Position = value;
+        }
+        
+        [SerializeField] private List<PortData> m_Ports;
+        public List<PortData> Ports {
+            get => m_Ports;
+            set => m_Ports = value;
+        }
 
         public SceneStateData(string name, SceneType type, Vector2 pos) {
-            GUID = Guid.NewGuid().ToString();
-            SceneName = name;
-            SceneType = type;
-            Position = pos;
-            Ports = new List<PortData>();
+            m_GUID = Guid.NewGuid().ToString();
+            m_SceneName = name;
+            m_SceneType = type;
+            m_Position = pos;
+            m_Ports = new List<PortData>();
         }
 
         public PortData CreatePort(string ownerGUID, bool isOutput, bool isMulti, bool isParameter, Color portColor) {
@@ -54,12 +76,28 @@ namespace ThunderNut.WorldGraph {
                 PortType = isParameter ? PortType.Parameter : PortType.Default,
                 PortColor = portColor,
             };
-            Ports.Add(portData);
+            m_Ports.Add(portData);
             return portData;
         }
 
         public void RemovePort(PortData portData) {
-            Ports.Remove(portData);
+            m_Ports.Remove(portData);
+        }
+
+        public bool Equals(SceneStateData other) {
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return m_GUID == other.m_GUID;
+        }
+
+        public override bool Equals(object obj) {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            return obj.GetType() == this.GetType() && Equals((SceneStateData) obj);
+        }
+
+        public override int GetHashCode() {
+            return HashCode.Combine(GUID, SceneName, (int) SceneType, Position, Ports);
         }
     }
 
@@ -70,7 +108,7 @@ namespace ThunderNut.WorldGraph {
             serializedObject.Update();
 
             EditorGUILayout.PropertyField(serializedObject.FindProperty("SceneStateData"));
-            EditorGUILayout.PropertyField(serializedObject.FindProperty("StateTransitions"));
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("TransitionData"));
             EditorGUILayout.PropertyField(serializedObject.FindProperty("ExposedParameters"));
             EditorGUILayout.PropertyField(serializedObject.FindProperty("ExposedParameterViewData"));
 
@@ -82,21 +120,20 @@ namespace ThunderNut.WorldGraph {
     [CreateAssetMenu(fileName = "New WorldStateGraph", menuName = "WorldGraph/StateGraph", order = 0)]
     public class WorldStateGraph : ScriptableObject {
         public List<SceneStateData> SceneStateData = new List<SceneStateData>();
-
-        [SerializeReference] public List<Transition> StateTransitions = new List<Transition>();
+        public List<TransitionData> TransitionData = new List<TransitionData>();
 
         public List<ExposedParameter> ExposedParameters = new List<ExposedParameter>();
         public List<ExposedParameterViewData> ExposedParameterViewData = new List<ExposedParameterViewData>();
 
-        public Transition CreateTransition(SceneStateData output, SceneStateData input) {
-            StateTransition edge = new StateTransition(this, output, input);
-            StateTransitions.Add(edge);
-            return edge;
+        public TransitionData CreateTransition(SceneStateData output, SceneStateData input) {
+            TransitionData transitionData = new TransitionData(this, output, input);
+            TransitionData.Add(transitionData);
+            return transitionData;
         }
 
 
-        public void RemoveTransition(Transition edge) {
-            StateTransitions.Remove(edge);
+        public void RemoveTransition(TransitionData edge) {
+            TransitionData.Remove(edge);
         }
 
         public ExposedParameter CreateParameter(string type) {

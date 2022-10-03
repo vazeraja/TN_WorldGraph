@@ -143,7 +143,7 @@ namespace ThunderNut.WorldGraph.Editor {
                         stateGraph.SceneStateData.Remove(nodeView.stateData);
                         break;
                     case Edge edge:
-                        stateGraph.RemoveTransition(edge.userData as Transition);
+                        stateGraph.RemoveTransition(edge.userData as TransitionData);
                         break;
                     case BlackboardField blackboardField:
                         ExposedParameter exposedParameter = (ExposedParameter) blackboardField.userData;
@@ -174,7 +174,7 @@ namespace ThunderNut.WorldGraph.Editor {
                 CreateGraphNode(stateData);
             }
 
-            foreach (var transition in stateGraph.StateTransitions) {
+            foreach (var transition in stateGraph.TransitionData) {
                 WSGNodeView outputView = (WSGNodeView) GetNodeByGuid(transition.OutputStateGUID);
                 WSGNodeView inputView = (WSGNodeView) GetNodeByGuid(transition.InputStateGUID);
 
@@ -361,7 +361,7 @@ namespace ThunderNut.WorldGraph.Editor {
                         // output.stateData.Children.Remove(input.stateData);
 
                         ClearGraphInspector();
-                        stateGraph.RemoveTransition(edge.userData as Transition);
+                        stateGraph.RemoveTransition(edge.userData as TransitionData);
 
                         break;
                     }
@@ -450,13 +450,13 @@ namespace ThunderNut.WorldGraph.Editor {
             inspectorContentContainer.Add(GUIContainer);
         }
 
-        public void DrawPropertiesInInspector(Transition transition) {
+        public void DrawPropertiesInInspector(TransitionData transitionData) {
             inspectorContentContainer.Clear();
             UpdateSerializedProperties();
             
-            var match = GetPropertyMatch(serializedGraph.FindProperty("StateTransitions"), transition);
+            var match = GetPropertyMatch(serializedGraph.FindProperty("StateTransitions"), transitionData);
 
-            titleLabel.text = transition.ToString();
+            titleLabel.text = transitionData.ToString();
             IMGUIContainer GUIContainer = new IMGUIContainer(() => {
                 match.serializedObject.Update();
 
