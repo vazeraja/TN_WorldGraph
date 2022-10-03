@@ -1,3 +1,10 @@
+## [1.0.2](https://github.com/vazeraja/TN_WorldGraph/compare/v1.0.1...v1.0.2) (2022-10-03)
+
+
+### Bug Fixes
+
+* Initialize StateGraph from editor ([ca39f7b](https://github.com/vazeraja/TN_WorldGraph/commit/ca39f7b9bb8c27fc219442ff86264fd282205d43))
+
 ## [1.0.1](https://github.com/vazeraja/TN_WorldGraph/compare/v1.0.0...v1.0.1) (2022-09-26)
 
 
