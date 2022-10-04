@@ -18,7 +18,7 @@ namespace ThunderNut.WorldGraph {
     [DisallowMultipleComponent]
     public class WorldGraph : MonoBehaviour {
         [SerializeField] private WorldStateGraph stateGraph;
-        public WorldStateGraph StateGraph => stateGraph;
+        public WorldStateGraph StateGraph => stateGraph; 
 
         public List<SceneHandle> SceneHandles = new List<SceneHandle>();
         public List<StateTransition> StateTransitions = new List<StateTransition>();

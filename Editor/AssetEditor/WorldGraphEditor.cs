@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using ThunderNut.WorldGraph.Handles;
 using UnityEditor;
+using UnityEditor.SceneManagement;
 using UnityEngine;
 
 namespace ThunderNut.WorldGraph.Editor {
@@ -346,6 +347,9 @@ namespace ThunderNut.WorldGraph.Editor {
             foreach (var sceneHandle in SceneHandles) {
                 oldTransitionData.AddRange(sceneHandle.StateTransitions.Select(st => st.TransitionData));
             }
+
+
+            List<SceneStateData> newElements = new List<SceneStateData>(); 
             
             // -------------------- Find Elements which were newly added + elements which were removed --------------------
             var elementsNotInGraph = oldStateData.Except(stateData).ToList();
@@ -397,12 +401,12 @@ namespace ThunderNut.WorldGraph.Editor {
             #region Inline Functions
             // -------------------- Add transition to the corresponding SceneHandle, and AddComponent --------------------
             void CreateTransition(TransitionData data, Type type) {
-                if (obj.AddComponent(type) is not StateTransition stateTransition) return;
-
+                StateTransition stateTransition = Undo.AddComponent(obj, type) as StateTransition;
+                stateTransition!.Label = type.Name;
                 stateTransition.TransitionData = data;
-                stateTransition.hideFlags = HideFlags.HideInInspector;
-                StateTransitions.Add(stateTransition);
-
+ 
+                (target as WorldGraph)?.StateTransitions.Add(stateTransition);
+                
                 var match = SceneHandles.Find(handle => handle.StateData.GUID == data.OutputStateGUID);
                 match.StateTransitions.Add(stateTransition);
             }
@@ -419,26 +423,30 @@ namespace ThunderNut.WorldGraph.Editor {
                         owner = sceneHandle;
                     }
                 }
-
-                owner!.StateTransitions.Remove(toRemove);
-                StateTransitions.Remove(toRemove);
-                DestroyImmediate(toRemove);
+                
+                (target as WorldGraph)?.StateTransitions.Remove(toRemove);
+                if(owner != null) owner.StateTransitions.Remove(toRemove);
+                
+                Undo.DestroyObjectImmediate(toRemove);
             }
             
             // -------------------- Add SceneHandle and add as Component --------------------
             void AddHandle(SceneStateData data, Type type) {
-                if (obj.AddComponent(type) is not SceneHandle sceneHandle) return;
-                sceneHandle.Label = data.SceneType + "Handle";
+                SceneHandle sceneHandle = Undo.AddComponent(obj, type) as SceneHandle;
+                sceneHandle!.Label = data.SceneType + "Handle";
                 sceneHandle.StateData = data;
+                
+                AddEditor(sceneHandle);
 
-                SceneHandles.Add(sceneHandle);
+                (target as WorldGraph)?.SceneHandles.Add(sceneHandle);
             }
             
             // -------------------- Remove SceneHandle and Destroy Component --------------------
             void RemoveHandle(SceneStateData data) {
                 var toRemove = SceneHandles.Find(x => x.StateData.Equals(data));
-                SceneHandles.Remove(toRemove);
-                DestroyImmediate(toRemove);
+                
+                (target as WorldGraph)?.SceneHandles.Remove(toRemove);
+                Undo.DestroyObjectImmediate(toRemove);
             }
 
             #endregion

@@ -40,6 +40,21 @@ namespace ThunderNut.WorldGraph.Editor {
             return result;
         }
         
+        private static IEnumerable<TSource> ExceptImpl<TSource>(
+            IEnumerable<TSource> first,
+            IEnumerable<TSource> second,
+            IEqualityComparer<TSource> comparer)
+        {
+            HashSet<TSource> bannedElements = new HashSet<TSource>(second, comparer);
+            foreach (TSource item in first)
+            {
+                if (bannedElements.Add(item))
+                {
+                    yield return item;
+                }
+            }
+        }
+        
         public static void PingAsset(string selectedGuid) {
             string path = AssetDatabase.GUIDToAssetPath(selectedGuid);
             if (selectedGuid == null) return;

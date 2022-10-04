@@ -1,14 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using JetBrains.Annotations;
 using ThunderNut.WorldGraph.Handles;
 using UnityEditor;
 using UnityEditor.Experimental.GraphView;
 using UnityEditor.Searcher;
 using UnityEngine;
 using UnityEngine.UIElements;
-using Object = System.Object;
 
 namespace ThunderNut.WorldGraph.Editor {
 
@@ -21,12 +19,13 @@ namespace ThunderNut.WorldGraph.Editor {
 
     public class WSGGraphView : GraphView, IDisposable {
         public WorldGraph worldGraph;
+        
         public readonly WorldStateGraph stateGraph;
         public readonly WorldGraphEditorWindow window;
         private string assetName;
 
         private SerializedObject serializedGraph;
-        private WorldStateGraphEditor stateGraphEditor;
+        private UnityEditor.Editor stateGraphEditor;
 
         private EdgeConnectorListener m_EdgeConnectorListener;
         private WSGSearcherProvider m_SearchWindowProvider;
@@ -76,7 +75,7 @@ namespace ThunderNut.WorldGraph.Editor {
             stateGraph = graph;
 
             serializedGraph = new SerializedObject(stateGraph);
-            stateGraphEditor = (WorldStateGraphEditor)UnityEditor.Editor.CreateEditor(stateGraph);
+            stateGraphEditor = UnityEditor.Editor.CreateEditor(stateGraph);
 
             window.m_BlackboardButton.RegisterValueChangedCallback(UpdateUserViewBlackboardSettings);
             window.m_GraphInspectorButton.RegisterValueChangedCallback(UpdateUserViewInspectorSettings);
@@ -329,7 +328,6 @@ namespace ThunderNut.WorldGraph.Editor {
                         var output = (WSGNodeView) outputPort.node;
                         var input = (WSGNodeView) inputPort.node;
 
-                        // output.stateData.Children.Add(input.stateData);
                         var transition = stateGraph.CreateTransition(output.stateData, input.stateData);
                         edge.userData = transition;
 
@@ -357,8 +355,6 @@ namespace ThunderNut.WorldGraph.Editor {
                     case PortType.Default when port.direction == Direction.Output: {
                         var output = (WSGNodeView) outputPort.node;
                         var input = (WSGNodeView) inputPort.node;
-
-                        // output.stateData.Children.Remove(input.stateData);
 
                         ClearGraphInspector();
                         stateGraph.RemoveTransition(edge.userData as TransitionData);
@@ -424,7 +420,7 @@ namespace ThunderNut.WorldGraph.Editor {
             var match = worldGraph.SceneHandles.Find(x => x.StateData.GUID == stateData.GUID);
             var handleEditor = UnityEditor.Editor.CreateEditor(match);
 
-            titleLabel.text = $"{match.Label} Node";
+            titleLabel.text = $"{match.Label} Node"; 
             IMGUIContainer GUIContainer = new IMGUIContainer(() => { handleEditor.OnInspectorGUI(); });
 
             inspectorContentContainer.Add(GUIContainer);

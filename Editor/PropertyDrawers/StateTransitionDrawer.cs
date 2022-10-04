@@ -41,14 +41,14 @@
 //                 // SceneHandle sceneHandle = prop.FindPropertyRelative("OutputNode").objectReferenceValue as SceneHandle;
 //                 // Debug.Assert(sceneHandle != null, nameof(sceneHandle) + " != null");
 //
-//                 WorldStateGraph stateGraph = prop
+//                 WorldStateGraph StateGraph = prop
 //                     .FindPropertyRelative("TransitionData")
 //                     .FindPropertyRelative("StateGraph")
 //                     .objectReferenceValue as WorldStateGraph;
 //
 //
-//                 Debug.Assert(stateGraph != null, nameof(stateGraph) + " != null");
-//                 var allParameters = stateGraph.ExposedParameters;
+//                 Debug.Assert(StateGraph != null, nameof(StateGraph) + " != null");
+//                 var allParameters = StateGraph.ExposedParameters;
 //
 //                 if (allParameters.Any()) {
 //                     rect.width = width;
@@ -56,7 +56,7 @@
 //                     if (EditorGUI.DropdownButton(rect, condition!.parameter != null
 //                         ? new GUIContent(condition.parameter.Name)
 //                         : new GUIContent("Select a Parameter"), FocusType.Passive)) {
-//                         PopupWindow.Show(rect, new ConditionOptionsPopupWindow(stateGraph, condition) {
+//                         PopupWindow.Show(rect, new ConditionOptionsPopupWindow(StateGraph, condition) {
 //                             Width = rect.width
 //                         });
 //                     }
