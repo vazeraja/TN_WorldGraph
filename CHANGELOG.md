@@ -1,3 +1,10 @@
+## [1.0.3](https://github.com/vazeraja/TN_WorldGraph/compare/v1.0.2...v1.0.3) (2022-10-04)
+
+
+### Bug Fixes
+
+* use scriptable objects, way easier to save transition conditions ([412ba02](https://github.com/vazeraja/TN_WorldGraph/commit/412ba02e0bbb63a5079c159d29f36f5c3ca537f8))
+
 ## [1.0.2](https://github.com/vazeraja/TN_WorldGraph/compare/v1.0.1...v1.0.2) (2022-10-03)
 
 
