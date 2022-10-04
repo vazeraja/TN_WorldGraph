@@ -9,20 +9,32 @@ namespace ThunderNut.WorldGraph {
     [CreateAssetMenu(fileName = "New WorldStateGraph", menuName = "WorldGraph/StateGraph", order = 0)]
     public class WorldStateGraph : ScriptableObject {
         public List<SceneStateData> SceneStateData = new List<SceneStateData>();
-        public List<TransitionData> TransitionData = new List<TransitionData>();
-
-        public List<ExposedParameter> ExposedParameters = new List<ExposedParameter>();
         public List<ExposedParameterViewData> ExposedParameterViewData = new List<ExposedParameterViewData>();
+        
+        public List<StateTransition> StateTransitions = new List<StateTransition>();
+        public List<ExposedParameter> ExposedParameters = new List<ExposedParameter>();
 
-        public TransitionData CreateTransition(SceneStateData output, SceneStateData input) {
-            TransitionData transitionData = new TransitionData(this, output, input);
-            TransitionData.Add(transitionData);
-            return transitionData;
+        public StateTransition CreateTransition(SceneStateData output, SceneStateData input) {
+            Undo.RecordObject(this, $"CreateTransition() :: {output} + {input}");
+            
+            StateTransition stateTransition = StateTransition.CreateInstance(this, output, input);
+            StateTransitions.Add(stateTransition);
+            
+            if (!Application.isPlaying) AssetDatabase.AddObjectToAsset(stateTransition, this);
+            Undo.RegisterCreatedObjectUndo(stateTransition, "StringParameterField SO Created");
+            AssetDatabase.SaveAssets();
+            
+            return stateTransition;
         }
 
 
-        public void RemoveTransition(TransitionData edge) {
-            TransitionData.Remove(edge);
+        public void RemoveTransition(StateTransition stateTransition) {
+            Undo.RecordObject(this, $"RemoveTransition() :: {stateTransition}");
+
+            StateTransitions.Remove(stateTransition);
+
+            Undo.DestroyObjectImmediate(stateTransition);
+            AssetDatabase.SaveAssets();
         }
 
         public ExposedParameter CreateParameter(string type) {

@@ -24,7 +24,7 @@ namespace ThunderNut.WorldGraph.Editor {
         
         public override void OnInspectorGUI() {
             serializedObject.Update();
-            
+
             conditionsList.DoLayoutList();
 
             serializedObject.ApplyModifiedProperties();
@@ -38,7 +38,7 @@ namespace ThunderNut.WorldGraph.Editor {
 
             float width = rect.width / 2;
 
-            WorldStateGraph stateGraph = stateTransition.TransitionData.StateGraph;
+            WorldStateGraph stateGraph = stateTransition.StateGraph;
             var allParameters = stateGraph.ExposedParameters;
 
             if (allParameters.Any()) {

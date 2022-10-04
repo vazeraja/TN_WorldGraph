@@ -19,7 +19,7 @@ namespace ThunderNut.WorldGraph.Editor {
 
     public class WSGGraphView : GraphView, IDisposable {
         public WorldGraph worldGraph;
-        
+
         public readonly WorldStateGraph stateGraph;
         public readonly WorldGraphEditorWindow window;
         private string assetName;
@@ -142,7 +142,7 @@ namespace ThunderNut.WorldGraph.Editor {
                         stateGraph.SceneStateData.Remove(nodeView.stateData);
                         break;
                     case Edge edge:
-                        stateGraph.RemoveTransition(edge.userData as TransitionData);
+                        // stateGraph.RemoveTransition(edge.userData as StateTransition);
                         break;
                     case BlackboardField blackboardField:
                         ExposedParameter exposedParameter = (ExposedParameter) blackboardField.userData;
@@ -158,8 +158,6 @@ namespace ThunderNut.WorldGraph.Editor {
                         stateGraph.RemoveExposedParameterViewData(parameterNodeView.GetViewData());
                         break;
                 }
-
-                UpdateSerializedProperties();
             });
             graphViewChange.movedElements?.ForEach(elem => { });
             graphViewChange.edgesToCreate?.ForEach(elem => { });
@@ -173,7 +171,7 @@ namespace ThunderNut.WorldGraph.Editor {
                 CreateGraphNode(stateData);
             }
 
-            foreach (var transition in stateGraph.TransitionData) {
+            foreach (var transition in stateGraph.StateTransitions) {
                 WSGNodeView outputView = (WSGNodeView) GetNodeByGuid(transition.OutputStateGUID);
                 WSGNodeView inputView = (WSGNodeView) GetNodeByGuid(transition.InputStateGUID);
 
@@ -265,8 +263,6 @@ namespace ThunderNut.WorldGraph.Editor {
         public void CreateBlackboardField(ExposedParameter parameter) {
             var blackboardField = new WSGBlackboardField(parameter);
             exposedParametersBlackboard.Add(blackboardField);
-
-            UpdateSerializedProperties();
         }
 
         public void CreateParameterNode(ExposedParameter parameter, Vector2 position) {
@@ -331,7 +327,6 @@ namespace ThunderNut.WorldGraph.Editor {
                         var transition = stateGraph.CreateTransition(output.stateData, input.stateData);
                         edge.userData = transition;
 
-                        UpdateSerializedProperties();
                         break;
                     }
                     case PortType.Parameter when node is WSGNodeView nodeView: {
@@ -357,7 +352,7 @@ namespace ThunderNut.WorldGraph.Editor {
                         var input = (WSGNodeView) inputPort.node;
 
                         ClearGraphInspector();
-                        stateGraph.RemoveTransition(edge.userData as TransitionData);
+                        stateGraph.RemoveTransition(edge.userData as StateTransition);
 
                         break;
                     }
@@ -371,7 +366,6 @@ namespace ThunderNut.WorldGraph.Editor {
                         break;
                 }
 
-                UpdateSerializedProperties();
             };
         }
 
@@ -403,14 +397,8 @@ namespace ThunderNut.WorldGraph.Editor {
             AddElement(element);
         }
 
-        public void UpdateSerializedProperties() {
-            serializedGraph = new SerializedObject(stateGraph);
-            UnityEditorInternal.InternalEditorUtility.RepaintAllViews();
-        }
-
         public void DrawPropertiesInInspector(SceneStateData stateData) {
             inspectorContentContainer.Clear();
-            UpdateSerializedProperties();
 
             if (worldGraph == null) {
                 inspectorContentContainer.Add(new Label("Select WorldGraph in Inspector"));
@@ -420,7 +408,7 @@ namespace ThunderNut.WorldGraph.Editor {
             var match = worldGraph.SceneHandles.Find(x => x.StateData.GUID == stateData.GUID);
             var handleEditor = UnityEditor.Editor.CreateEditor(match);
 
-            titleLabel.text = $"{match.Label} Node"; 
+            titleLabel.text = $"{match.Label} Node";
             IMGUIContainer GUIContainer = new IMGUIContainer(() => { handleEditor.OnInspectorGUI(); });
 
             inspectorContentContainer.Add(GUIContainer);
@@ -428,7 +416,6 @@ namespace ThunderNut.WorldGraph.Editor {
 
         public void DrawPropertiesInInspector(ExposedParameter parameter) {
             inspectorContentContainer.Clear();
-            UpdateSerializedProperties();
 
             var serializedParameter = new SerializedObject(parameter);
 
@@ -446,21 +433,14 @@ namespace ThunderNut.WorldGraph.Editor {
             inspectorContentContainer.Add(GUIContainer);
         }
 
-        public void DrawPropertiesInInspector(TransitionData transitionData) {
+        public void DrawPropertiesInInspector(StateTransition stateTransition) {
             inspectorContentContainer.Clear();
-            UpdateSerializedProperties();
-            
-            var match = GetPropertyMatch(serializedGraph.FindProperty("StateTransitions"), transitionData);
 
-            titleLabel.text = transitionData.ToString();
-            IMGUIContainer GUIContainer = new IMGUIContainer(() => {
-                match.serializedObject.Update();
+            var handleEditor = (StateTransitionEditor) UnityEditor.Editor.CreateEditor(stateTransition);
 
-                EditorGUILayout.PropertyField(match);
+            titleLabel.text = stateTransition.ToString();
+            IMGUIContainer GUIContainer = new IMGUIContainer(() => { handleEditor.OnInspectorGUI(); });
 
-                match.serializedObject.ApplyModifiedProperties();
-            });
-            
             inspectorContentContainer.Add(GUIContainer);
         }
 

@@ -6,14 +6,6 @@ using UnityEngine;
 
 namespace ThunderNut.WorldGraph {
 
-    public static class Helpers {
-        public static IEnumerable<T> SymmetricExcept<T>(this IEnumerable<T> seq1, IEnumerable<T> seq2) {
-            HashSet<T> hashSet = new HashSet<T>(seq1);
-            hashSet.SymmetricExceptWith(seq2);
-            return hashSet.Select(x => x);
-        }
-    }
-
     [AddComponentMenu("ThunderNut/WorldGraph/World Graph")]
     [DisallowMultipleComponent]
     public class WorldGraph : MonoBehaviour {

@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.Serialization;
 
 namespace ThunderNut.WorldGraph.Handles {
-    
+
     [AddComponentMenu("")]
     [Serializable]
     public abstract class SceneHandle : MonoBehaviour {
@@ -19,12 +19,11 @@ namespace ThunderNut.WorldGraph.Handles {
 
         public virtual SceneType SceneType => SceneType.Default;
 
-        [SerializeField] public SceneStateData StateData;
+        [SerializeField, HideInInspector] public SceneStateData StateData;
 
         public SceneReference SceneReference;
-        
-        public List<StateTransition> StateTransitions = new List<StateTransition>();
-        
+
+        [SerializeField] public List<StateTransition> StateTransitions = new(); 
     }
 
 }

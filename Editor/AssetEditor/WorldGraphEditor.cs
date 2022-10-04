@@ -291,6 +291,57 @@ namespace ThunderNut.WorldGraph.Editor {
             }
             EditorGUILayout.EndHorizontal();
         }
+        
+        private void InitializeFromStateGraph() {
+            var obj = targetWorldGraph.gameObject;
+            
+            // -------------------- Remove All --------------------
+            foreach (var stateData in targetWorldGraph.StateGraph.SceneStateData) {
+                RemoveHandle(stateData);
+            }
+
+            // -------------------- Add Again --------------------
+            foreach (var data in targetWorldGraph.StateGraph.SceneStateData) {
+                switch (data.SceneType) {
+                    case SceneType.Default:
+                        AddHandle(data, typeof(DefaultHandle));
+                        break;
+                    case SceneType.Cutscene:
+                        AddHandle(data, typeof(CutsceneHandle));
+                        break;
+                    case SceneType.Battle:
+                        AddHandle(data, typeof(BattleHandle));
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+            }
+
+            // foreach (var transition in stateGraph.StateTransitions) {
+            //     var match = targetWorldGraph.SceneHandles.Find(handle => handle.StateData.GUID == transition.OutputStateGUID);
+            //     match.StateTransitions.Add(transition);
+            // }
+            
+            void AddHandle(SceneStateData data, Type type) {
+                SceneHandle sceneHandle = Undo.AddComponent(obj, type) as SceneHandle;
+                sceneHandle!.Label = data.SceneType + "Handle";
+                sceneHandle.StateData = data;
+                
+                AddEditor(sceneHandle);
+
+                targetWorldGraph.SceneHandles.Add(sceneHandle);
+            }
+            
+            // -------------------- Remove SceneHandle and Destroy Component --------------------
+            void RemoveHandle(SceneStateData data) {
+                var toRemove = targetWorldGraph.SceneHandles.Find(x => x.StateData.Equals(data));
+                if (toRemove == null) return;
+                
+                targetWorldGraph.SceneHandles.Remove(toRemove);
+                Undo.DestroyObjectImmediate(toRemove);
+            }
+
+        }
 
         public SceneHandle AddSceneHandle(Type type) {
             GameObject gameObject = (target as WorldGraph)?.gameObject;
@@ -326,131 +377,7 @@ namespace ThunderNut.WorldGraph.Editor {
 
             _editors.Add(handle, editor);
         }
-
-        private void InitializeFromStateGraph() {
-            var obj = targetWorldGraph.gameObject;
-            var stateGraph = targetWorldGraph.StateGraph;
-            if (stateGraph == null) {
-                EditorUtility.DisplayDialog("No WorldStateGraph Assigned", "Please assign a WorldStateGraph to initialize", "OK");
-                return;
-            }
-            
-            // -------------------- Get Variables for SceneHandles and Transitions --------------------
-            var SceneHandles = targetWorldGraph.SceneHandles;
-            var StateTransitions = targetWorldGraph.StateTransitions;
-
-            // -------------------- Get Variables for Old and New State/Transition Data's --------------------
-            var stateData = stateGraph.SceneStateData;
-            var oldStateData = SceneHandles.Select(sceneHandle => sceneHandle.StateData).ToList();
-            var transitionData = stateGraph.TransitionData;
-            var oldTransitionData = new List<TransitionData>();
-            foreach (var sceneHandle in SceneHandles) {
-                oldTransitionData.AddRange(sceneHandle.StateTransitions.Select(st => st.TransitionData));
-            }
-
-
-            List<SceneStateData> newElements = new List<SceneStateData>(); 
-            
-            // -------------------- Find Elements which were newly added + elements which were removed --------------------
-            var elementsNotInGraph = oldStateData.Except(stateData).ToList();
-            var newElementsInGraph = stateData.Except(oldStateData).ToList();
-
-            var transitionNotInGraph = oldTransitionData.Except(transitionData).ToList();
-            var newTransitionInGraph = transitionData.Except(oldTransitionData).ToList();
-
-            elementsNotInGraph.ForEach(s => Debug.Log("States Not in Graph: " + s.SceneName));
-            newElementsInGraph.ForEach(s => Debug.Log("New States in Graph: " + s.SceneName));
-
-            transitionNotInGraph.ForEach(t => Debug.Log("Transitions Not in Graph: " + t));
-            newTransitionInGraph.ForEach(t => Debug.Log("New Transitions in Graph: " + t));
-            
-            // -------------------- First remove the ones which were removed from the graph --------------------
-            foreach (var elem in elementsNotInGraph) {
-                RemoveHandle(elem);
-            }
-            
-            // -------------------- Then add the ones which were newly added to graph --------------------
-            foreach (var data in newElementsInGraph) {
-                switch (data.SceneType) {
-                    case SceneType.Default:
-                        AddHandle(data, typeof(DefaultHandle));
-                        break;
-                    case SceneType.Cutscene:
-                        AddHandle(data, typeof(CutsceneHandle));
-                        break;
-                    case SceneType.Battle:
-                        AddHandle(data, typeof(BattleHandle));
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException();
-                }
-            }
-            
-            // -------------------- Repeat again with the state transitions --------------------
-            foreach (var data in transitionNotInGraph) {
-                RemoveTransition(data);
-            }
-
-            foreach (var newData in newTransitionInGraph) {
-                CreateTransition(newData, typeof(StateTransition));
-            }
-
-            UnityEditorInternal.InternalEditorUtility.RepaintAllViews();
-            OnEnable();
-
-            #region Inline Functions
-            // -------------------- Add transition to the corresponding SceneHandle, and AddComponent --------------------
-            void CreateTransition(TransitionData data, Type type) {
-                StateTransition stateTransition = Undo.AddComponent(obj, type) as StateTransition;
-                stateTransition!.Label = type.Name;
-                stateTransition.TransitionData = data;
- 
-                (target as WorldGraph)?.StateTransitions.Add(stateTransition);
-                
-                var match = SceneHandles.Find(handle => handle.StateData.GUID == data.OutputStateGUID);
-                match.StateTransitions.Add(stateTransition);
-            }
-            
-            // -------------------- Remove transition from the SceneHandle which owns it, then destroy it --------------------
-            void RemoveTransition(TransitionData data) {
-                StateTransition toRemove = null;
-                SceneHandle owner = null;
-
-                foreach (SceneHandle sceneHandle in SceneHandles) {
-                    foreach (StateTransition stateTransition in sceneHandle.StateTransitions) {
-                        if (stateTransition.TransitionData.OutputStateGUID != data.OutputStateGUID) continue;
-                        toRemove = stateTransition;
-                        owner = sceneHandle;
-                    }
-                }
-                
-                (target as WorldGraph)?.StateTransitions.Remove(toRemove);
-                if(owner != null) owner.StateTransitions.Remove(toRemove);
-                
-                Undo.DestroyObjectImmediate(toRemove);
-            }
-            
-            // -------------------- Add SceneHandle and add as Component --------------------
-            void AddHandle(SceneStateData data, Type type) {
-                SceneHandle sceneHandle = Undo.AddComponent(obj, type) as SceneHandle;
-                sceneHandle!.Label = data.SceneType + "Handle";
-                sceneHandle.StateData = data;
-                
-                AddEditor(sceneHandle);
-
-                (target as WorldGraph)?.SceneHandles.Add(sceneHandle);
-            }
-            
-            // -------------------- Remove SceneHandle and Destroy Component --------------------
-            void RemoveHandle(SceneStateData data) {
-                var toRemove = SceneHandles.Find(x => x.StateData.Equals(data));
-                
-                (target as WorldGraph)?.SceneHandles.Remove(toRemove);
-                Undo.DestroyObjectImmediate(toRemove);
-            }
-
-            #endregion
-        }
+        
     }
 
 }

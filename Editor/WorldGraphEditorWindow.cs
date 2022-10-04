@@ -36,7 +36,7 @@ namespace ThunderNut.WorldGraph.Editor {
             private set => m_Selected = value;
         }
 
-        private WorldGraph m_WorldGraph;
+        [SerializeField] private WorldGraph m_WorldGraph;
 
         [SerializeField] private WorldStateGraph m_StateGraph;
         private WorldStateGraph stateGraph {

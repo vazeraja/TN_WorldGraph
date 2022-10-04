@@ -10,7 +10,7 @@ namespace ThunderNut.WorldGraph.Editor {
             base.OnSelected();
             
             if (output.node is not WSGParameterNodeView) {
-                // graphView.DrawPropertiesInInspector((TransitionData) userData);
+                graphView.DrawPropertiesInInspector((StateTransition) userData);
             }
         }
     }

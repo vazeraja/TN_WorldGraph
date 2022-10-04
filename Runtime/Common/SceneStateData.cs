@@ -11,7 +11,7 @@ namespace ThunderNut.WorldGraph {
     }
 
     [Serializable]
-    public class SceneStateData : ISerializationCallbackReceiver {
+    public class SceneStateData : ISerializationCallbackReceiver, IEquatable<SceneStateData> {
         [SerializeField] private string m_GUID;
         public string GUID => m_GUID;
 
@@ -68,6 +68,22 @@ namespace ThunderNut.WorldGraph {
         public void OnBeforeSerialize() { }
 
         public void OnAfterDeserialize() { }
+
+        public bool Equals(SceneStateData other) {
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return GUID == other.GUID;
+        }
+
+        public override bool Equals(object obj) {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            return obj.GetType() == GetType() && Equals((SceneStateData) obj);
+        }
+
+        public override int GetHashCode() {
+            return (GUID != null ? GUID.GetHashCode() : 0);
+        }
     }
 
 }

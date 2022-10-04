@@ -10,14 +10,10 @@ namespace ThunderNut.WorldGraph.Editor {
 
     [CustomEditor(typeof(SceneHandle), true)]
     public class SceneHandleEditor : UnityEditor.Editor {
-        private SceneHandle targetSceneHandle;
-
         private SerializedProperty _StateTransitions;
         private Dictionary<StateTransition, UnityEditor.Editor> editors;
 
         private void OnEnable() {
-            targetSceneHandle = target as SceneHandle;
-
             _StateTransitions = serializedObject.FindProperty("StateTransitions");
 
             editors = new Dictionary<StateTransition, UnityEditor.Editor>();
@@ -43,7 +39,7 @@ namespace ThunderNut.WorldGraph.Editor {
 
                 Undo.RecordObject(stateTransition, "Modified StateTransition");
 
-                EditorGUI.BeginDisabledGroup(!stateTransition.Active);
+                EditorGUI.BeginDisabledGroup(!stateTransition!.Active);
                 EditorGUILayout.Space();
                 
                 if (!editors.ContainsKey(stateTransition)) AddEditor(stateTransition);
