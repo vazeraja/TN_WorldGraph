@@ -291,56 +291,45 @@ namespace ThunderNut.WorldGraph.Editor {
             }
             EditorGUILayout.EndHorizontal();
         }
-        
+
         private void InitializeFromStateGraph() {
-            var obj = targetWorldGraph.gameObject;
-            
+            var obj = (target as WorldGraph)?.gameObject;
+
             // -------------------- Remove All --------------------
-            foreach (var stateData in targetWorldGraph.StateGraph.SceneStateData) {
-                RemoveHandle(stateData);
+            for (int i = 0; i < sceneHandles.arraySize; i++) {
+                RemoveSceneHandle(i);
             }
 
             // -------------------- Add Again --------------------
-            foreach (var data in targetWorldGraph.StateGraph.SceneStateData) {
+            foreach (var data in (target as WorldGraph)?.stateGraph.SceneStateData) {
                 switch (data.SceneType) {
                     case SceneType.Default:
-                        AddHandle(data, typeof(DefaultHandle));
+                        Add(typeof(DefaultHandle), data);
                         break;
                     case SceneType.Cutscene:
-                        AddHandle(data, typeof(CutsceneHandle));
+                        Add(typeof(CutsceneHandle), data);
                         break;
                     case SceneType.Battle:
-                        AddHandle(data, typeof(BattleHandle));
+                        Add(typeof(BattleHandle), data);
                         break;
-                    default:
-                        throw new ArgumentOutOfRangeException();
                 }
             }
 
-            // foreach (var transition in stateGraph.StateTransitions) {
-            //     var match = targetWorldGraph.SceneHandles.Find(handle => handle.StateData.GUID == transition.OutputStateGUID);
-            //     match.StateTransitions.Add(transition);
-            // }
-            
-            void AddHandle(SceneStateData data, Type type) {
+            foreach (var transition in (target as WorldGraph)?.stateGraph.StateTransitions) {
+                var match = targetWorldGraph.SceneHandles.Find(handle => handle.StateData.GUID == transition.OutputStateGUID);
+                match.StateTransitions.Add(transition);
+            }
+ 
+            void Add(Type type, SceneStateData data) {
                 SceneHandle sceneHandle = Undo.AddComponent(obj, type) as SceneHandle;
-                sceneHandle!.Label = data.SceneType + "Handle";
+                sceneHandle!.hideFlags = HideFlags.HideInInspector;
+                sceneHandle.Label = type.Name;
                 sceneHandle.StateData = data;
-                
+
                 AddEditor(sceneHandle);
 
-                targetWorldGraph.SceneHandles.Add(sceneHandle);
+                (target as WorldGraph)?.SceneHandles.Add(sceneHandle);
             }
-            
-            // -------------------- Remove SceneHandle and Destroy Component --------------------
-            void RemoveHandle(SceneStateData data) {
-                var toRemove = targetWorldGraph.SceneHandles.Find(x => x.StateData.Equals(data));
-                if (toRemove == null) return;
-                
-                targetWorldGraph.SceneHandles.Remove(toRemove);
-                Undo.DestroyObjectImmediate(toRemove);
-            }
-
         }
 
         public SceneHandle AddSceneHandle(Type type) {
@@ -361,10 +350,12 @@ namespace ThunderNut.WorldGraph.Editor {
         private void RemoveSceneHandle(int id) {
             SerializedProperty property = sceneHandles.GetArrayElementAtIndex(id);
             SceneHandle sceneHandle = property.objectReferenceValue as SceneHandle;
+            
+            sceneHandle!.StateTransitions.Clear();
 
             (target as WorldGraph)?.SceneHandles.Remove(sceneHandle);
 
-            _editors.Remove(sceneHandle!);
+            _editors.Remove(sceneHandle);
             Undo.DestroyObjectImmediate(sceneHandle);
         }
 
@@ -377,7 +368,6 @@ namespace ThunderNut.WorldGraph.Editor {
 
             _editors.Add(handle, editor);
         }
-        
     }
 
 }

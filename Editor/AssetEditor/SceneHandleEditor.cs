@@ -14,7 +14,7 @@ namespace ThunderNut.WorldGraph.Editor {
         private Dictionary<StateTransition, UnityEditor.Editor> editors;
 
         private void OnEnable() {
-            _StateTransitions = serializedObject.FindProperty("StateTransitions");
+            _StateTransitions = serializedObject.FindProperty("StateTransitions"); 
 
             editors = new Dictionary<StateTransition, UnityEditor.Editor>();
             for (var i = 0; i < _StateTransitions.arraySize; i++) {

@@ -19,7 +19,7 @@ namespace ThunderNut.WorldGraph.Handles {
 
         public virtual SceneType SceneType => SceneType.Default;
 
-        [SerializeField, HideInInspector] public SceneStateData StateData;
+        [SerializeField] public SceneStateData StateData;
 
         public SceneReference SceneReference;
 

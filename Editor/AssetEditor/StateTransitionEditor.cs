@@ -10,12 +10,17 @@ namespace ThunderNut.WorldGraph.Editor {
     public class StateTransitionEditor : UnityEditor.Editor {
 
         private StateTransition stateTransition;
+
+        private SerializedProperty conditionsProp;
+        
         private ReorderableList conditionsList;
 
         private void OnEnable() {
             stateTransition = target as StateTransition;
+ 
+            conditionsProp = serializedObject.FindProperty("conditions");
             
-            conditionsList = new ReorderableList(serializedObject, serializedObject.FindProperty("conditions")) {
+            conditionsList = new ReorderableList(serializedObject, conditionsProp) {
                 drawHeaderCallback = rect => EditorGUI.LabelField(rect, stateTransition.Label),
                 elementHeightCallback = index => EditorGUIUtility.singleLineHeight,
                 drawElementCallback = DrawElementCallback
@@ -31,7 +36,7 @@ namespace ThunderNut.WorldGraph.Editor {
         }
 
         private void DrawElementCallback(Rect rect, int index, bool active, bool focused) {
-            var conditionProp = serializedObject.FindProperty("conditions").GetArrayElementAtIndex(index);
+            var conditionProp = conditionsProp.GetArrayElementAtIndex(index);
 
             conditionProp.managedReferenceValue ??= new StateCondition();
             StateCondition condition = conditionProp.managedReferenceValue as StateCondition;
