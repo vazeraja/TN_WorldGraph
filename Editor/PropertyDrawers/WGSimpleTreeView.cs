@@ -39,7 +39,7 @@ namespace ThunderNut.WorldGraph.Editor {
             };
 
             onDoubleClicked?.Invoke();
-
+            
             base.DoubleClickedItem(id);
         }
 

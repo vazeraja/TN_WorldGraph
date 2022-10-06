@@ -1,28 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using ThunderNut.WorldGraph.Handles;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 namespace ThunderNut.WorldGraph {
-
-    public class StateTransition : ScriptableObject {
-        public static StateTransition CreateInstance(WorldStateGraph graph, SceneStateData output, SceneStateData input) {
-            var obj = ScriptableObject.CreateInstance<StateTransition>();
-
-            obj.StateGraph = graph;
-            obj.GUID = Guid.NewGuid().ToString();
-            obj.OutputStateGUID = output.GUID;
-            obj.OutputState = output;
-            obj.InputStateGUID = input.GUID;
-            obj.InputState = input;
-            
-            obj.name = $"{obj.OutputState.SceneName} ---> {obj.InputState.SceneName}";
-
-            return obj;
-        }
-
-        [SerializeReference] public List<StateCondition> conditions = new List<StateCondition>();
-
+    
+    [Serializable]
+    public class StateTransitionData {
         [SerializeField] private WorldStateGraph m_StateGraph;
         public WorldStateGraph StateGraph {
             get => m_StateGraph;
@@ -59,6 +45,38 @@ namespace ThunderNut.WorldGraph {
             set => m_InputState = value;
         }
 
+        public StateTransitionData(WorldStateGraph graph, SceneStateData output, SceneStateData input) {
+            m_StateGraph = graph;
+            m_GUID = Guid.NewGuid().ToString();
+            
+            OutputStateGUID = output.GUID;
+            InputStateGUID = input.GUID;
+            OutputState = output;
+            InputState = input;
+        }
+    }
+
+    public class StateTransition : MonoBehaviour {
+
+        [SerializeReference] public List<StateCondition> conditions = new List<StateCondition>();
+
+        [SerializeField] public StateTransitionData data;
+
+        public SceneHandle OutputState {
+            get {
+                var controller = GetComponent<WorldGraph>();
+                var outputState = controller.SceneHandles.Find(sh => sh.StateData.GUID == data.OutputStateGUID);
+                return outputState;
+            }
+        }
+        public SceneHandle InputState {
+            get {
+                var controller = GetComponent<WorldGraph>();
+                var outputState = controller.SceneHandles.Find(sh => sh.StateData.GUID == data.InputStateGUID);
+                return outputState;
+            }
+        }
+        
         [SerializeField] private bool m_Active = true;
         public bool Active {
             get => m_Active;
@@ -68,17 +86,13 @@ namespace ThunderNut.WorldGraph {
         [SerializeField] private string m_Label;
         public string Label {
             get {
-                if (m_Label != null)
-                    return m_Label;
-
-                m_Label = $"{OutputState.SceneName} ---> {InputState.SceneName}";
+                m_Label = $"{data.OutputState.SceneName} ---> {data.InputState.SceneName}";
                 return m_Label;
             }
-            set => m_Label = value;
         }
 
         public override string ToString() {
-            return $"{OutputState.SceneName} ---> {InputState.SceneName}";
+            return $"{data.OutputState.SceneName} ---> {data.InputState.SceneName}";
         }
     }
 

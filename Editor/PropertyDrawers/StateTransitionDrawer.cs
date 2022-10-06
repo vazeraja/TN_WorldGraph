@@ -7,7 +7,7 @@
 //
 // namespace ThunderNut.WorldGraph.Editor {
 //
-//     // [CustomPropertyDrawer(typeof(StateTransition), true)]
+//     [CustomPropertyDrawer(typeof(StateTransition), true)]
 //     public class StateTransitionDrawer : PropertyDrawer {
 //         private readonly Dictionary<string, ReorderableList> _listsPerProp = new Dictionary<string, ReorderableList>();
 //
@@ -18,16 +18,7 @@
 //
 //             list = new ReorderableList(listProperty.serializedObject, listProperty, true, true, true, true);
 //             _listsPerProp[listProperty.propertyPath] = list;
-//
-//             list.onAddCallback = reorderableList => {
-//                 reorderableList.serializedProperty.arraySize++;
-//
-//                 var conditionProp =
-//                     reorderableList.serializedProperty.GetArrayElementAtIndex(reorderableList.serializedProperty.arraySize - 1);
-//
-//                 conditionProp.managedReferenceValue = new StateCondition();
-//             };
-//             list.onRemoveCallback = reorderableList => { reorderableList.serializedProperty.arraySize--; };
+//             
 //             list.drawHeaderCallback = rect => EditorGUI.LabelField(rect, listProperty.displayName);
 //             list.elementHeightCallback = index => EditorGUIUtility.singleLineHeight;
 //             list.drawElementCallback = (rect, index, active, focused) => {
@@ -37,13 +28,10 @@
 //                 StateCondition condition = conditionProp.managedReferenceValue as StateCondition;
 //
 //                 float width = rect.width / 2;
-//
-//                 // SceneHandle sceneHandle = prop.FindPropertyRelative("OutputNode").objectReferenceValue as SceneHandle;
-//                 // Debug.Assert(sceneHandle != null, nameof(sceneHandle) + " != null");
-//
+//                 
 //                 WorldStateGraph StateGraph = prop
-//                     .FindPropertyRelative("TransitionData")
-//                     .FindPropertyRelative("StateGraph")
+//                     .FindPropertyRelative("data")
+//                     .FindPropertyRelative("m_StateGraph")
 //                     .objectReferenceValue as WorldStateGraph;
 //
 //

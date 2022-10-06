@@ -8,7 +8,6 @@ namespace ThunderNut.WorldGraph.Editor {
 
     [CustomEditor(typeof(StateTransition), true)]
     public class StateTransitionEditor : UnityEditor.Editor {
-
         private StateTransition stateTransition;
 
         private SerializedProperty conditionsProp;
@@ -21,7 +20,7 @@ namespace ThunderNut.WorldGraph.Editor {
             conditionsProp = serializedObject.FindProperty("conditions");
             
             conditionsList = new ReorderableList(serializedObject, conditionsProp) {
-                drawHeaderCallback = rect => EditorGUI.LabelField(rect, stateTransition.Label),
+                drawHeaderCallback = rect => EditorGUI.LabelField(rect, "Conditions"),
                 elementHeightCallback = index => EditorGUIUtility.singleLineHeight,
                 drawElementCallback = DrawElementCallback
             };
@@ -43,7 +42,7 @@ namespace ThunderNut.WorldGraph.Editor {
 
             float width = rect.width / 2;
 
-            WorldStateGraph stateGraph = stateTransition.StateGraph;
+            WorldStateGraph stateGraph = stateTransition.data.StateGraph;
             var allParameters = stateGraph.ExposedParameters;
 
             if (allParameters.Any()) {

@@ -123,6 +123,7 @@ namespace ThunderNut.WorldGraph {
 
                 if (conditionsMet.All(x => x)) {
                     Debug.Log($"All Conditions Met for Transition: {currentTransitions[i].Label}");
+                    Debug.Log($"Target State --> : {currentTransitions[i].InputState.Label}");
                 }
             }
         }
@@ -145,6 +146,10 @@ namespace ThunderNut.WorldGraph {
         public void SetBool(string name, bool value) {
             var match = (BoolParameterField) stateGraph.ExposedParameters.ToList().Find(param => param.Reference == name);
             match.Value = value;
+        }
+
+        public IEnumerable<StateTransition> GetAllTransitionForHandle(SceneHandle handle) {
+            return StateTransitions.FindAll(stateTransition => stateTransition.data.OutputStateGUID == handle.StateData.GUID);
         }
     }
 

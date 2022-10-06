@@ -70,6 +70,7 @@ namespace ThunderNut.WorldGraph.Editor {
                     m_RefreshButton.clicked += Refresh;
 
                     m_GraphView.Initialize();
+                    SelectionChanged();
 
                     m_GraphView.RegisterCallback<GeometryChangedEvent>(OnGeometryChanged);
                     m_FrameAllAfterLayout = true;
@@ -161,7 +162,7 @@ namespace ThunderNut.WorldGraph.Editor {
             }
         }
 
-        private void SelectionChanged() {
+        public void SelectionChanged() {
             using (SelectionChangedMarker.Auto()) {
                 if (Selection.activeGameObject == null || !Selection.activeGameObject.TryGetComponent(out m_WorldGraph)) {
                     // graphView.worldGraph = null;

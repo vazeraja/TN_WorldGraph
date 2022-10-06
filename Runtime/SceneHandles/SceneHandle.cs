@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -19,11 +20,19 @@ namespace ThunderNut.WorldGraph.Handles {
 
         public virtual SceneType SceneType => SceneType.Default;
 
-        [SerializeField] public SceneStateData StateData;
+        [SerializeField, HideInInspector]
+        public SceneStateData StateData;
+
+        public WorldGraph WorldGraph => GetComponent<WorldGraph>();
 
         public SceneReference SceneReference;
 
-        [SerializeField] public List<StateTransition> StateTransitions = new(); 
-    }
+        [SerializeField] public List<StateTransition> StateTransitions = new List<StateTransition>();
 
+        public virtual void Awake() {
+            var allTransitionForHandle = WorldGraph.GetAllTransitionForHandle(this);
+            StateTransitions.AddRange(allTransitionForHandle);
+        }
+    }
+ 
 }

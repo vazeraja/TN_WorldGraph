@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-6915578421891667684
+--- !u!114 &-4831611746785258783
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -9,17 +9,17 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 12a14ab3b6cf41a382145733447cdd5d, type: 3}
-  m_Name: StringParameter
+  m_Script: {fileID: 11500000, guid: b82f64d5f4cf419c9025361c64b4568e, type: 3}
+  m_Name: BoolParameter
   m_EditorClassIdentifier: 
-  GUID: 4a1b37d4-eba6-4d88-b560-91cf4b5afd4e
-  Name: StringParameter
-  Reference: _StringParameter
+  GUID: c9434fa6-f3b1-48c8-9da4-ff90d257a573
+  Name: BoolParameter
+  Reference: _BoolParameter
   Exposed: 1
-  ParameterType: String
-  Value: Default_Value
+  ParameterType: Bool
+  Value: 1
   options: 0
---- !u!114 &-2924747887979999251
+--- !u!114 &-4537005721040940789
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -28,55 +28,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b3a3fbd8e0fe40ecb582b9ee83823f9a, type: 3}
-  m_Name: Cutscene Handle ---> Default Handle
+  m_Script: {fileID: 11500000, guid: b9f955d6d6e445649c41c48f6ce0e87a, type: 3}
+  m_Name: FloatParameter
   m_EditorClassIdentifier: 
-  conditions: []
-  m_StateGraph: {fileID: 11400000}
-  m_GUID: 1306d0a8-265f-414a-9eab-ba93972cb2e6
-  m_OutputStateGUID: 7a67aab3-0ae7-4c4c-ab40-a67173994b05
-  m_InputStateGUID: cbc8b9bd-4c8e-4e41-b7ff-3c7fa569139f
-  m_OutputState:
-    m_GUID: 7a67aab3-0ae7-4c4c-ab40-a67173994b05
-    m_SceneName: Cutscene Handle
-    m_SceneType: 1
-    m_Position: {x: 280.10846, y: -3.9936829}
-    m_Ports:
-    - OwnerNodeGUID: 7a67aab3-0ae7-4c4c-ab40-a67173994b05
-      GUID: 753a2039-129d-4c46-99e7-1d2055932a89
-      PortDirection: Output
-      PortCapacity: Multi
-      PortType: 0
-      PortColor: {r: 0.81, g: 0.29, b: 0.28, a: 1}
-    - OwnerNodeGUID: 7a67aab3-0ae7-4c4c-ab40-a67173994b05
-      GUID: c5ec7825-7649-4eb9-9965-5b8aac701f95
-      PortDirection: Input
-      PortCapacity: Multi
-      PortType: 0
-      PortColor: {r: 0.81, g: 0.29, b: 0.28, a: 1}
-  m_InputState:
-    m_GUID: cbc8b9bd-4c8e-4e41-b7ff-3c7fa569139f
-    m_SceneName: Default Handle
-    m_SceneType: 0
-    m_Position: {x: 538, y: -43}
-    m_Ports:
-    - OwnerNodeGUID: cbc8b9bd-4c8e-4e41-b7ff-3c7fa569139f
-      GUID: 121c6e34-44a7-488c-976d-6fceff6c6f7b
-      PortDirection: Output
-      PortCapacity: Multi
-      PortType: 0
-      PortColor: {r: 0.12, g: 0.44, b: 0.81, a: 1}
-    - OwnerNodeGUID: cbc8b9bd-4c8e-4e41-b7ff-3c7fa569139f
-      GUID: aea72749-bea8-4454-849e-c4561d08dbb9
-      PortDirection: Input
-      PortCapacity: Multi
-      PortType: 0
-      PortColor: {r: 0.12, g: 0.44, b: 0.81, a: 1}
-  m_Active: 1
-  m_Label: 
-  references:
-    version: 2
-    RefIds: []
+  GUID: 01f025fc-ba68-4b32-9a9b-1ef55b85917f
+  Name: FloatParameter
+  Reference: _FloatParameter
+  Exposed: 1
+  ParameterType: Float
+  Value: 7
+  options: 0
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -90,118 +51,139 @@ MonoBehaviour:
   m_Name: New WorldStateGraph
   m_EditorClassIdentifier: 
   SceneStateData:
-  - m_GUID: 7a67aab3-0ae7-4c4c-ab40-a67173994b05
-    m_SceneName: Cutscene Handle
-    m_SceneType: 1
-    m_Position: {x: 280.10846, y: -3.9936829}
+  - m_GUID: efde3ece-5219-43bb-8149-32463e65767b
+    m_SceneName: Battle Handle
+    m_SceneType: 2
+    m_Position: {x: 359, y: 16}
     m_Ports:
-    - OwnerNodeGUID: 7a67aab3-0ae7-4c4c-ab40-a67173994b05
-      GUID: 753a2039-129d-4c46-99e7-1d2055932a89
+    - OwnerNodeGUID: efde3ece-5219-43bb-8149-32463e65767b
+      GUID: 56c89c3f-bc56-40dc-9e0d-b89d4955b9f7
       PortDirection: Output
       PortCapacity: Multi
       PortType: 0
-      PortColor: {r: 0.81, g: 0.29, b: 0.28, a: 1}
-    - OwnerNodeGUID: 7a67aab3-0ae7-4c4c-ab40-a67173994b05
-      GUID: c5ec7825-7649-4eb9-9965-5b8aac701f95
+      PortColor: {r: 0.94, g: 0.7, b: 0.31, a: 1}
+    - OwnerNodeGUID: efde3ece-5219-43bb-8149-32463e65767b
+      GUID: 94260517-0b77-4495-a5ae-ab42f910706a
       PortDirection: Input
       PortCapacity: Multi
       PortType: 0
-      PortColor: {r: 0.81, g: 0.29, b: 0.28, a: 1}
-  - m_GUID: cbc8b9bd-4c8e-4e41-b7ff-3c7fa569139f
+      PortColor: {r: 0.94, g: 0.7, b: 0.31, a: 1}
+  - m_GUID: 0fecb83e-4bf3-431d-9492-7857f5d92b99
     m_SceneName: Default Handle
     m_SceneType: 0
-    m_Position: {x: 538, y: -43}
+    m_Position: {x: 567, y: -81.64}
     m_Ports:
-    - OwnerNodeGUID: cbc8b9bd-4c8e-4e41-b7ff-3c7fa569139f
-      GUID: 121c6e34-44a7-488c-976d-6fceff6c6f7b
+    - OwnerNodeGUID: 0fecb83e-4bf3-431d-9492-7857f5d92b99
+      GUID: 2b269aae-0082-4e25-a7bf-1182b9c2cd9e
       PortDirection: Output
       PortCapacity: Multi
       PortType: 0
       PortColor: {r: 0.12, g: 0.44, b: 0.81, a: 1}
-    - OwnerNodeGUID: cbc8b9bd-4c8e-4e41-b7ff-3c7fa569139f
-      GUID: aea72749-bea8-4454-849e-c4561d08dbb9
+    - OwnerNodeGUID: 0fecb83e-4bf3-431d-9492-7857f5d92b99
+      GUID: fc60839b-b014-4e6a-8785-ede60d9a945b
       PortDirection: Input
       PortCapacity: Multi
       PortType: 0
       PortColor: {r: 0.12, g: 0.44, b: 0.81, a: 1}
-  - m_GUID: 1de81eaa-3c06-4f3c-ac1b-2338d6718fbe
-    m_SceneName: Battle Handle
-    m_SceneType: 2
-    m_Position: {x: 584, y: 128}
-    m_Ports:
-    - OwnerNodeGUID: 1de81eaa-3c06-4f3c-ac1b-2338d6718fbe
-      GUID: 33cac2d0-2f4e-4132-9cd7-f9ebccd6fecf
-      PortDirection: Output
-      PortCapacity: Multi
-      PortType: 0
-      PortColor: {r: 0.94, g: 0.7, b: 0.31, a: 1}
-    - OwnerNodeGUID: 1de81eaa-3c06-4f3c-ac1b-2338d6718fbe
-      GUID: de61ea37-383d-4486-a5f0-c6fb54975c1d
-      PortDirection: Input
-      PortCapacity: Multi
-      PortType: 0
-      PortColor: {r: 0.94, g: 0.7, b: 0.31, a: 1}
-  ExposedParameterViewData: []
-  StateTransitions:
-  - {fileID: -2924747887979999251}
-  - {fileID: 2787979369022379385}
-  ExposedParameters:
-  - {fileID: -6915578421891667684}
---- !u!114 &2787979369022379385
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b3a3fbd8e0fe40ecb582b9ee83823f9a, type: 3}
-  m_Name: Cutscene Handle ---> Battle Handle
-  m_EditorClassIdentifier: 
-  conditions: []
-  m_StateGraph: {fileID: 11400000}
-  m_GUID: 25598094-6313-4853-96d3-78bb8863723f
-  m_OutputStateGUID: 7a67aab3-0ae7-4c4c-ab40-a67173994b05
-  m_InputStateGUID: 1de81eaa-3c06-4f3c-ac1b-2338d6718fbe
-  m_OutputState:
-    m_GUID: 7a67aab3-0ae7-4c4c-ab40-a67173994b05
+  - m_GUID: bb680fb4-89c5-4383-a8cf-31ca5fa647a4
     m_SceneName: Cutscene Handle
     m_SceneType: 1
-    m_Position: {x: 280.10846, y: -3.9936829}
+    m_Position: {x: 575, y: 61}
     m_Ports:
-    - OwnerNodeGUID: 7a67aab3-0ae7-4c4c-ab40-a67173994b05
-      GUID: 753a2039-129d-4c46-99e7-1d2055932a89
+    - OwnerNodeGUID: bb680fb4-89c5-4383-a8cf-31ca5fa647a4
+      GUID: d6beccde-7c27-4155-b4fe-e4eb3a7fb6cb
       PortDirection: Output
       PortCapacity: Multi
       PortType: 0
       PortColor: {r: 0.81, g: 0.29, b: 0.28, a: 1}
-    - OwnerNodeGUID: 7a67aab3-0ae7-4c4c-ab40-a67173994b05
-      GUID: c5ec7825-7649-4eb9-9965-5b8aac701f95
+    - OwnerNodeGUID: bb680fb4-89c5-4383-a8cf-31ca5fa647a4
+      GUID: f54d389e-4743-47d4-a01c-a8e3fec3d5af
       PortDirection: Input
       PortCapacity: Multi
       PortType: 0
       PortColor: {r: 0.81, g: 0.29, b: 0.28, a: 1}
-  m_InputState:
-    m_GUID: 1de81eaa-3c06-4f3c-ac1b-2338d6718fbe
-    m_SceneName: Battle Handle
-    m_SceneType: 2
-    m_Position: {x: 584, y: 128}
-    m_Ports:
-    - OwnerNodeGUID: 1de81eaa-3c06-4f3c-ac1b-2338d6718fbe
-      GUID: 33cac2d0-2f4e-4132-9cd7-f9ebccd6fecf
-      PortDirection: Output
-      PortCapacity: Multi
-      PortType: 0
-      PortColor: {r: 0.94, g: 0.7, b: 0.31, a: 1}
-    - OwnerNodeGUID: 1de81eaa-3c06-4f3c-ac1b-2338d6718fbe
-      GUID: de61ea37-383d-4486-a5f0-c6fb54975c1d
-      PortDirection: Input
-      PortCapacity: Multi
-      PortType: 0
-      PortColor: {r: 0.94, g: 0.7, b: 0.31, a: 1}
-  m_Active: 1
-  m_Label: 
-  references:
-    version: 2
-    RefIds: []
+  ExposedParameterViewData: []
+  StateTransitionData:
+  - m_StateGraph: {fileID: 11400000}
+    m_GUID: d5d212b0-07e4-4fb3-be99-453113f8de7c
+    m_OutputStateGUID: efde3ece-5219-43bb-8149-32463e65767b
+    m_InputStateGUID: 0fecb83e-4bf3-431d-9492-7857f5d92b99
+    m_OutputState:
+      m_GUID: efde3ece-5219-43bb-8149-32463e65767b
+      m_SceneName: Battle Handle
+      m_SceneType: 2
+      m_Position: {x: 359, y: 16}
+      m_Ports:
+      - OwnerNodeGUID: efde3ece-5219-43bb-8149-32463e65767b
+        GUID: 56c89c3f-bc56-40dc-9e0d-b89d4955b9f7
+        PortDirection: Output
+        PortCapacity: Multi
+        PortType: 0
+        PortColor: {r: 0.94, g: 0.7, b: 0.31, a: 1}
+      - OwnerNodeGUID: efde3ece-5219-43bb-8149-32463e65767b
+        GUID: 94260517-0b77-4495-a5ae-ab42f910706a
+        PortDirection: Input
+        PortCapacity: Multi
+        PortType: 0
+        PortColor: {r: 0.94, g: 0.7, b: 0.31, a: 1}
+    m_InputState:
+      m_GUID: 0fecb83e-4bf3-431d-9492-7857f5d92b99
+      m_SceneName: Default Handle
+      m_SceneType: 0
+      m_Position: {x: 601, y: 98}
+      m_Ports:
+      - OwnerNodeGUID: 0fecb83e-4bf3-431d-9492-7857f5d92b99
+        GUID: 2b269aae-0082-4e25-a7bf-1182b9c2cd9e
+        PortDirection: Output
+        PortCapacity: Multi
+        PortType: 0
+        PortColor: {r: 0.12, g: 0.44, b: 0.81, a: 1}
+      - OwnerNodeGUID: 0fecb83e-4bf3-431d-9492-7857f5d92b99
+        GUID: fc60839b-b014-4e6a-8785-ede60d9a945b
+        PortDirection: Input
+        PortCapacity: Multi
+        PortType: 0
+        PortColor: {r: 0.12, g: 0.44, b: 0.81, a: 1}
+  - m_StateGraph: {fileID: 11400000}
+    m_GUID: 3d3b46ae-ab5e-402c-8a2f-bc590eafae05
+    m_OutputStateGUID: efde3ece-5219-43bb-8149-32463e65767b
+    m_InputStateGUID: bb680fb4-89c5-4383-a8cf-31ca5fa647a4
+    m_OutputState:
+      m_GUID: efde3ece-5219-43bb-8149-32463e65767b
+      m_SceneName: Battle Handle
+      m_SceneType: 2
+      m_Position: {x: 359, y: 16}
+      m_Ports:
+      - OwnerNodeGUID: efde3ece-5219-43bb-8149-32463e65767b
+        GUID: 56c89c3f-bc56-40dc-9e0d-b89d4955b9f7
+        PortDirection: Output
+        PortCapacity: Multi
+        PortType: 0
+        PortColor: {r: 0.94, g: 0.7, b: 0.31, a: 1}
+      - OwnerNodeGUID: efde3ece-5219-43bb-8149-32463e65767b
+        GUID: 94260517-0b77-4495-a5ae-ab42f910706a
+        PortDirection: Input
+        PortCapacity: Multi
+        PortType: 0
+        PortColor: {r: 0.94, g: 0.7, b: 0.31, a: 1}
+    m_InputState:
+      m_GUID: bb680fb4-89c5-4383-a8cf-31ca5fa647a4
+      m_SceneName: Cutscene Handle
+      m_SceneType: 1
+      m_Position: {x: 575, y: 61}
+      m_Ports:
+      - OwnerNodeGUID: bb680fb4-89c5-4383-a8cf-31ca5fa647a4
+        GUID: d6beccde-7c27-4155-b4fe-e4eb3a7fb6cb
+        PortDirection: Output
+        PortCapacity: Multi
+        PortType: 0
+        PortColor: {r: 0.81, g: 0.29, b: 0.28, a: 1}
+      - OwnerNodeGUID: bb680fb4-89c5-4383-a8cf-31ca5fa647a4
+        GUID: f54d389e-4743-47d4-a01c-a8e3fec3d5af
+        PortDirection: Input
+        PortCapacity: Multi
+        PortType: 0
+        PortColor: {r: 0.81, g: 0.29, b: 0.28, a: 1}
+  ExposedParameters:
+  - {fileID: -4537005721040940789}
+  - {fileID: -4831611746785258783}

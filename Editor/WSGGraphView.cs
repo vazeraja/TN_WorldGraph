@@ -24,8 +24,8 @@ namespace ThunderNut.WorldGraph.Editor {
         public readonly WorldGraphEditorWindow window;
         private string assetName;
 
-        private SerializedObject serializedGraph;
-        private UnityEditor.Editor stateGraphEditor;
+        private UnityEditor.Editor sceneHandleEditor;
+        private StateTransitionEditor stateTransitionEditor;
 
         private EdgeConnectorListener m_EdgeConnectorListener;
         private WSGSearcherProvider m_SearchWindowProvider;
@@ -73,9 +73,6 @@ namespace ThunderNut.WorldGraph.Editor {
         public WSGGraphView(WorldGraphEditorWindow window, WorldStateGraph graph, string assetName) {
             this.window = window;
             stateGraph = graph;
-
-            serializedGraph = new SerializedObject(stateGraph);
-            stateGraphEditor = UnityEditor.Editor.CreateEditor(stateGraph);
 
             window.m_BlackboardButton.RegisterValueChangedCallback(UpdateUserViewBlackboardSettings);
             window.m_GraphInspectorButton.RegisterValueChangedCallback(UpdateUserViewInspectorSettings);
@@ -151,7 +148,7 @@ namespace ThunderNut.WorldGraph.Editor {
                             RemoveParameterNode(paramNode);
                         }
 
-                        ClearGraphInspector();
+                        ClearInspector();
                         stateGraph.RemoveParameter(exposedParameter);
                         break;
                     case WSGParameterNodeView parameterNodeView:
@@ -171,7 +168,7 @@ namespace ThunderNut.WorldGraph.Editor {
                 CreateGraphNode(stateData);
             }
 
-            foreach (var transition in stateGraph.StateTransitions) {
+            foreach (var transition in stateGraph.StateTransitionData) {
                 WSGNodeView outputView = (WSGNodeView) GetNodeByGuid(transition.OutputStateGUID);
                 WSGNodeView inputView = (WSGNodeView) GetNodeByGuid(transition.InputStateGUID);
 
@@ -351,8 +348,8 @@ namespace ThunderNut.WorldGraph.Editor {
                         var output = (WSGNodeView) outputPort.node;
                         var input = (WSGNodeView) inputPort.node;
 
-                        ClearGraphInspector();
-                        stateGraph.RemoveTransition(edge.userData as StateTransition);
+                        ClearInspector();
+                        stateGraph.RemoveTransition(edge.userData as StateTransitionData);
 
                         break;
                     }
@@ -365,7 +362,6 @@ namespace ThunderNut.WorldGraph.Editor {
                         param.ConnectedPortGUID = null;
                         break;
                 }
-
             };
         }
 
@@ -398,7 +394,7 @@ namespace ThunderNut.WorldGraph.Editor {
         }
 
         public void DrawPropertiesInInspector(SceneStateData stateData) {
-            inspectorContentContainer.Clear();
+            ClearInspector();
 
             if (worldGraph == null) {
                 inspectorContentContainer.Add(new Label("Select WorldGraph in Inspector"));
@@ -406,16 +402,20 @@ namespace ThunderNut.WorldGraph.Editor {
             }
 
             var match = worldGraph.SceneHandles.Find(x => x.StateData.GUID == stateData.GUID);
-            var handleEditor = UnityEditor.Editor.CreateEditor(match);
+            sceneHandleEditor = UnityEditor.Editor.CreateEditor(match);
 
             titleLabel.text = $"{match.Label} Node";
-            IMGUIContainer GUIContainer = new IMGUIContainer(() => { handleEditor.OnInspectorGUI(); });
+            IMGUIContainer GUIContainer = new IMGUIContainer(() => {
+                if (sceneHandleEditor && sceneHandleEditor.target) {
+                    sceneHandleEditor.OnInspectorGUI();
+                }
+            });
 
             inspectorContentContainer.Add(GUIContainer);
         }
 
         public void DrawPropertiesInInspector(ExposedParameter parameter) {
-            inspectorContentContainer.Clear();
+            ClearInspector();
 
             var serializedParameter = new SerializedObject(parameter);
 
@@ -433,19 +433,31 @@ namespace ThunderNut.WorldGraph.Editor {
             inspectorContentContainer.Add(GUIContainer);
         }
 
-        public void DrawPropertiesInInspector(StateTransition stateTransition) {
-            inspectorContentContainer.Clear();
+        public void DrawPropertiesInInspector(StateTransitionData stateTransition) {
+            ClearInspector();
 
-            var handleEditor = (StateTransitionEditor) UnityEditor.Editor.CreateEditor(stateTransition);
+            if (worldGraph == null) {
+                inspectorContentContainer.Add(new Label("Select WorldGraph in Inspector"));
+                return;
+            }
 
-            titleLabel.text = stateTransition.ToString();
-            IMGUIContainer GUIContainer = new IMGUIContainer(() => { handleEditor.OnInspectorGUI(); });
+            var transition = worldGraph.StateTransitions.Find(x => x.data.GUID == stateTransition.GUID);
+            stateTransitionEditor = (StateTransitionEditor) UnityEditor.Editor.CreateEditor(transition);
+
+            titleLabel.text = transition.Label;
+            IMGUIContainer GUIContainer = new IMGUIContainer(() => {
+                if (stateTransitionEditor && stateTransitionEditor.target) {
+                    stateTransitionEditor.OnInspectorGUI();
+                }
+            });
 
             inspectorContentContainer.Add(GUIContainer);
         }
 
-        private void ClearGraphInspector() {
+        private void ClearInspector() {
             inspectorContentContainer.Clear();
+            UnityEngine.Object.DestroyImmediate(sceneHandleEditor);
+            UnityEngine.Object.DestroyImmediate(stateTransitionEditor);
         }
 
         private static SerializedProperty GetPropertyMatch(SerializedProperty property, object referenceValue) {
@@ -530,6 +542,7 @@ namespace ThunderNut.WorldGraph.Editor {
 
             m_SearchWindowProvider = null;
             UnityEngine.Object.DestroyImmediate(m_SearchWindowProvider);
+            UnityEngine.Object.DestroyImmediate(stateTransitionEditor);
         }
     }
 

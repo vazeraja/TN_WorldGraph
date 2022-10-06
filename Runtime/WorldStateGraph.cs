@@ -11,30 +11,19 @@ namespace ThunderNut.WorldGraph {
         public List<SceneStateData> SceneStateData = new List<SceneStateData>();
         public List<ExposedParameterViewData> ExposedParameterViewData = new List<ExposedParameterViewData>();
         
-        public List<StateTransition> StateTransitions = new List<StateTransition>();
+        public List<StateTransitionData> StateTransitionData = new List<StateTransitionData>();
         public List<ExposedParameter> ExposedParameters = new List<ExposedParameter>();
 
-        public StateTransition CreateTransition(SceneStateData output, SceneStateData input) {
-            Undo.RecordObject(this, $"CreateTransition() :: {output} + {input}");
-            
-            StateTransition stateTransition = StateTransition.CreateInstance(this, output, input);
-            StateTransitions.Add(stateTransition);
-            
-            if (!Application.isPlaying) AssetDatabase.AddObjectToAsset(stateTransition, this);
-            Undo.RegisterCreatedObjectUndo(stateTransition, "StringParameterField SO Created");
-            AssetDatabase.SaveAssets();
-            
+        public StateTransitionData CreateTransition(SceneStateData output, SceneStateData input) {
+            StateTransitionData stateTransition = new StateTransitionData(this, output, input);
+            StateTransitionData.Add(stateTransition);
+
             return stateTransition;
         }
 
 
-        public void RemoveTransition(StateTransition stateTransition) {
-            Undo.RecordObject(this, $"RemoveTransition() :: {stateTransition}");
-
-            StateTransitions.Remove(stateTransition);
-
-            Undo.DestroyObjectImmediate(stateTransition);
-            AssetDatabase.SaveAssets();
+        public void RemoveTransition(StateTransitionData stateTransition) {
+            StateTransitionData.Remove(stateTransition);
         }
 
         public ExposedParameter CreateParameter(string type) {

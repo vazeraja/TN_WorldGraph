@@ -8,7 +8,7 @@ namespace ThunderNut.WorldGraph.Editor {
         private static void OnPostprocessAllAssets(string[] importedAssets, string[] deletedAssets, string[] movedAssets,
             string[] movedFromAssetPaths) {
             var windows = Resources.FindObjectsOfTypeAll<WorldGraphEditorWindow>();
-            
+
             bool moved = movedAssets.Select(AssetDatabase.AssetPathToGUID).ToList().Any();
             if (moved) {
                 foreach (var matGraphEditWindow in windows) {
@@ -28,15 +28,14 @@ namespace ThunderNut.WorldGraph.Editor {
                     }
                 }
             }
-            
-            
+
+
             var changedGraphGuids = importedAssets.Select(AssetDatabase.AssetPathToGUID).ToList();
             foreach (var window in windows) {
                 if (changedGraphGuids.Contains(window.selectedGuid)) {
                     window.CheckForChanges();
                 }
             }
-
         }
     }
 

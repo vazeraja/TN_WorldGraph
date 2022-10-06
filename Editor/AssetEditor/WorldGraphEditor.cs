@@ -10,13 +10,12 @@ namespace ThunderNut.WorldGraph.Editor {
 
     [CustomEditor(typeof(WorldGraph))]
     public class WorldGraphEditor : UnityEditor.Editor {
-        private WorldGraph targetWorldGraph;
         private SerializedProperty sceneHandles;
+        private SerializedProperty stateTransitions;
 
         private Dictionary<SceneHandle, UnityEditor.Editor> _editors;
 
-
-        private readonly List<string> typeDisplays = new List<string>();
+        private readonly List<string> typeDisplays = new List<string>(); 
         private bool _settingsMenuDropdown;
         private GUIStyle _playingStyle;
         private static bool debugView = false;
@@ -26,8 +25,8 @@ namespace ThunderNut.WorldGraph.Editor {
         private readonly Color _playButtonColor = new Color32(193, 255, 2, 255);
 
         private void OnEnable() {
-            targetWorldGraph = target as WorldGraph;
             sceneHandles = serializedObject.FindProperty("SceneHandles");
+            stateTransitions = serializedObject.FindProperty("StateTransitions");
 
             // store GUI bg color
             _originalBackgroundColor = GUI.backgroundColor;
@@ -97,6 +96,15 @@ namespace ThunderNut.WorldGraph.Editor {
             }
 
             // -------------------------------------------- Draw list --------------------------------------------
+
+            for (int i = 0; i < stateTransitions.arraySize; i++) {
+                SerializedProperty property = stateTransitions.GetArrayElementAtIndex(i);
+
+                if (property.objectReferenceValue == null) continue; // Should not happen ...
+
+                StateTransition stateTransition = property.objectReferenceValue as StateTransition;
+                stateTransition!.hideFlags = debugView ? HideFlags.None : HideFlags.HideInInspector;
+            }
 
             WGEditorGUI.DrawSection("Scene Handles");
 
@@ -279,7 +287,9 @@ namespace ThunderNut.WorldGraph.Editor {
                     debugView = GUILayout.Toggle(debugView, "Debug View", EditorStyles.miniButtonRight);
 
                     if (EditorGUI.EndChangeCheck()) {
-                        foreach (var f in targetWorldGraph.SceneHandles)
+                        foreach (var f in (target as WorldGraph)?.SceneHandles)
+                            f.hideFlags = debugView ? HideFlags.HideInInspector : HideFlags.None;
+                        foreach (var f in (target as WorldGraph)?.StateTransitions)
                             f.hideFlags = debugView ? HideFlags.HideInInspector : HideFlags.None;
                         UnityEditorInternal.InternalEditorUtility.RepaintAllViews();
                     }
@@ -295,34 +305,75 @@ namespace ThunderNut.WorldGraph.Editor {
         private void InitializeFromStateGraph() {
             var obj = (target as WorldGraph)?.gameObject;
 
-            // -------------------- Remove All --------------------
+            // -------------------- Remove All Scene Handles --------------------
             for (int i = 0; i < sceneHandles.arraySize; i++) {
-                RemoveSceneHandle(i);
+                SerializedProperty property = sceneHandles.GetArrayElementAtIndex(i);
+                SceneHandle sceneHandle = property.objectReferenceValue as SceneHandle;
+
+                if (sceneHandle == null) break;
+
+                var match = (target as WorldGraph)?.stateGraph.SceneStateData.Find(data => data.GUID == sceneHandle.StateData.GUID);
+                if (match != null) continue;
+
+                Debug.Log($"destroying {sceneHandle.Label}");
+                (target as WorldGraph)?.SceneHandles.Remove(sceneHandle);
+                Undo.DestroyObjectImmediate(sceneHandle);
             }
 
-            // -------------------- Add Again --------------------
+            // -------------------- Remove all StateTransition's that no longer have data fields in the StateGraph --------------------
+            for (int i = 0; i < stateTransitions.arraySize; i++) {
+                SerializedProperty property = stateTransitions.GetArrayElementAtIndex(i);
+                StateTransition stateTransition = property.objectReferenceValue as StateTransition;
+
+                if (stateTransition == null) break;
+
+                var match = (target as WorldGraph)?.stateGraph.StateTransitionData.Find(data =>
+                    data.GUID == stateTransition.data.GUID);
+                if (match != null) continue;
+
+                Debug.Log($"destroying {stateTransition.Label}");
+                (target as WorldGraph)?.StateTransitions.Remove(stateTransition);
+                Undo.DestroyObjectImmediate(stateTransition);
+            }
+
+            // -------------------- Add All Scene Handles --------------------
             foreach (var data in (target as WorldGraph)?.stateGraph.SceneStateData) {
+                var match = (target as WorldGraph)?.SceneHandles.Find(sceneHandle => sceneHandle.StateData.GUID == data.GUID);
+                if (match != null) continue;
+
                 switch (data.SceneType) {
                     case SceneType.Default:
-                        Add(typeof(DefaultHandle), data);
+                        AddHandle(typeof(DefaultHandle), data);
                         break;
                     case SceneType.Cutscene:
-                        Add(typeof(CutsceneHandle), data);
+                        AddHandle(typeof(CutsceneHandle), data);
                         break;
                     case SceneType.Battle:
-                        Add(typeof(BattleHandle), data);
+                        AddHandle(typeof(BattleHandle), data);
                         break;
                 }
             }
 
-            foreach (var transition in (target as WorldGraph)?.stateGraph.StateTransitions) {
-                var match = targetWorldGraph.SceneHandles.Find(handle => handle.StateData.GUID == transition.OutputStateGUID);
-                match.StateTransitions.Add(transition);
+            // ------------ Add all StateTransition's with their data fields skipping ones that already exist ------------
+            foreach (var data in (target as WorldGraph)?.stateGraph.StateTransitionData) {
+                var match = (target as WorldGraph)?.StateTransitions.Find(transition => transition.data.GUID == data.GUID);
+                if (match != null) continue;
+
+                AddTransition(data);
             }
- 
-            void Add(Type type, SceneStateData data) {
+
+            // ------------ Add all StateTransition's to their SceneHandle, if the SceneHandle doesnt already contain ------------
+            // foreach (var transition in (target as WorldGraph)?.StateTransitions) {
+            //     var match = (target as WorldGraph)?.SceneHandles.Find(handle =>
+            //         handle.StateData.GUID == transition.data.OutputStateGUID);
+            //
+            //     if (match == null || match.StateTransitions.Any(x => x.data.GUID == transition.data.GUID)) continue;
+            //     match.StateTransitions.Add(transition);
+            // }
+
+            void AddHandle(Type type, SceneStateData data) {
                 SceneHandle sceneHandle = Undo.AddComponent(obj, type) as SceneHandle;
-                sceneHandle!.hideFlags = HideFlags.HideInInspector;
+                sceneHandle!.hideFlags = debugView ? HideFlags.None : HideFlags.HideInInspector;
                 sceneHandle.Label = type.Name;
                 sceneHandle.StateData = data;
 
@@ -330,9 +381,17 @@ namespace ThunderNut.WorldGraph.Editor {
 
                 (target as WorldGraph)?.SceneHandles.Add(sceneHandle);
             }
+
+            void AddTransition(StateTransitionData data) {
+                StateTransition stateTransition = Undo.AddComponent(obj, typeof(StateTransition)) as StateTransition;
+                stateTransition!.hideFlags = debugView ? HideFlags.None : HideFlags.HideInInspector;
+                stateTransition.data = data;
+
+                (target as WorldGraph)?.StateTransitions.Add(stateTransition);
+            }
         }
 
-        public SceneHandle AddSceneHandle(Type type) {
+        public SceneHandle AddSceneHandle(Type type) { 
             GameObject gameObject = (target as WorldGraph)?.gameObject;
 
             SceneHandle sceneHandle = Undo.AddComponent(gameObject, type) as SceneHandle;
@@ -350,8 +409,6 @@ namespace ThunderNut.WorldGraph.Editor {
         private void RemoveSceneHandle(int id) {
             SerializedProperty property = sceneHandles.GetArrayElementAtIndex(id);
             SceneHandle sceneHandle = property.objectReferenceValue as SceneHandle;
-            
-            sceneHandle!.StateTransitions.Clear();
 
             (target as WorldGraph)?.SceneHandles.Remove(sceneHandle);
 
