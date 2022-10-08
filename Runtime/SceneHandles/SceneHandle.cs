@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+using ThunderNut.WorldGraph.Attributes;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace ThunderNut.WorldGraph.Handles {
 
     [AddComponentMenu("")]
     [Serializable]
     public abstract class SceneHandle : MonoBehaviour {
+        [InspectorGroup("Settings", true, 29)]
         [Tooltip("Whether or not this SceneHandle is active")]
         public bool Active = true;
 
@@ -23,16 +23,17 @@ namespace ThunderNut.WorldGraph.Handles {
         [SerializeField, HideInInspector]
         public SceneStateData StateData;
 
+        [SerializeField, HideInInspector]
+        public List<StateTransition> StateTransitions = new List<StateTransition>();
+        
         public WorldGraph WorldGraph => GetComponent<WorldGraph>();
 
         public SceneReference SceneReference;
-
-        [SerializeField] public List<StateTransition> StateTransitions = new List<StateTransition>();
 
         public virtual void Awake() {
             var allTransitionForHandle = WorldGraph.GetAllTransitionForHandle(this);
             StateTransitions.AddRange(allTransitionForHandle);
         }
     }
- 
+
 }

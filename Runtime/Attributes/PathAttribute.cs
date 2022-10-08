@@ -23,4 +23,8 @@ namespace ThunderNut.WorldGraph.Attributes {
         }
     }
 
+    public class RequiresConstantRepaintAttribute : Attribute {
+        
+    }
+
 }

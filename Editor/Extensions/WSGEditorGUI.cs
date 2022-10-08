@@ -217,6 +217,13 @@ namespace ThunderNut.WorldGraph.Editor {
             return labelVisualElement;
         }
         
+        public static void DrawVerticalLayout(this UnityEditor.Editor editor, Action action, GUIStyle style)
+        {
+            EditorGUILayout.BeginVertical(style);
+            action();
+            EditorGUILayout.EndVertical();
+        }
+        
         public static VisualElement GetFirstAncestorWhere(VisualElement target, Predicate<VisualElement> predicate) {
             for (VisualElement parent = target.hierarchy.parent; parent != null; parent = parent.hierarchy.parent) {
                 if (predicate(parent))

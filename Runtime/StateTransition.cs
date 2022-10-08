@@ -55,7 +55,9 @@ namespace ThunderNut.WorldGraph {
             InputState = input;
         }
     }
-
+    
+    [AddComponentMenu("")]
+    [Serializable]
     public class StateTransition : MonoBehaviour {
 
         [SerializeReference] public List<StateCondition> conditions = new List<StateCondition>();

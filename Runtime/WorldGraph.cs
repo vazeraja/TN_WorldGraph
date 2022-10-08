@@ -14,6 +14,9 @@ namespace ThunderNut.WorldGraph {
         public List<SceneHandle> SceneHandles = new List<SceneHandle>();
         public List<StateTransition> StateTransitions = new List<StateTransition>();
 
+        private delegate void StateMachineListener();
+        private event StateMachineListener OnStateTransition;
+
         public SceneHandle activeSceneHandle;
 
         public List<StateTransition> currentTransitions;
@@ -28,6 +31,18 @@ namespace ThunderNut.WorldGraph {
             activeSceneHandle = SceneHandles.First();
 
             SetCurrentTransitions();
+        }
+
+        private void OnEnable() {
+            OnStateTransition += StateTransition;
+        }
+
+        private void OnDisable() {
+            OnStateTransition -= StateTransition;
+        }
+
+        private static void StateTransition() {
+            // Debug.Log("Do a Transition");
         }
 
         private void Update() {
@@ -122,8 +137,10 @@ namespace ThunderNut.WorldGraph {
                 }
 
                 if (conditionsMet.All(x => x)) {
-                    Debug.Log($"All Conditions Met for Transition: {currentTransitions[i].Label}");
-                    Debug.Log($"Target State --> : {currentTransitions[i].InputState.Label}");
+                    // Debug.Log($"All Conditions Met for Transition: {currentTransitions[i].Label}");
+                    // Debug.Log($"Target State --> : {currentTransitions[i].InputState.Label}");
+                    
+                    OnStateTransition?.Invoke();
                 }
             }
         }
