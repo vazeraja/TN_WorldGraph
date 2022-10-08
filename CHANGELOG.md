@@ -1,3 +1,10 @@
+## [1.0.4](https://github.com/vazeraja/TN_WorldGraph/compare/v1.0.3...v1.0.4) (2022-10-06)
+
+
+### Bug Fixes
+
+* fix issues with transitions ([59ee89e](https://github.com/vazeraja/TN_WorldGraph/commit/59ee89efc189246ed11b1cca280bb0db9bae0dcb))
+
 ## [1.0.3](https://github.com/vazeraja/TN_WorldGraph/compare/v1.0.2...v1.0.3) (2022-10-04)
 
 
