@@ -3,6 +3,6 @@
 namespace ThunderNut.WorldGraph.Attributes {
 
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = true, Inherited = false)]
-    public abstract class ContextFilterableAttribute : Attribute { }
+    public abstract class WSGBaseAttribute : Attribute { }
 
 }

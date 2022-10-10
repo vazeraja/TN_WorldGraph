@@ -8,18 +8,24 @@ namespace ThunderNut.WorldGraph {
     }
     
     public class StringParameterField : ParameterField<string> {
+        private const string DEFAULT_VALUE = "Default_Value";
+        private const string DEFAULT_NAME = "StringParameter";
+        
         public StringParamOptions options = StringParamOptions.Equals;
 
-        public Type type;
-        
+        public override void Dispose() {
+            Value = DEFAULT_VALUE;
+            
+            base.Dispose();
+        }
+
         public StringParameterField() {
             GUID = Guid.NewGuid().ToString();
-            Name = "StringParameter";
-            Reference = "_StringParameter";
+            Name = DEFAULT_NAME;
+            Reference = $"_{DEFAULT_NAME}";
             Exposed = true;
             ParameterType = "String";
-            Value = "Default_Value";
-            type = this.GetType();
+            Value = DEFAULT_VALUE;
         }
     }
 

@@ -9,14 +9,14 @@ using Action = System.Action;
 
 namespace ThunderNut.WorldGraph.Editor {
 
-    public class WGSimpleTreeView : TreeView {
+    public class ExposedParameterTreeView : TreeView {
         public Action onDoubleClicked;
         private readonly List<ExposedParameter> data;
 
         private WorldStateGraph graph;
         private StateCondition condition;
 
-        private WGSimpleTreeView(WorldStateGraph graph, StateCondition condition) : base(
+        private ExposedParameterTreeView(WorldStateGraph graph, StateCondition condition) : base(
             new TreeViewState()) {
             this.graph = graph;
             this.condition = condition;
@@ -58,8 +58,8 @@ namespace ThunderNut.WorldGraph.Editor {
             return root;
         }
 
-        public static WGSimpleTreeView Create(WorldStateGraph graph, StateCondition condition) {
-            return new WGSimpleTreeView(graph, condition);
+        public static ExposedParameterTreeView Create(WorldStateGraph graph, StateCondition condition) {
+            return new ExposedParameterTreeView(graph, condition);
         }
     }
 

@@ -18,7 +18,7 @@ namespace ThunderNut.WorldGraph.Editor {
     }
 
     public class WSGGraphView : GraphView, IDisposable {
-        public WorldGraph worldGraph;
+        public WorldGraphController WorldGraphController;
 
         public readonly WorldStateGraph stateGraph;
         public readonly WorldGraphEditorWindow window;
@@ -396,12 +396,12 @@ namespace ThunderNut.WorldGraph.Editor {
         public void DrawPropertiesInInspector(SceneStateData stateData) {
             ClearInspector();
 
-            if (worldGraph == null) {
+            if (WorldGraphController == null) {
                 inspectorContentContainer.Add(new Label("Select WorldGraph in Inspector"));
                 return;
             }
 
-            var match = worldGraph.SceneHandles.Find(x => x.StateData.GUID == stateData.GUID);
+            var match = WorldGraphController.SceneHandles.Find(x => x.StateData.GUID == stateData.GUID);
             sceneHandleEditor = UnityEditor.Editor.CreateEditor(match);
 
             titleLabel.text = $"{match.Label} Node";
@@ -436,12 +436,12 @@ namespace ThunderNut.WorldGraph.Editor {
         public void DrawPropertiesInInspector(StateTransitionData stateTransition) {
             ClearInspector();
 
-            if (worldGraph == null) {
+            if (WorldGraphController == null) {
                 inspectorContentContainer.Add(new Label("Select WorldGraph in Inspector"));
                 return;
             }
 
-            var transition = worldGraph.StateTransitions.Find(x => x.data.GUID == stateTransition.GUID);
+            var transition = WorldGraphController.StateTransitions.Find(x => x.data.GUID == stateTransition.GUID);
             stateTransitionEditor = (StateTransitionEditor) UnityEditor.Editor.CreateEditor(transition);
 
             titleLabel.text = transition.Label;

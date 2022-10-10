@@ -12,13 +12,13 @@ namespace ThunderNut.WorldGraph {
             get => parameter;
             set => parameter = value;
         }
-         
+
         [SerializeField] private SceneStateData connectedNode;
         public SceneStateData ConnectedNode {
             get => connectedNode;
             set => connectedNode = value;
         }
-        
+
         [SerializeField] private string connectedPortGUID;
         public string ConnectedPortGUID {
             get => connectedPortGUID;
@@ -32,7 +32,7 @@ namespace ThunderNut.WorldGraph {
         }
     }
 
-    public class ExposedParameter : ScriptableObject, ISerializationCallbackReceiver {
+    public class ExposedParameter : ScriptableObject, IDisposable {
         public string GUID;
         public string Name;
         public string Reference;
@@ -43,11 +43,7 @@ namespace ThunderNut.WorldGraph {
             name = Name;
         }
 
-        public void OnBeforeSerialize() {
-        }
-
-        public void OnAfterDeserialize() {
-        }
+        public virtual void Dispose() { }
     }
 
 }

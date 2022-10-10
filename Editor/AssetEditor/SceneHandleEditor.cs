@@ -5,6 +5,7 @@ using ThunderNut.WorldGraph.Attributes;
 using ThunderNut.WorldGraph.Handles;
 using UnityEditor;
 using UnityEngine;
+using Object = System.Object;
 
 namespace ThunderNut.WorldGraph.Editor {
 
@@ -23,7 +24,7 @@ namespace ThunderNut.WorldGraph.Editor {
     }
 
     [CanEditMultipleObjects]
-    [CustomEditor(typeof(SceneHandle), true, isFallback = true)]
+    [CustomEditor(typeof(Object), true, isFallback = true)]
     public class SceneHandleEditor : UnityEditor.Editor {
         public bool DrawerInitialized;
         private bool _requiresConstantRepaint;
@@ -51,7 +52,8 @@ namespace ThunderNut.WorldGraph.Editor {
             foreach (KeyValuePair<string, InspectorGroupData> groupData in GroupData) {
                 EditorPrefs.SetBool(
                     string.Format(
-                        $"{groupData.Value.GroupAttribute.GroupName}{groupData.Value.PropertiesList[0].name}{target.GetInstanceID()}"),
+                        $"{groupData.Value.GroupAttribute.GroupName}{groupData.Value.PropertiesList[0].name}{target.GetInstanceID()}"
+                    ),
                     groupData.Value.GroupIsOpen);
                 groupData.Value.ClearGroup();
             }
@@ -62,7 +64,7 @@ namespace ThunderNut.WorldGraph.Editor {
 
             Initialization();
             DrawBase();
-            if (drawScriptField) DrawScriptBox();
+            DrawScriptBox();
             DrawContainer();
             DrawContents();
 
@@ -138,6 +140,7 @@ namespace ThunderNut.WorldGraph.Editor {
 
         protected virtual void DrawScriptBox() {
             if (PropertiesList.Count == 0) return;
+            if (!drawScriptField) return;
 
             using (new EditorGUI.DisabledScope("m_Script" == PropertiesList[0].propertyPath)) {
                 EditorGUILayout.PropertyField(PropertiesList[0], true);
@@ -178,17 +181,11 @@ namespace ThunderNut.WorldGraph.Editor {
 
             var GroupStyle = new GUIStyle(EditorStyles.foldout);
             GroupStyle.active.background = Resources.Load<Texture2D>("IN foldout focus-6510");
-            ;
             GroupStyle.focused.background = Resources.Load<Texture2D>("IN foldout focus-6510");
-            ;
             GroupStyle.hover.background = Resources.Load<Texture2D>("IN foldout focus-6510");
-            ;
             GroupStyle.onActive.background = Resources.Load<Texture2D>("IN foldout focus on-5718");
-            ;
             GroupStyle.onFocused.background = Resources.Load<Texture2D>("IN foldout focus on-5718");
-            ;
             GroupStyle.onHover.background = Resources.Load<Texture2D>("IN foldout focus on-5718");
-            ;
             GroupStyle.fontStyle = FontStyle.Bold;
             GroupStyle.overflow = new RectOffset(100, 0, 0, 0);
             GroupStyle.padding = new RectOffset(20, 0, 0, 0);

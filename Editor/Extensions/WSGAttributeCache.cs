@@ -14,18 +14,18 @@ namespace ThunderNut.WorldGraph.Editor {
             ReCacheKnownNodeTypes();
         }
 
-        public static Dictionary<Type, List<ContextFilterableAttribute>> m_KnownNodeTypeLookupTable { get; set; }
+        public static Dictionary<Type, List<WSGBaseAttribute>> m_KnownNodeTypeLookupTable { get; set; }
         public static IEnumerable<Type> knownNodeTypes => m_KnownNodeTypeLookupTable.Keys;
         public static List<string> nodePathsList => GetNodePathsList();
 
         private static void ReCacheKnownNodeTypes() {
-            m_KnownNodeTypeLookupTable = new Dictionary<Type, List<ContextFilterableAttribute>>();
+            m_KnownNodeTypeLookupTable = new Dictionary<Type, List<WSGBaseAttribute>>();
             foreach (Type nodeType in TypeCache.GetTypesDerivedFrom<SceneHandle>()) {
                 if (nodeType.IsAbstract) continue;
-                List<ContextFilterableAttribute> filterableAttributes = new List<ContextFilterableAttribute>();
+                List<WSGBaseAttribute> filterableAttributes = new List<WSGBaseAttribute>();
                 foreach (Attribute attribute in Attribute.GetCustomAttributes(nodeType)) {
                     Type attributeType = attribute.GetType();
-                    if (!attributeType.IsAbstract && attribute is ContextFilterableAttribute contextFilterableAttribute) {
+                    if (!attributeType.IsAbstract && attribute is WSGBaseAttribute contextFilterableAttribute) {
                         filterableAttributes.Add(contextFilterableAttribute);
                     }
                 }
@@ -64,7 +64,7 @@ namespace ThunderNut.WorldGraph.Editor {
 
             return list;
         }
-        public static T GetAttributeOnNodeType<T>(Type nodeType) where T : ContextFilterableAttribute {
+        public static T GetAttributeOnNodeType<T>(Type nodeType) where T : WSGBaseAttribute {
             var filterableAttributes = GetFilterableAttributesOnNodeType(nodeType);
             foreach (var attr in filterableAttributes) {
                 if (attr is T searchTypeAttr) {
@@ -75,12 +75,12 @@ namespace ThunderNut.WorldGraph.Editor {
             return null;
         }
 
-        private static IEnumerable<ContextFilterableAttribute> GetFilterableAttributesOnNodeType(Type nodeType) {
+        private static IEnumerable<WSGBaseAttribute> GetFilterableAttributesOnNodeType(Type nodeType) {
             if (nodeType == null) {
                 throw new ArgumentNullException($"Cannot get attributes on a null type");
             }
 
-            if (m_KnownNodeTypeLookupTable.TryGetValue(nodeType, out List<ContextFilterableAttribute> filterableAttributes)) {
+            if (m_KnownNodeTypeLookupTable.TryGetValue(nodeType, out List<WSGBaseAttribute> filterableAttributes)) {
                 return filterableAttributes;
             }
             else {

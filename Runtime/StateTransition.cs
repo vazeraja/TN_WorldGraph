@@ -66,14 +66,14 @@ namespace ThunderNut.WorldGraph {
 
         public SceneHandle OutputState {
             get {
-                var controller = GetComponent<WorldGraph>();
+                var controller = GetComponent<WorldGraphController>();
                 var outputState = controller.SceneHandles.Find(sh => sh.StateData.GUID == data.OutputStateGUID);
                 return outputState;
             }
         }
         public SceneHandle InputState {
             get {
-                var controller = GetComponent<WorldGraph>();
+                var controller = GetComponent<WorldGraphController>();
                 var outputState = controller.SceneHandles.Find(sh => sh.StateData.GUID == data.InputStateGUID);
                 return outputState;
             }
@@ -91,6 +91,14 @@ namespace ThunderNut.WorldGraph {
                 m_Label = $"{data.OutputState.SceneName} ---> {data.InputState.SceneName}";
                 return m_Label;
             }
+        }
+
+        public string GetOutputStateSceneName() {
+            return WorldGraph.GetSceneName(OutputState.Scene.ScenePath);
+        }
+        
+        public string GetInputStateSceneName() {
+            return WorldGraph.GetSceneName(InputState.Scene.ScenePath);
         }
 
         public override string ToString() {

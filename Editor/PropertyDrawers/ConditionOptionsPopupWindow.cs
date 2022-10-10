@@ -8,14 +8,14 @@ namespace ThunderNut.WorldGraph.Editor {
     public class ConditionOptionsPopupWindow : PopupWindowContent {
         private readonly SearchField m_SearchField;
 
-        private readonly WGSimpleTreeView multiColumnTreeView;
+        private readonly ExposedParameterTreeView multiColumnTreeView;
 
         private bool m_ShouldClose;
         public float Width;
 
         public ConditionOptionsPopupWindow(WorldStateGraph graph, StateCondition condition) {
             m_SearchField = new SearchField();
-            multiColumnTreeView = WGSimpleTreeView.Create(graph, condition);
+            multiColumnTreeView = ExposedParameterTreeView.Create(graph, condition);
             multiColumnTreeView.onDoubleClicked = ForceClose;
         }
 

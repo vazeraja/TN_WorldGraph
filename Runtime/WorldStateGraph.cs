@@ -10,9 +10,15 @@ namespace ThunderNut.WorldGraph {
     public class WorldStateGraph : ScriptableObject {
         public List<SceneStateData> SceneStateData = new List<SceneStateData>();
         public List<ExposedParameterViewData> ExposedParameterViewData = new List<ExposedParameterViewData>();
-        
+
         public List<StateTransitionData> StateTransitionData = new List<StateTransitionData>();
         public List<ExposedParameter> ExposedParameters = new List<ExposedParameter>();
+
+        public void Dispose() {
+            foreach (var param in ExposedParameters) {
+                param.Dispose();
+            }
+        }
 
         public StateTransitionData CreateTransition(SceneStateData output, SceneStateData input) {
             StateTransitionData stateTransition = new StateTransitionData(this, output, input);

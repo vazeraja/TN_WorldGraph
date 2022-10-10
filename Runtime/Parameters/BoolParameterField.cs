@@ -10,13 +10,22 @@ namespace ThunderNut.WorldGraph {
     public class BoolParameterField : ParameterField<bool> {
         public BoolParamOptions options = BoolParamOptions.True;
         
+        private const bool DEFAULT_VALUE = false;
+        private const string DEFAULT_NAME = "FloatParameter";
+        
+        public override void Dispose() {
+            Value = DEFAULT_VALUE;
+            
+            base.Dispose();
+        }
+        
         public BoolParameterField() {
             GUID = Guid.NewGuid().ToString();
-            Name = "BoolParameter";
-            Reference = "_BoolParameter";
+            Name = DEFAULT_NAME;
+            Reference = $"_{DEFAULT_NAME}";
             Exposed = true;
             ParameterType = "Bool";
-            Value = true;
+            Value = DEFAULT_VALUE;
         }
         
     }

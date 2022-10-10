@@ -7,11 +7,23 @@ using System.Text;
 using UnityEditor;
 using UnityEditor.Callbacks;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using Object = UnityEngine.Object;
 
 namespace ThunderNut.WorldGraph.Editor {
 
     public static class WSGHelpers {
+        [OnOpenAsset(0)]
+        public static bool OnBaseGraphOpened(int instanceID, int line) {
+            var asset = EditorUtility.InstanceIDToObject(instanceID) as WorldStateGraph;
+            string path = AssetDatabase.GetAssetPath(instanceID);
+
+            if (asset == null || !path.Contains("WorldGraph"))
+                return false;
+
+            return ShowWorldGraphEditorWindow(path);
+        }
+        
         private static bool ShowWorldGraphEditorWindow(string path) {
             string guid = AssetDatabase.AssetPathToGUID(path);
 
@@ -88,17 +100,6 @@ namespace ThunderNut.WorldGraph.Editor {
             var asset = AssetDatabase.LoadAssetAtPath<UnityEngine.Object>(path);
             EditorGUIUtility.PingObject(asset);
             Selection.activeObject = asset;
-        }
-
-        [OnOpenAsset(0)]
-        public static bool OnBaseGraphOpened(int instanceID, int line) {
-            var asset = EditorUtility.InstanceIDToObject(instanceID) as WorldStateGraph;
-            string path = AssetDatabase.GetAssetPath(instanceID);
-
-            if (asset == null || !path.Contains("WorldGraph"))
-                return false;
-
-            return ShowWorldGraphEditorWindow(path);
         }
     }
 

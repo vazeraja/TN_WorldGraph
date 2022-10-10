@@ -5,7 +5,7 @@ using UnityEngine.UIElements;
 namespace ThunderNut.WorldGraph.Editor {
 
     public class GraphInspectorView : VisualElement {
-        private readonly WorldGraph m_Graph;
+        private readonly WorldGraphController m_GraphController;
         private WSGGraphView graphView;
         private EditorWindow editorWindow;
 

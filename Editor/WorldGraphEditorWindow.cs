@@ -36,7 +36,7 @@ namespace ThunderNut.WorldGraph.Editor {
             private set => m_Selected = value;
         }
 
-        [SerializeField] private WorldGraph m_WorldGraph;
+        [SerializeField] private WorldGraphController worldGraphController;
 
         [SerializeField] private WorldStateGraph m_StateGraph;
         private WorldStateGraph stateGraph {
@@ -164,7 +164,7 @@ namespace ThunderNut.WorldGraph.Editor {
 
         public void SelectionChanged() {
             using (SelectionChangedMarker.Auto()) {
-                if (Selection.activeGameObject == null || !Selection.activeGameObject.TryGetComponent(out m_WorldGraph)) {
+                if (Selection.activeGameObject == null || !Selection.activeGameObject.TryGetComponent(out worldGraphController)) {
                     // graphView.worldGraph = null;
                     m_MessageLabel.text = "WorldGraph not selected";
                     return;
@@ -175,8 +175,8 @@ namespace ThunderNut.WorldGraph.Editor {
                     return;
                 }
 
-                m_MessageLabel.text = $"{m_WorldGraph.name} selected";
-                graphView.worldGraph = m_WorldGraph;
+                m_MessageLabel.text = $"{worldGraphController.name} selected";
+                graphView.WorldGraphController = worldGraphController;
             }
         }
 
