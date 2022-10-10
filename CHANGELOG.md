@@ -1,3 +1,10 @@
+## [1.0.5](https://github.com/vazeraja/TN_WorldGraph/compare/v1.0.4...v1.0.5) (2022-10-10)
+
+
+### Bug Fixes
+
+* work on short demo ([cf421c8](https://github.com/vazeraja/TN_WorldGraph/commit/cf421c84c317c0b2e98931a8bb3813f9c3d6efa9))
+
 ## [1.0.4](https://github.com/vazeraja/TN_WorldGraph/compare/v1.0.3...v1.0.4) (2022-10-06)
 
 
