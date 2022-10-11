@@ -1,186 +1,133 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using MoreMountains.Feedbacks;
 using ThunderNut.WorldGraph.Attributes;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 namespace ThunderNut.WorldGraph.Demos {
 
-    public class PlayerController : MonoBehaviour {
-        protected BoxCollider2D m_BoxCollider2D;
-        protected SpriteRenderer m_SpriteRenderer;
-        protected Animator m_Animator;
-        protected CollisionHandler m_CollisionHandler;
-        protected Rigidbody2D m_Rigidbody2D => m_CollisionHandler.m_Rigidbody2D;
+    public class PlayerController : TN_MonoBehaviour {
+        public InputProvider provider;
+        public MMFeedbacks dashFeedback;
+        
+        private RuntimeStateMachine stateMachine;
+        [HideInInspector] public CollisionHandler collisionHandler;
 
-        [SerializeField] private float walkingSpeed = 8f;
-        [SerializeField] private float crouchingSpeed = 4f;
+        [InspectorGroup("Walking", true, 12)]
+        public float walkSpeed = 7;
+        public float crouchSpeed = 3;
 
-        private enum AnimationState {
-            Idle,
-            Walk,
-            Run,
-            Crouch,
-            CrouchWalk,
-            CrouchAttack,
-            Jump,
+        [InspectorGroup("Jumping", true, 12)]
+        public float firstJumpSpeed;
+        public float secondJumpSpeed;
+        public float fallSpeed;
+        public int numberOfJumps = 2;
+        public AnimationCurve jumpFallOff = AnimationCurve.Linear(0, 1, 1, 0);
+        public FixedStopwatch jumpStopwatch = new FixedStopwatch();
+
+        [InspectorGroup("Dashing", true, 12)]
+        public float dashSpeed = 12;
+        public FixedStopwatch dashStopwatch = new FixedStopwatch();
+
+        [InspectorGroup("Damage", groupAllFieldsUntilNextGroupAttribute: true, 12)]
+        public Vector2 hitForce;
+        public FixedStopwatch hitStopwatch = new FixedStopwatch();
+        public Collision2D collisionData;
+        
+
+        private InputState inputState => provider;
+
+        public enum AnimState {
+            Movement = 0,
+            Dash = 1,
+            Hit = 2,
         }
 
-        [InspectorGroup("Jumping Properties", true, 12)] [SerializeField]
-        private float firstJumpSpeed = 8;
-        [SerializeField] private float jumpSpeed = 3;
-        [SerializeField] private float fallSpeed = 12;
-        [SerializeField] private int numberOfJumps = 2;
-        [SerializeField] private AnimationCurve jumpFallOff = AnimationCurve.Linear(0, 1, 1, 0);
-        [SerializeField] private FixedStopwatch jumpStopwatch = new FixedStopwatch();
+        public AnimState State { get; set; } = AnimState.Movement;
+        public Vector2 MovementDirection => inputState.movementDirection;
+        public bool IsCrouching => inputState.isCrouching;
+        public int FacingDirection { get; set; } = 1;
 
-        private AnimationState m_AnimationState { get; set; } = AnimationState.Walk;
-        private Vector2 m_MovementDirection;
-        private bool m_IsCrouching;
-        private bool m_IsRunning;
-        private int FacingDirection;
-
-        public Vector2 Velocity => m_CollisionHandler.m_Rigidbody2D.velocity;
+        public float DashCompletion => dashStopwatch.Completion;
         public float JumpCompletion => jumpStopwatch.Completion;
         public bool IsJumping => !jumpStopwatch.IsFinished;
-        public bool IsFirstJump => _jumpsLeft == numberOfJumps - 1;
+        public bool IsFirstJump => jumpsLeft == numberOfJumps - 1;
 
-        private bool _wantsToJump;
-        private bool _wasOnTheGround;
-        private int _jumpsLeft;
-        
+        [HideInInspector] public bool wantsToJump;
+        [HideInInspector] public bool wasOnTheGround;
+        [HideInInspector] public int jumpsLeft;
+        [HideInInspector] public bool canDash;
 
         private void Awake() {
-            m_BoxCollider2D = GetComponent<BoxCollider2D>();
-            m_SpriteRenderer = GetComponent<SpriteRenderer>();
-            m_Animator = GetComponent<Animator>();
-            m_CollisionHandler = GetComponent<CollisionHandler>();
-        }
-        
-        private void Update() {
-            var previousVelocity = m_Rigidbody2D.velocity;
-            var velocityChange = Vector2.zero;
+            collisionHandler = GetComponent<CollisionHandler>();
 
-            switch (m_MovementDirection.x) {
-                case > 0:
-                    m_SpriteRenderer.flipX = false;
-                    FacingDirection = 1;
-                    break;
-                case < 0:
-                    m_SpriteRenderer.flipX = true;
-                    FacingDirection = -1;
-                    break;
-            }
-            
-            if (_wantsToJump && IsJumping)
-            {
-                _wasOnTheGround = false;
-                float currentJumpSpeed = IsFirstJump ? firstJumpSpeed : jumpSpeed;
-                currentJumpSpeed *= jumpFallOff.Evaluate(JumpCompletion);
-                velocityChange.y = currentJumpSpeed - previousVelocity.y;
-
-                if (m_CollisionHandler.IsTouchingCeiling)
-                    jumpStopwatch.Reset();
-            }
-            else if (m_CollisionHandler.IsGrounded)
-            {
-                _jumpsLeft = numberOfJumps;
-                _wasOnTheGround = true;
-            }
-            else
-            {
-                if (_wasOnTheGround)
-                {
-                    _jumpsLeft -= 1;
-                    _wasOnTheGround = false;
-                }
-
-                velocityChange.y = (-fallSpeed - previousVelocity.y) / 8;
-            }
-
-            velocityChange.x = (m_MovementDirection.x * walkingSpeed - previousVelocity.x);
-
-            if (m_CollisionHandler.wallContact.HasValue)
-            {
-                var wallDirection = (int) Mathf.Sign(m_CollisionHandler.wallContact.Value.point.x - transform.position.x);
-                var walkDirection = (int) Mathf.Sign(m_MovementDirection.x);
-
-                if (walkDirection == wallDirection)
-                    velocityChange.x = 0;
-            }
-
-            m_Rigidbody2D.AddForce(velocityChange, ForceMode2D.Impulse);
-
-            HandleAnimation();
+            stateMachine = Builder.RuntimeStateMachine
+                .WithState(new MovementState(), out var movementState)
+                .WithState(new DashState(), out var dashState)
+                .WithState(new HitState(), out var hitState)
+                .WithState(new RemainState(), out var remainState)
+                .WithTransition(new EnterMovementStateDecision(), movementState, remainState, new[] {dashState, hitState})
+                .WithTransition(new EnterDashStateDecision(), dashState, remainState, new[] {movementState})
+                .WithTransition(new EnterHitStateDecision(), hitState, remainState, new[] {movementState, dashState})
+                .SetCurrentState(movementState)
+                .SetRemainState(remainState)
+                .Build<PlayerController>(this);
         }
 
-        private void HandleAnimation() {
-
-            if (Velocity.x != 0 && m_IsRunning) {
-                m_AnimationState = AnimationState.Run;
-            }
-
-            if (Velocity.x != 0) {
-                m_AnimationState = AnimationState.Walk;
-            }
-
-            if (Velocity.x == 0) {
-                m_AnimationState = AnimationState.Idle;
-            }
-
-            switch (m_AnimationState) {
-                case AnimationState.Idle:
-                    m_Animator.Play("Player_Idle");
-                    break;
-                case AnimationState.Walk:
-                    m_Animator.Play("Player_Walk");
-                    break;
-                case AnimationState.Run:
-                    m_Animator.Play("Player_Run");
-                    break;
-                case AnimationState.Crouch:
-                    break;
-                case AnimationState.CrouchWalk:
-                    break;
-                case AnimationState.CrouchAttack:
-                    break;
-                case AnimationState.Jump:
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
+        private void OnEnable() {
+            provider.onJump += OnJump;
+            provider.onDash += OnDash;
         }
 
+        private void OnDisable() {
+            provider.onJump -= OnJump;
+            provider.onDash -= OnDash;
 
-        private void OnMovement(InputValue value) {
-            m_MovementDirection = value.Get<Vector2>();
+            DestroyImmediate(stateMachine);
         }
 
-        private void OnCrouch(InputValue value) {
-            m_IsCrouching = value.Get<float>() > 0.5;
-        }
+        private void Update() => stateMachine.Update();
+        private void FixedUpdate() => stateMachine.FixedUpdate();
 
-        private void OnRun(InputValue value) {
-            m_IsRunning = value.Get<float>() > 0.5;
-        }
+        private void OnJump(float value) {
+            wantsToJump = value > 0.5f;
 
-        private void OnJump(InputValue value) {
-            _wantsToJump = value.Get<float>() > 0.5;
-            Debug.Log("Pressing Jump: " + _wantsToJump);
+            if (wantsToJump) {
+                if (State != AnimState.Movement || jumpsLeft <= 0)
+                    return;
 
-            if (_wantsToJump)
-                RequestJump();
-            else
+                jumpsLeft--;
+                jumpStopwatch.Split();
+            }
+            else {
                 jumpStopwatch.Reset();
+            }
         }
 
-        private void RequestJump() {
-            if (_jumpsLeft <= 0)
-                return;
+        private void OnDash(float value) => EnterDashState();
 
-            _jumpsLeft--;
-            jumpStopwatch.Split();
+        private void OnCollisionEnter2D(Collision2D other) {
+            if (other.gameObject.layer != collisionHandler.enemyMask) return;
+            collisionData = other;
+            EnterHitState();
+        }
+
+        private void OnCollisionStay2D(Collision2D other) {
+            if (other.gameObject.layer != collisionHandler.enemyMask || State == AnimState.Hit) return;
+            collisionData = other;
+            EnterHitState();
+        }
+
+        private void EnterHitState() {
+            if (State != AnimState.Hit && !hitStopwatch.IsReady) return;
+            State = AnimState.Hit;
+        }
+
+        private void EnterDashState() {
+            if (State != AnimState.Movement || !dashStopwatch.IsReady || !canDash) return;
+            State = AnimState.Dash;
+        }
+
+        public void EnterMovementState() {
+            State = AnimState.Movement;
         }
     }
 

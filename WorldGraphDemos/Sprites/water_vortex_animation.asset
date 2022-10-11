@@ -1,0 +1,62 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 38410541ac5f4ea48c5cdb5f1d957b6f, type: 3}
+  m_Name: water_vortex_animation
+  m_EditorClassIdentifier: 
+  guid: 
+  title: 
+  position: {x: 0, y: 0}
+  cels:
+  - sprite: {fileID: 7524045463543801961, guid: c58414217f3be3b488dffd776120e985, type: 3}
+    drivers:
+      keys: []
+      values: 
+  - sprite: {fileID: 2493154019533861436, guid: c58414217f3be3b488dffd776120e985, type: 3}
+    drivers:
+      keys: []
+      values: 
+  - sprite: {fileID: -4188407647324664987, guid: c58414217f3be3b488dffd776120e985, type: 3}
+    drivers:
+      keys: []
+      values: 
+  - sprite: {fileID: -1697686948412687292, guid: c58414217f3be3b488dffd776120e985, type: 3}
+    drivers:
+      keys: []
+      values: 
+  - sprite: {fileID: 6901384055803385123, guid: c58414217f3be3b488dffd776120e985, type: 3}
+    drivers:
+      keys: []
+      values: 
+  - sprite: {fileID: -3339002182637032387, guid: c58414217f3be3b488dffd776120e985, type: 3}
+    drivers:
+      keys: []
+      values: 
+  - sprite: {fileID: 3138191645937462602, guid: c58414217f3be3b488dffd776120e985, type: 3}
+    drivers:
+      keys: []
+      values: 
+  - sprite: {fileID: 4876857171378593501, guid: c58414217f3be3b488dffd776120e985, type: 3}
+    drivers:
+      keys: []
+      values: 
+  - sprite: {fileID: 1602538595769600169, guid: c58414217f3be3b488dffd776120e985, type: 3}
+    drivers:
+      keys: []
+      values: 
+  controlDriver:
+    name: 
+    autoIncrement: 1
+    percentageBased: 0
+    guid: cb473d3e-75b1-4abd-841a-706301e49b07
+  drivers:
+    keys: []
+    values: 

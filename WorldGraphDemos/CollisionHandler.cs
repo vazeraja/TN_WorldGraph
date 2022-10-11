@@ -4,7 +4,6 @@ using UnityEngine;
 namespace ThunderNut.WorldGraph.Demos {
 
     public class CollisionHandler : MonoBehaviour {
-        public Rigidbody2D m_Rigidbody2D;
         private ContactFilter2D contactFilter;
         private ContactPoint2D? groundContact;
         private ContactPoint2D? ceilingContact;
@@ -12,8 +11,10 @@ namespace ThunderNut.WorldGraph.Demos {
         private readonly ContactPoint2D[] contacts = new ContactPoint2D[16];
         
         [InspectorGroup("Properties", true, 12)]
+        public Rigidbody2D m_Rigidbody2D;
         [SerializeField] private float maxWalkCos = 0.2f;
         [SerializeField] private LayerMask groundMask;
+        [SerializeField] public LayerMask enemyMask;
 
         public bool IsGrounded => groundContact.HasValue;
         public bool IsTouchingWall => wallContact.HasValue;

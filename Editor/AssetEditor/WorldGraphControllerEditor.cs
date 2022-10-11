@@ -177,8 +177,8 @@ namespace ThunderNut.WorldGraph.Editor {
                     UnityEditor.Editor editor = _editors[handle];
                     CreateCachedEditor(handle, handle.GetType(), ref editor);
 
-                    // ((SceneHandleEditor) editor).drawScriptField = false;
-                    ((SceneHandleEditor) editor).OnInspectorGUI();
+                    // ((TN_MonoBehaviourEditor) editor).drawScriptField = false;
+                    ((TN_MonoBehaviourEditor) editor).OnInspectorGUI();
 
                     EditorGUI.EndDisabledGroup();
 
