@@ -9,7 +9,7 @@ namespace ThunderNut.WorldGraph.Handles {
 
     [AddComponentMenu("")]
     [Serializable]
-    public abstract class SceneHandle : MonoBehaviour {
+    public abstract class SceneHandle : TN_MonoBehaviour {
         [Tooltip("The color of this SceneHandle to display in the inspector")]
         public virtual Color HandleColor => Color.white;
 
@@ -20,7 +20,7 @@ namespace ThunderNut.WorldGraph.Handles {
         [SerializeField, HideInInspector]
         public SceneStateData StateData;
 
-        [SerializeField, HideInInspector]
+        [SerializeField]
         public List<StateTransition> StateTransitions = new List<StateTransition>();
 
         [Tooltip("Whether or not this SceneHandle is active. Scene Handle will not work if false")]
@@ -91,13 +91,9 @@ namespace ThunderNut.WorldGraph.Handles {
         [Tooltip("the tween to use on the exit fade")]
         public MMTweenType ExitFadeTween = new MMTweenType(new AnimationCurve(new Keyframe(0, 0), new Keyframe(1, 1)));
 
-        public virtual void Awake() {
-            var allTransitionForHandle = worldGraphController.GetAllTransitionForHandle(this);
-            StateTransitions.AddRange(allTransitionForHandle);
-        }
-
         public virtual void ExecuteStateTransition(StateTransition stateTransition) {
-            Debug.Log("ExecuteStateTransition");
+            if (!Active) return;
+            
             string DestinationSceneName = WorldGraph.GetSceneName(stateTransition.InputState.Scene.ScenePath);
             string LoadingSceneName = WorldGraph.GetSceneName(LoadingScene.ScenePath);
 

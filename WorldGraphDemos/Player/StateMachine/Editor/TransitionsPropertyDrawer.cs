@@ -1,7 +1,7 @@
 ﻿using UnityEditor;
 using UnityEngine;
 
-namespace ThunderNut.StateMachine.Editor {
+namespace ThunderNut.WorldGraph.Demos {
     
     // [CustomPropertyDrawer(typeof(Transition))]
     public class TransitionsPropertyDrawer : PropertyDrawer {

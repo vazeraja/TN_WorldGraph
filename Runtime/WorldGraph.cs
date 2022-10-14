@@ -7,66 +7,44 @@ using UnityEngine.SceneManagement;
 
 namespace ThunderNut.WorldGraph {
     
-    [DisallowMultipleComponent]
-    [AddComponentMenu("")]
-    public class WorldGraph : MonoBehaviour {
-        private static WorldGraph _instance;
-        public static WorldGraph Instance {
-            get {
-                if (_instance == null) {
-                    _instance = FindObjectOfType<WorldGraph>();
-                    if (_instance == null) {
-                        var go = new GameObject("WorldGraph");
-                        _instance = go.AddComponent<WorldGraph>();
-                    }
-                }
-
-                return _instance;
-            }
+    public class WorldGraph {
+        
+        private WorldGraphController m_Controller;
+        public WorldGraphController Controller {
+            get => m_Controller;
+            set => m_Controller = value;
+        }
+        
+        private WorldStateGraph m_StateGraph;
+        public WorldStateGraph StateGraph {
+            get => m_StateGraph;
+            set => m_StateGraph = value;
         }
 
-        private void Awake() {
-            if (Instance != this) {
-                // Debug.Log($"WorldGraph Duplicate: deleting {name}", this);
-                DestroyImmediate(gameObject);
+
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
+        private static void Bootstrap() {
+            var app = UnityEngine.Object.Instantiate(Resources.Load("WorldGraph")) as GameObject;
+            if (app == null) {
+                throw new ApplicationException();
             }
-            else {
-                // Debug.Log($"WorldGraph: {name}", this);
-                #if UNITY_EDITOR
-                EditorApplication.playModeStateChanged += EditorApplication_playModeStateChanged;
-                #endif
-                DontDestroyOnLoad(gameObject);
-            }
+            app.name = "WorldGraph";
+            
+            UnityEngine.Object.DontDestroyOnLoad(app);
         }
 
-        private void OnDestroy() {
-            if (_instance == this) {
-                // Debug.Log("WorldGraph OnDestroy: set instance to null");
-                _instance = null;
-            }
-            #if UNITY_EDITOR
-            EditorApplication.playModeStateChanged -= EditorApplication_playModeStateChanged;
-            #endif
+        public static WorldGraph GetWorldGraph() {
+            var worldGraphPrefab = GameObject.FindGameObjectWithTag("WorldGraph");
+            
+            var controller = worldGraphPrefab.GetComponent<WorldGraphController>();
+            
+            WorldGraph app = new WorldGraph {
+                m_Controller = controller,
+                m_StateGraph = controller.stateGraph
+            };
+            
+            return app;
         }
-
-        #if UNITY_EDITOR
-        private static void EditorApplication_playModeStateChanged(PlayModeStateChange obj) {
-            switch (obj) {
-                case PlayModeStateChange.ExitingEditMode:
-                    // Debug.Log("WorldGraph PlayModeStateChange ExitingEditMode: set instance to null");
-                    _instance = null;
-                    break;
-                case PlayModeStateChange.EnteredEditMode:
-                    break;
-                case PlayModeStateChange.EnteredPlayMode:
-                    break;
-                case PlayModeStateChange.ExitingPlayMode:
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(obj), obj, null);
-            }
-        }
-        #endif
         
         public static string GetSceneName(string scenePath) {
             int slash = scenePath.LastIndexOf("/", StringComparison.Ordinal);

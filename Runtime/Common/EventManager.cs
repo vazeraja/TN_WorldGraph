@@ -89,7 +89,7 @@ namespace ThunderNut.WorldGraph {
             #endif
 
             for (int i = list.Count - 1; i >= 0; i--) {
-                (list[i] as IEventListener<TEvent>)?.OnMMEvent(newEvent);
+                (list[i] as IEventListener<TEvent>)?.OnEventRaised(newEvent);
             }
         }
 
@@ -141,7 +141,7 @@ namespace ThunderNut.WorldGraph {
     /// A public interface you'll need to implement for each type of event you want to listen to.
     /// </summary>
     public interface IEventListener<in T> : IEventListenerBase {
-        void OnMMEvent(T eventType);
+        void OnEventRaised(T stateTransitionEvent);
     }
 
 }

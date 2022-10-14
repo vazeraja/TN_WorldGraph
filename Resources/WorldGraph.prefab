@@ -1,0 +1,341 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &4039155626588931711
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1157716811441737300}
+  - component: {fileID: 4005085632571571674}
+  - component: {fileID: -3764427926284173584}
+  - component: {fileID: -3797037451269537239}
+  - component: {fileID: -4846783079628317668}
+  m_Layer: 0
+  m_Name: WorldGraph
+  m_TagString: WorldGraph
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1157716811441737300
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4039155626588931711}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4005085632571571674
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4039155626588931711}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d17f1665a5984e7459a727f391630158, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  stateGraph: {fileID: 11400000, guid: 6bc87f91605c8ff47bc45c285ea9b5b5, type: 2}
+  SceneHandles:
+  - {fileID: -3764427926284173584}
+  - {fileID: -3797037451269537239}
+  StateTransitions:
+  - {fileID: -4846783079628317668}
+  currentTransitions: []
+  activeSceneHandle: {fileID: 0}
+  settingB: 
+  settingC: 
+  settingD: 
+  settingE: 
+--- !u!114 &-3764427926284173584
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4039155626588931711}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4bf5aac20271450daa54a4f55e20db0a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  StateData:
+    m_GUID: 1aab5bb1-0d65-4c02-b890-d2434a2db603
+    m_SceneName: DefaultSceneA
+    m_SceneType: 0
+    m_Position: {x: 667, y: 195}
+    m_Ports:
+    - OwnerNodeGUID: 1aab5bb1-0d65-4c02-b890-d2434a2db603
+      GUID: a3cafb91-bd8c-4435-9241-3466aaa13f7d
+      PortDirection: Output
+      PortCapacity: Multi
+      PortType: 0
+      PortColor: {r: 0.12, g: 0.44, b: 0.81, a: 1}
+    - OwnerNodeGUID: 1aab5bb1-0d65-4c02-b890-d2434a2db603
+      GUID: fad13335-e940-4b4a-a2b2-3e8a3dcab83d
+      PortDirection: Input
+      PortCapacity: Multi
+      PortType: 0
+      PortColor: {r: 0.12, g: 0.44, b: 0.81, a: 1}
+  StateTransitions: []
+  Active: 1
+  Label: FeelSnake
+  Scene:
+    sceneAsset: {fileID: 102900000, guid: 3c3c000a82c344d4a824451d8abff6b6, type: 3}
+    ScenePath: Assets/Feel/FeelDemos/Snake/FeelSnake.unity
+  LoadingScene:
+    sceneAsset: {fileID: 102900000, guid: 945e5b97212e8e74ebcd35bddde3970c, type: 3}
+    ScenePath: Assets/Feel/MMTools/Tools/MMSceneLoading/LoadingScreens/MMAdditiveLoadingScreenSimple.unity
+  LoadingMode: 2
+  Priority: 4
+  InterpolateProgress: 1
+  SecureLoad: 1
+  BeforeEntryFadeDelay: 0
+  EntryFadeDuration: 0.2
+  AfterEntryFadeDelay: 0
+  BeforeExitFadeDelay: 0.2
+  ExitFadeDuration: 0.2
+  ProgressInterpolationSpeed: 5
+  FadeMode: 0
+  EntryFadeTween:
+    MMTweenDefinitionType: 0
+    MMTweenCurve: 9
+    Curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 1
+        value: 1
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    Initialized: 0
+  ExitFadeTween:
+    MMTweenDefinitionType: 0
+    MMTweenCurve: 4
+    Curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 1
+        value: 1
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    Initialized: 0
+--- !u!114 &-3797037451269537239
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4039155626588931711}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4bf5aac20271450daa54a4f55e20db0a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  StateData:
+    m_GUID: 56b2caf3-a85e-4691-aa27-4b84f686b7e0
+    m_SceneName: DefaultSceneB
+    m_SceneType: 0
+    m_Position: {x: 899, y: 122}
+    m_Ports:
+    - OwnerNodeGUID: 56b2caf3-a85e-4691-aa27-4b84f686b7e0
+      GUID: 48cf336a-10f2-409a-8954-8ca54397f6cc
+      PortDirection: Output
+      PortCapacity: Multi
+      PortType: 0
+      PortColor: {r: 0.12, g: 0.44, b: 0.81, a: 1}
+    - OwnerNodeGUID: 56b2caf3-a85e-4691-aa27-4b84f686b7e0
+      GUID: e7359e50-19e8-4add-834a-aca726fb8ffa
+      PortDirection: Input
+      PortCapacity: Multi
+      PortType: 0
+      PortColor: {r: 0.12, g: 0.44, b: 0.81, a: 1}
+  StateTransitions: []
+  Active: 1
+  Label: PlatformerScene
+  Scene:
+    sceneAsset: {fileID: 102900000, guid: 2cda990e2423bbf4892e6590ba056729, type: 3}
+    ScenePath: Assets/TN_WorldGraph/WorldGraphDemos/DefaultSceneA.unity
+  LoadingScene:
+    sceneAsset: {fileID: 102900000, guid: 945e5b97212e8e74ebcd35bddde3970c, type: 3}
+    ScenePath: Assets/Feel/MMTools/Tools/MMSceneLoading/LoadingScreens/MMAdditiveLoadingScreenSimple.unity
+  LoadingMode: 2
+  Priority: 4
+  InterpolateProgress: 1
+  SecureLoad: 1
+  BeforeEntryFadeDelay: 0
+  EntryFadeDuration: 0.2
+  AfterEntryFadeDelay: 0
+  BeforeExitFadeDelay: 0.2
+  ExitFadeDuration: 0.2
+  ProgressInterpolationSpeed: 5
+  FadeMode: 0
+  EntryFadeTween:
+    MMTweenDefinitionType: 0
+    MMTweenCurve: 9
+    Curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 1
+        value: 1
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    Initialized: 0
+  ExitFadeTween:
+    MMTweenDefinitionType: 0
+    MMTweenCurve: 9
+    Curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 1
+        value: 1
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    Initialized: 0
+--- !u!114 &-4846783079628317668
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4039155626588931711}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b3a3fbd8e0fe40ecb582b9ee83823f9a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  conditions:
+  - rid: 5390805756213985332
+  data:
+    m_StateGraph: {fileID: 11400000, guid: 6bc87f91605c8ff47bc45c285ea9b5b5, type: 2}
+    m_GUID: 9f2ca517-f19b-4c30-ab44-9b21c3cb9b15
+    m_OutputStateGUID: 1aab5bb1-0d65-4c02-b890-d2434a2db603
+    m_InputStateGUID: 56b2caf3-a85e-4691-aa27-4b84f686b7e0
+    m_OutputState:
+      m_GUID: 1aab5bb1-0d65-4c02-b890-d2434a2db603
+      m_SceneName: DefaultSceneA
+      m_SceneType: 0
+      m_Position: {x: 675, y: 204}
+      m_Ports:
+      - OwnerNodeGUID: 1aab5bb1-0d65-4c02-b890-d2434a2db603
+        GUID: a3cafb91-bd8c-4435-9241-3466aaa13f7d
+        PortDirection: Output
+        PortCapacity: Multi
+        PortType: 0
+        PortColor: {r: 0.12, g: 0.44, b: 0.81, a: 1}
+      - OwnerNodeGUID: 1aab5bb1-0d65-4c02-b890-d2434a2db603
+        GUID: fad13335-e940-4b4a-a2b2-3e8a3dcab83d
+        PortDirection: Input
+        PortCapacity: Multi
+        PortType: 0
+        PortColor: {r: 0.12, g: 0.44, b: 0.81, a: 1}
+    m_InputState:
+      m_GUID: 56b2caf3-a85e-4691-aa27-4b84f686b7e0
+      m_SceneName: DefaultSceneB
+      m_SceneType: 0
+      m_Position: {x: 899, y: 122}
+      m_Ports:
+      - OwnerNodeGUID: 56b2caf3-a85e-4691-aa27-4b84f686b7e0
+        GUID: 48cf336a-10f2-409a-8954-8ca54397f6cc
+        PortDirection: Output
+        PortCapacity: Multi
+        PortType: 0
+        PortColor: {r: 0.12, g: 0.44, b: 0.81, a: 1}
+      - OwnerNodeGUID: 56b2caf3-a85e-4691-aa27-4b84f686b7e0
+        GUID: e7359e50-19e8-4add-834a-aca726fb8ffa
+        PortDirection: Input
+        PortCapacity: Multi
+        PortType: 0
+        PortColor: {r: 0.12, g: 0.44, b: 0.81, a: 1}
+  m_Active: 1
+  m_Label: DefaultSceneA ---> DefaultSceneB
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
+    - rid: 5390805756213985332
+      type: {class: StateCondition, ns: ThunderNut.WorldGraph, asm: Unity.WorldGraph}
+      data:
+        parameter: {fileID: 0}
+        value:
+          rid: -2

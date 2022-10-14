@@ -6,10 +6,10 @@ namespace ThunderNut.WorldGraph.Demos {
 
     public class PlayerController : TN_MonoBehaviour {
         public InputProvider provider;
+        public CollisionHandler collisionHandler;
         public MMFeedbacks dashFeedback;
-        
+
         private RuntimeStateMachine stateMachine;
-        [HideInInspector] public CollisionHandler collisionHandler;
 
         [InspectorGroup("Walking", true, 12)]
         public float walkSpeed = 7;
@@ -27,11 +27,10 @@ namespace ThunderNut.WorldGraph.Demos {
         public float dashSpeed = 12;
         public FixedStopwatch dashStopwatch = new FixedStopwatch();
 
-        [InspectorGroup("Damage", groupAllFieldsUntilNextGroupAttribute: true, 12)]
+        [InspectorGroup("Damage", true, 12)]
         public Vector2 hitForce;
         public FixedStopwatch hitStopwatch = new FixedStopwatch();
         public Collision2D collisionData;
-        
 
         private InputState inputState => provider;
 
@@ -84,7 +83,11 @@ namespace ThunderNut.WorldGraph.Demos {
             DestroyImmediate(stateMachine);
         }
 
-        private void Update() => stateMachine.Update();
+        private void Update() {
+            
+            stateMachine.Update();
+        }
+
         private void FixedUpdate() => stateMachine.FixedUpdate();
 
         private void OnJump(float value) {
@@ -102,7 +105,10 @@ namespace ThunderNut.WorldGraph.Demos {
             }
         }
 
-        private void OnDash(float value) => EnterDashState();
+        private void OnDash(float value) {
+            Debug.Log("DASH");
+            EnterDashState();
+        }
 
         private void OnCollisionEnter2D(Collision2D other) {
             if (other.gameObject.layer != collisionHandler.enemyMask) return;

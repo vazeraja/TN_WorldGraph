@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using ThunderNut.WorldGraph.Handles;
-using MoreMountains.Feel;
 using MoreMountains.Tools;
+using UnityEngine.SceneManagement;
 #if UNITY_EDITOR
 using UnityEditor;
+
 #endif
 
 namespace ThunderNut.WorldGraph {
@@ -18,48 +19,60 @@ namespace ThunderNut.WorldGraph {
         public StateTransitionEvent(StateTransition t) {
             StateTransition = t;
         }
+
         public static void Trigger(StateTransition t) {
             e.StateTransition = t;
-            
+
             EventManager.TriggerEvent(e);
         }
     }
 
     [AddComponentMenu("ThunderNut/WorldGraph/WorldGraphController")]
-    [RequireComponent(typeof(WorldGraph))]
     [DisallowMultipleComponent]
-    public class WorldGraphController : MonoBehaviour, IEventListener<StateTransitionEvent>, MMEventListener<MMSceneLoadingManager.LoadingSceneEvent> {
+    public class WorldGraphController : MonoBehaviour, IEventListener<StateTransitionEvent> {
         [SerializeField] public WorldStateGraph stateGraph;
 
         public List<SceneHandle> SceneHandles = new List<SceneHandle>();
         public List<StateTransition> StateTransitions = new List<StateTransition>();
 
+        public List<StateTransition> currentTransitions;
+        private List<List<Func<bool>>> currentConditions;
         private bool isInitiatingSceneTransition = false;
 
         public SceneHandle activeSceneHandle;
-
-        public List<StateTransition> currentTransitions;
-        private List<List<Func<bool>>> currentConditions;
-
         public string settingB;
         public string settingC;
         public string settingD;
         public string settingE;
 
         private void Awake() {
+            foreach (var handle in SceneHandles) {
+                IEnumerable<StateTransition> stateTransitions = FindTransitions(handle);
+                handle.StateTransitions.AddRange(stateTransitions);
+            }
+
             activeSceneHandle = SceneHandles.First();
+            if (activeSceneHandle.Scene.ScenePath != SceneManager.GetActiveScene().path) {
+                SceneManager.LoadScene(activeSceneHandle.Scene.ScenePath);
+            }
 
             SetCurrentTransitions();
         }
 
         private void OnEnable() {
+            SceneManager.activeSceneChanged += OnActiveSceneChanged;
+
             this.EventStartListening<StateTransitionEvent>();
-            this.MMEventStartListening<MMSceneLoadingManager.LoadingSceneEvent>();
+        }
+
+        private void OnActiveSceneChanged(Scene from, Scene to) {
+            Debug.Log($"From: {from.name} --- To: {to.name}");
         }
 
         private void OnDisable() {
+            SceneManager.activeSceneChanged -= OnActiveSceneChanged;
+
             this.EventStopListening<StateTransitionEvent>();
-            this.MMEventStopListening<MMSceneLoadingManager.LoadingSceneEvent>();
 
             stateGraph.Dispose();
         }
@@ -68,8 +81,6 @@ namespace ThunderNut.WorldGraph {
             if (isInitiatingSceneTransition) return;
 
             CheckTransitions();
-            
-            Debug.Log(activeSceneHandle.name);
         }
 
         private void CheckTransitions() {
@@ -87,55 +98,10 @@ namespace ThunderNut.WorldGraph {
                 }
             }
         }
-        public void OnMMEvent(StateTransitionEvent eventType) {
+
+        public void OnEventRaised(StateTransitionEvent stateTransitionEvent) {
             isInitiatingSceneTransition = true;
-            activeSceneHandle.ExecuteStateTransition(eventType.StateTransition);
-        }
-        public void OnMMEvent(MMSceneLoadingManager.LoadingSceneEvent loadingSceneEvent) {
-            switch (loadingSceneEvent.Status) {
-                case MMSceneLoadingManager.LoadingStatus.LoadStarted:
-                    Debug.Log("LoadStarted");
-                    break;
-                case MMSceneLoadingManager.LoadingStatus.BeforeEntryFade:
-                    Debug.Log("BeforeEntryFade");
-                    break;
-                case MMSceneLoadingManager.LoadingStatus.EntryFade:
-                    Debug.Log("EntryFade");
-                    break;
-                case MMSceneLoadingManager.LoadingStatus.AfterEntryFade:
-                    Debug.Log("AfterEntryFade");
-                    break;
-                case MMSceneLoadingManager.LoadingStatus.UnloadOriginScene:
-                    Debug.Log("UnloadOriginScene");
-                    break;
-                case MMSceneLoadingManager.LoadingStatus.LoadDestinationScene:
-                    Debug.Log("LoadDestinationScene");
-                    break;
-                case MMSceneLoadingManager.LoadingStatus.LoadProgressComplete:
-                    Debug.Log("LoadProgressComplete");
-                    break;
-                case MMSceneLoadingManager.LoadingStatus.InterpolatedLoadProgressComplete:
-                    Debug.Log("InterpolatedLoadProgressComplete");
-                    break;
-                case MMSceneLoadingManager.LoadingStatus.BeforeExitFade:
-                    Debug.Log("BeforeExitFade");
-                    break;
-                case MMSceneLoadingManager.LoadingStatus.ExitFade:
-                    Debug.Log("ExitFade");
-                    break;
-                case MMSceneLoadingManager.LoadingStatus.DestinationSceneActivation:
-                    Debug.Log("DestinationSceneActivation");
-                    
-                    break;
-                case MMSceneLoadingManager.LoadingStatus.UnloadSceneLoader:
-                    Debug.Log("UnloadSceneLoader");
-                    break;
-                case MMSceneLoadingManager.LoadingStatus.LoadTransitionComplete:
-                    Debug.Log("LoadTransitionComplete");
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
+            activeSceneHandle.ExecuteStateTransition(stateTransitionEvent.StateTransition);
         }
 
         private void SetCurrentTransitions() {
@@ -232,8 +198,9 @@ namespace ThunderNut.WorldGraph {
             match.Value = value;
         }
 
-        public IEnumerable<StateTransition> GetAllTransitionForHandle(SceneHandle handle) {
-            return StateTransitions.FindAll(stateTransition => stateTransition.data.OutputStateGUID == handle.StateData.GUID);
+        private IEnumerable<StateTransition> FindTransitions(SceneHandle handle) {
+            var matches = StateTransitions.FindAll(stateTransition => handle.StateData.GUID == stateTransition.data.OutputStateGUID);
+            return matches;
         }
 
         public virtual SceneHandle AddSceneHandle(System.Type type) {

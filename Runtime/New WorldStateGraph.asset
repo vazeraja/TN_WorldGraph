@@ -54,7 +54,7 @@ MonoBehaviour:
   - m_GUID: 1aab5bb1-0d65-4c02-b890-d2434a2db603
     m_SceneName: DefaultSceneA
     m_SceneType: 0
-    m_Position: {x: 667, y: 195}
+    m_Position: {x: 675, y: 204}
     m_Ports:
     - OwnerNodeGUID: 1aab5bb1-0d65-4c02-b890-d2434a2db603
       GUID: a3cafb91-bd8c-4435-9241-3466aaa13f7d
@@ -88,14 +88,14 @@ MonoBehaviour:
   ExposedParameterViewData: []
   StateTransitionData:
   - m_StateGraph: {fileID: 11400000}
-    m_GUID: 64fa26d1-42e8-4ec2-bbc6-24f4ae7695bc
+    m_GUID: 9f2ca517-f19b-4c30-ab44-9b21c3cb9b15
     m_OutputStateGUID: 1aab5bb1-0d65-4c02-b890-d2434a2db603
     m_InputStateGUID: 56b2caf3-a85e-4691-aa27-4b84f686b7e0
     m_OutputState:
       m_GUID: 1aab5bb1-0d65-4c02-b890-d2434a2db603
       m_SceneName: DefaultSceneA
       m_SceneType: 0
-      m_Position: {x: 667, y: 195}
+      m_Position: {x: 675, y: 204}
       m_Ports:
       - OwnerNodeGUID: 1aab5bb1-0d65-4c02-b890-d2434a2db603
         GUID: a3cafb91-bd8c-4435-9241-3466aaa13f7d

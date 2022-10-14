@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
 using UnityEditor.Experimental.GraphView;
@@ -7,7 +8,7 @@ using UnityEngine;
 namespace ThunderNut.WorldGraph {
 
     [CreateAssetMenu(fileName = "New WorldStateGraph", menuName = "WorldGraph/StateGraph", order = 0)]
-    public class WorldStateGraph : ScriptableObject {
+    public class WorldStateGraph : ScriptableObject, IDisposable {
         public List<SceneStateData> SceneStateData = new List<SceneStateData>();
         public List<ExposedParameterViewData> ExposedParameterViewData = new List<ExposedParameterViewData>();
 
