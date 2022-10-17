@@ -1,6 +1,6 @@
 {
   "name": "com.thundernut.worldgraph",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "displayName": "WorldGraph: A Scene Management System",
   "description": "Creates Functionality for scene management similar to the Unity animator",
   "unity": "2022.1",
