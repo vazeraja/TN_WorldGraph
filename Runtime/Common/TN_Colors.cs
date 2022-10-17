@@ -323,7 +323,7 @@ namespace ThunderNut.WorldGraph {
 		/// <param name="min"></param>
 		/// <param name="max"></param>
 		/// <returns></returns>
-		public static Color MMRandomColor(this Color color, Color min, Color max) {
+		public static Color RandomColor(this Color color, Color min, Color max) {
 			Color c = new Color() {
 				r = UnityEngine.Random.Range(min.r, max.r),
 				g = UnityEngine.Random.Range(min.g, max.g),

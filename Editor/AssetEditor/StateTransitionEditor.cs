@@ -42,8 +42,8 @@ namespace ThunderNut.WorldGraph.Editor {
 
             float width = rect.width / 2;
 
-            WorldStateGraph stateGraph = stateTransition.data.StateGraph;
-            var allParameters = stateGraph.ExposedParameters;
+            WorldGraph controller = stateTransition.Controller;
+            var allParameters = controller.ExposedParameters;
 
             if (allParameters.Any()) {
                 rect.width = width;
@@ -51,13 +51,13 @@ namespace ThunderNut.WorldGraph.Editor {
                 if (EditorGUI.DropdownButton(rect, condition!.parameter != null
                     ? new GUIContent(condition.parameter.Name)
                     : new GUIContent("Select a Parameter"), FocusType.Passive)) {
-                    PopupWindow.Show(rect, new ConditionOptionsPopupWindow(stateGraph, condition) {Width = rect.width});
+                    PopupWindow.Show(rect, new ConditionOptionsPopupWindow(controller, condition) {Width = rect.width});
                 }
 
                 rect.x += width + 5;
                 rect.width = width / 2 - 5;
                 switch (condition.parameter) {
-                    case StringParameterField:
+                    case StringParameter:
                         if (condition.value is StringCondition stringCondition) {
                             stringCondition.stringOptions = (StringParamOptions) EditorGUI.EnumPopup(rect, stringCondition.stringOptions);
                             rect.x += width / 2;
@@ -65,7 +65,7 @@ namespace ThunderNut.WorldGraph.Editor {
                         }
 
                         break;
-                    case FloatParameterField:
+                    case FloatParameter:
                         if (condition.value is FloatCondition floatCondition) {
                             floatCondition.floatOptions = (FloatParamOptions) EditorGUI.EnumPopup(rect, floatCondition.floatOptions);
                             rect.x += width / 2;
@@ -73,7 +73,7 @@ namespace ThunderNut.WorldGraph.Editor {
                         }
 
                         break;
-                    case IntParameterField:
+                    case IntParameter:
                         if (condition.value is IntCondition intCondition) {
                             intCondition.intOptions = (IntParamOptions) EditorGUI.EnumPopup(rect, intCondition.intOptions);
                             rect.x += width / 2;
@@ -81,7 +81,7 @@ namespace ThunderNut.WorldGraph.Editor {
                         }
 
                         break;
-                    case BoolParameterField:
+                    case BoolParameter:
                         if (condition.value is BoolCondition boolCondition) {
                             boolCondition.boolOptions = (BoolParamOptions) EditorGUI.EnumPopup(rect, boolCondition.boolOptions);
                             boolCondition.Value = boolCondition.boolOptions switch {

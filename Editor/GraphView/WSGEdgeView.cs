@@ -9,9 +9,9 @@ namespace ThunderNut.WorldGraph.Editor {
         public override void OnSelected() {
             base.OnSelected();
             
-            if (output.node is not WSGParameterNodeView) {
-                graphView.DrawPropertiesInInspector((StateTransitionData) userData);
-            }
+            
+            graphView.DrawPropertiesInInspector((StateTransition) userData);
+            
         }
     }
 

@@ -56,7 +56,7 @@ namespace ThunderNut.WorldGraph.Editor {
 
             foreach (var selectedElement in selection.OfType<BlackboardField>()) {
                 ExposedParameter parameter = (ExposedParameter) selectedElement.userData;
-                graphView.CreateParameterNode(parameter, graphMousePosition);
+                // graphView.CreateParameterNode(parameter, graphMousePosition);
             }
         }
 

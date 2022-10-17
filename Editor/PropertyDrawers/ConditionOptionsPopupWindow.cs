@@ -13,9 +13,9 @@ namespace ThunderNut.WorldGraph.Editor {
         private bool m_ShouldClose;
         public float Width;
 
-        public ConditionOptionsPopupWindow(WorldStateGraph graph, StateCondition condition) {
+        public ConditionOptionsPopupWindow(WorldGraph controller, StateCondition condition) {
             m_SearchField = new SearchField();
-            multiColumnTreeView = ExposedParameterTreeView.Create(graph, condition);
+            multiColumnTreeView = ExposedParameterTreeView.Create(controller, condition);
             multiColumnTreeView.onDoubleClicked = ForceClose;
         }
 

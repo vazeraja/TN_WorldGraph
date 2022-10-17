@@ -36,13 +36,7 @@ namespace ThunderNut.WorldGraph.Editor {
             private set => m_Selected = value;
         }
 
-        [SerializeField] private WorldGraphController worldGraphController;
-
-        [SerializeField] private WorldStateGraph m_StateGraph;
-        private WorldStateGraph stateGraph {
-            get => m_StateGraph;
-            set => m_StateGraph = value;
-        }
+        [SerializeField] private WorldGraph controller;
 
         private WSGGraphView m_GraphView;
         private WSGGraphView graphView {
@@ -51,8 +45,6 @@ namespace ThunderNut.WorldGraph.Editor {
                 if (m_GraphView != null) {
                     m_GraphView.RemoveFromHierarchy();
                     m_GraphView.Dispose();
-
-                    Selection.selectionChanged -= SelectionChanged;
 
                     // m_SaveButton.clicked -= saveAction;
                     m_ShowInProjectButton.clicked -= PingAsset;
@@ -63,14 +55,11 @@ namespace ThunderNut.WorldGraph.Editor {
 
                 // ReSharper disable once InvertIf
                 if (m_GraphView != null) {
-                    Selection.selectionChanged += SelectionChanged;
-
                     // m_SaveButton.clicked += saveAction;
                     m_ShowInProjectButton.clicked += PingAsset;
                     m_RefreshButton.clicked += Refresh;
 
                     m_GraphView.Initialize();
-                    SelectionChanged();
 
                     m_GraphView.RegisterCallback<GeometryChangedEvent>(OnGeometryChanged);
                     m_FrameAllAfterLayout = true;
@@ -124,25 +113,25 @@ namespace ThunderNut.WorldGraph.Editor {
             }
 
             try {
-                if (stateGraph == null && selectedGuid != null) {
+                if (controller == null && selectedGuid != null) {
                     string guid = selectedGuid;
                     selectedGuid = null;
                     Initialize(guid);
                 }
 
-                if (stateGraph == null) {
+                if (controller == null) {
                     Close();
                     return;
                 }
 
                 if (graphView == null) {
                     string assetPath = AssetDatabase.GUIDToAssetPath(selectedGuid);
-
                     string graphName = Path.GetFileNameWithoutExtension(assetPath);
-                    var asset = AssetDatabase.LoadAssetAtPath<WorldStateGraph>(assetPath);
-                    stateGraph = asset;
+                    
+                    GameObject gameObject = AssetDatabase.LoadAssetAtPath<GameObject>(assetPath);
+                    controller = gameObject.GetComponent<WorldGraph>();
 
-                    graphView = new WSGGraphView(this, stateGraph, graphName) {
+                    graphView = new WSGGraphView(this, controller, graphName) {
                         name = "GraphView",
                         viewDataKey = selectedGuid,
                     };
@@ -156,53 +145,36 @@ namespace ThunderNut.WorldGraph.Editor {
             catch (Exception e) {
                 m_HasError = true;
                 m_GraphView = null;
-                stateGraph = null;
+                controller = null;
                 Debug.LogException(e);
                 throw;
-            }
-        }
-
-        public void SelectionChanged() {
-            using (SelectionChangedMarker.Auto()) {
-                if (Selection.activeGameObject == null || !Selection.activeGameObject.TryGetComponent(out worldGraphController)) {
-                    // graphView.worldGraph = null;
-                    m_MessageLabel.text = "WorldGraph not selected";
-                    return;
-                }
-
-                if (Selection.count > 1) {
-                    m_MessageLabel.text = "Cannot edit multiple WorldGraph's at once";
-                    return;
-                }
-
-                m_MessageLabel.text = $"{worldGraphController.name} selected";
-                graphView.WorldGraphController = worldGraphController;
             }
         }
 
         public void Initialize(string assetGuid) {
             try {
                 string path = AssetDatabase.GUIDToAssetPath(assetGuid);
-                WorldStateGraph asset = AssetDatabase.LoadAssetAtPath<WorldStateGraph>(path);
+                GameObject gameObject = AssetDatabase.LoadAssetAtPath<GameObject>(path);
+                var controller = gameObject.GetComponent<WorldGraph>();
 
-                if (asset == null || !EditorUtility.IsPersistent(asset) || selectedGuid == assetGuid)
+                if (controller == null || !EditorUtility.IsPersistent(controller) || selectedGuid == assetGuid)
                     return;
 
                 selectedGuid = assetGuid;
                 string graphName = Path.GetFileNameWithoutExtension(path);
 
                 using (GraphLoadMarker.Auto()) {
-                    stateGraph = asset;
+                    this.controller = controller;
                 }
 
-                graphView = new WSGGraphView(this, stateGraph, graphName) {name = "GraphView", viewDataKey = assetGuid};
+                graphView = new WSGGraphView(this, controller, graphName) {name = "GraphView", viewDataKey = assetGuid};
 
                 UpdateTitle();
                 Repaint();
             }
             catch (Exception e) {
                 m_HasError = true;
-                stateGraph = null;
+                controller = null;
                 m_GraphView = null;
                 Debug.LogException(e);
                 throw;
@@ -218,7 +190,7 @@ namespace ThunderNut.WorldGraph.Editor {
                 graphView.AssetName = graphName;
 
             string newTitle = graphName;
-            if (stateGraph == null)
+            if (controller == null)
                 newTitle += " (nothing loaded)";
             else {
                 if (!File.Exists(AssetDatabase.GUIDToAssetPath(selectedGuid)))
@@ -233,7 +205,7 @@ namespace ThunderNut.WorldGraph.Editor {
         }
 
         public void CheckForChanges() {
-            if (m_AssetMaybeDeleted || stateGraph == null) return;
+            if (m_AssetMaybeDeleted || controller == null) return;
             UpdateTitle();
         }
 

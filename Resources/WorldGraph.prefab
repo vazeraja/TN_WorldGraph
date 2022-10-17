@@ -10,9 +10,12 @@ GameObject:
   m_Component:
   - component: {fileID: 1157716811441737300}
   - component: {fileID: 4005085632571571674}
-  - component: {fileID: -3764427926284173584}
-  - component: {fileID: -3797037451269537239}
-  - component: {fileID: -4846783079628317668}
+  - component: {fileID: -2369807397463235435}
+  - component: {fileID: 5897999773209992865}
+  - component: {fileID: -5226341786215937956}
+  - component: {fileID: -6863454984412421454}
+  - component: {fileID: -4593631374108855198}
+  - component: {fileID: 9144204169791985427}
   m_Layer: 0
   m_Name: WorldGraph
   m_TagString: WorldGraph
@@ -47,19 +50,62 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d17f1665a5984e7459a727f391630158, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  stateGraph: {fileID: 11400000, guid: 6bc87f91605c8ff47bc45c285ea9b5b5, type: 2}
   SceneHandles:
-  - {fileID: -3764427926284173584}
-  - {fileID: -3797037451269537239}
+  - {fileID: -5226341786215937956}
+  - {fileID: -6863454984412421454}
   StateTransitions:
-  - {fileID: -4846783079628317668}
-  currentTransitions: []
+  - {fileID: -4593631374108855198}
+  - {fileID: 9144204169791985427}
+  ExposedParameters:
+  - {fileID: -2369807397463235435}
+  - {fileID: 5897999773209992865}
   activeSceneHandle: {fileID: 0}
-  settingB: 
+  activeTransitions: []
+  Active: 0
   settingC: 
   settingD: 
   settingE: 
---- !u!114 &-3764427926284173584
+--- !u!114 &-2369807397463235435
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4039155626588931711}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fbe809c23aab4735a6de04ea27ae744c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  GUID: 77177759-f8c3-427d-96b5-e6f3904ccb13
+  Name: PointsCounter
+  Reference: _PointsCounter
+  Exposed: 1
+  ParameterType: Int
+  Position: {x: 0, y: 0}
+  Value: 0
+  options: 2
+--- !u!114 &5897999773209992865
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4039155626588931711}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fbe809c23aab4735a6de04ea27ae744c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  GUID: 38d17bea-6640-4d49-bb00-c45080d0a720
+  Name: DashCounter
+  Reference: _DashCounter
+  Exposed: 1
+  ParameterType: Int
+  Position: {x: 0, y: 0}
+  Value: 0
+  options: 2
+--- !u!114 &-5226341786215937956
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -71,33 +117,30 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4bf5aac20271450daa54a4f55e20db0a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  StateData:
-    m_GUID: 1aab5bb1-0d65-4c02-b890-d2434a2db603
-    m_SceneName: DefaultSceneA
-    m_SceneType: 0
-    m_Position: {x: 667, y: 195}
-    m_Ports:
-    - OwnerNodeGUID: 1aab5bb1-0d65-4c02-b890-d2434a2db603
-      GUID: a3cafb91-bd8c-4435-9241-3466aaa13f7d
-      PortDirection: Output
-      PortCapacity: Multi
-      PortType: 0
-      PortColor: {r: 0.12, g: 0.44, b: 0.81, a: 1}
-    - OwnerNodeGUID: 1aab5bb1-0d65-4c02-b890-d2434a2db603
-      GUID: fad13335-e940-4b4a-a2b2-3e8a3dcab83d
-      PortDirection: Input
-      PortCapacity: Multi
-      PortType: 0
-      PortColor: {r: 0.12, g: 0.44, b: 0.81, a: 1}
-  StateTransitions: []
+  m_GUID: 07b8ca55-d07c-4b05-bd34-ccc96e43bf90
+  Position: {x: -278, y: 37}
+  Ports:
+  - OwnerNodeGUID: 07b8ca55-d07c-4b05-bd34-ccc96e43bf90
+    GUID: 59a9c4de-f1be-48b3-ad14-cf592bbd96ea
+    PortDirection: Output
+    PortCapacity: Multi
+    PortType: 0
+    PortColor: {r: 0.12, g: 0.44, b: 0.81, a: 1}
+  - OwnerNodeGUID: 07b8ca55-d07c-4b05-bd34-ccc96e43bf90
+    GUID: aa9451aa-0a87-4a2d-8fc4-1d529e46eadc
+    PortDirection: Input
+    PortCapacity: Multi
+    PortType: 0
+    PortColor: {r: 0.12, g: 0.44, b: 0.81, a: 1}
   Active: 1
   Label: FeelSnake
   Scene:
     sceneAsset: {fileID: 102900000, guid: 3c3c000a82c344d4a824451d8abff6b6, type: 3}
     ScenePath: Assets/Feel/FeelDemos/Snake/FeelSnake.unity
+  StateTransitions: []
   LoadingScene:
-    sceneAsset: {fileID: 102900000, guid: 945e5b97212e8e74ebcd35bddde3970c, type: 3}
-    ScenePath: Assets/Feel/MMTools/Tools/MMSceneLoading/LoadingScreens/MMAdditiveLoadingScreenSimple.unity
+    sceneAsset: {fileID: 102900000, guid: fb3e231de7bcdc3428f955acea79180f, type: 3}
+    ScenePath: Assets/TN_WorldGraph/WorldGraphDemos/AdditiveLoadingScreenSimple.unity
   LoadingMode: 2
   Priority: 4
   InterpolateProgress: 1
@@ -111,7 +154,7 @@ MonoBehaviour:
   FadeMode: 0
   EntryFadeTween:
     MMTweenDefinitionType: 0
-    MMTweenCurve: 9
+    MMTweenCurve: 4
     Curve:
       serializedVersion: 2
       m_Curve:
@@ -165,7 +208,7 @@ MonoBehaviour:
       m_PostInfinity: 2
       m_RotationOrder: 4
     Initialized: 0
---- !u!114 &-3797037451269537239
+--- !u!114 &-6863454984412421454
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -177,33 +220,30 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4bf5aac20271450daa54a4f55e20db0a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  StateData:
-    m_GUID: 56b2caf3-a85e-4691-aa27-4b84f686b7e0
-    m_SceneName: DefaultSceneB
-    m_SceneType: 0
-    m_Position: {x: 899, y: 122}
-    m_Ports:
-    - OwnerNodeGUID: 56b2caf3-a85e-4691-aa27-4b84f686b7e0
-      GUID: 48cf336a-10f2-409a-8954-8ca54397f6cc
-      PortDirection: Output
-      PortCapacity: Multi
-      PortType: 0
-      PortColor: {r: 0.12, g: 0.44, b: 0.81, a: 1}
-    - OwnerNodeGUID: 56b2caf3-a85e-4691-aa27-4b84f686b7e0
-      GUID: e7359e50-19e8-4add-834a-aca726fb8ffa
-      PortDirection: Input
-      PortCapacity: Multi
-      PortType: 0
-      PortColor: {r: 0.12, g: 0.44, b: 0.81, a: 1}
-  StateTransitions: []
+  m_GUID: b4363e63-5620-471f-858a-2cecb32aaa92
+  Position: {x: -292, y: 222.08002}
+  Ports:
+  - OwnerNodeGUID: b4363e63-5620-471f-858a-2cecb32aaa92
+    GUID: 69f05d3e-f683-4f6c-a615-117725543a2e
+    PortDirection: Output
+    PortCapacity: Multi
+    PortType: 0
+    PortColor: {r: 0.12, g: 0.44, b: 0.81, a: 1}
+  - OwnerNodeGUID: b4363e63-5620-471f-858a-2cecb32aaa92
+    GUID: b927730c-7790-4c5d-81cf-952269a4cddb
+    PortDirection: Input
+    PortCapacity: Multi
+    PortType: 0
+    PortColor: {r: 0.12, g: 0.44, b: 0.81, a: 1}
   Active: 1
-  Label: PlatformerScene
+  Label: DefaultSceneA
   Scene:
     sceneAsset: {fileID: 102900000, guid: 2cda990e2423bbf4892e6590ba056729, type: 3}
     ScenePath: Assets/TN_WorldGraph/WorldGraphDemos/DefaultSceneA.unity
+  StateTransitions: []
   LoadingScene:
-    sceneAsset: {fileID: 102900000, guid: 945e5b97212e8e74ebcd35bddde3970c, type: 3}
-    ScenePath: Assets/Feel/MMTools/Tools/MMSceneLoading/LoadingScreens/MMAdditiveLoadingScreenSimple.unity
+    sceneAsset: {fileID: 102900000, guid: fb3e231de7bcdc3428f955acea79180f, type: 3}
+    ScenePath: Assets/TN_WorldGraph/WorldGraphDemos/AdditiveLoadingScreenSimple.unity
   LoadingMode: 2
   Priority: 4
   InterpolateProgress: 1
@@ -217,7 +257,7 @@ MonoBehaviour:
   FadeMode: 0
   EntryFadeTween:
     MMTweenDefinitionType: 0
-    MMTweenCurve: 9
+    MMTweenCurve: 4
     Curve:
       serializedVersion: 2
       m_Curve:
@@ -245,7 +285,7 @@ MonoBehaviour:
     Initialized: 0
   ExitFadeTween:
     MMTweenDefinitionType: 0
-    MMTweenCurve: 9
+    MMTweenCurve: 4
     Curve:
       serializedVersion: 2
       m_Curve:
@@ -271,7 +311,7 @@ MonoBehaviour:
       m_PostInfinity: 2
       m_RotationOrder: 4
     Initialized: 0
---- !u!114 &-4846783079628317668
+--- !u!114 &-4593631374108855198
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -284,56 +324,51 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   conditions:
-  - rid: 5390805756213985332
-  data:
-    m_StateGraph: {fileID: 11400000, guid: 6bc87f91605c8ff47bc45c285ea9b5b5, type: 2}
-    m_GUID: 9f2ca517-f19b-4c30-ab44-9b21c3cb9b15
-    m_OutputStateGUID: 1aab5bb1-0d65-4c02-b890-d2434a2db603
-    m_InputStateGUID: 56b2caf3-a85e-4691-aa27-4b84f686b7e0
-    m_OutputState:
-      m_GUID: 1aab5bb1-0d65-4c02-b890-d2434a2db603
-      m_SceneName: DefaultSceneA
-      m_SceneType: 0
-      m_Position: {x: 675, y: 204}
-      m_Ports:
-      - OwnerNodeGUID: 1aab5bb1-0d65-4c02-b890-d2434a2db603
-        GUID: a3cafb91-bd8c-4435-9241-3466aaa13f7d
-        PortDirection: Output
-        PortCapacity: Multi
-        PortType: 0
-        PortColor: {r: 0.12, g: 0.44, b: 0.81, a: 1}
-      - OwnerNodeGUID: 1aab5bb1-0d65-4c02-b890-d2434a2db603
-        GUID: fad13335-e940-4b4a-a2b2-3e8a3dcab83d
-        PortDirection: Input
-        PortCapacity: Multi
-        PortType: 0
-        PortColor: {r: 0.12, g: 0.44, b: 0.81, a: 1}
-    m_InputState:
-      m_GUID: 56b2caf3-a85e-4691-aa27-4b84f686b7e0
-      m_SceneName: DefaultSceneB
-      m_SceneType: 0
-      m_Position: {x: 899, y: 122}
-      m_Ports:
-      - OwnerNodeGUID: 56b2caf3-a85e-4691-aa27-4b84f686b7e0
-        GUID: 48cf336a-10f2-409a-8954-8ca54397f6cc
-        PortDirection: Output
-        PortCapacity: Multi
-        PortType: 0
-        PortColor: {r: 0.12, g: 0.44, b: 0.81, a: 1}
-      - OwnerNodeGUID: 56b2caf3-a85e-4691-aa27-4b84f686b7e0
-        GUID: e7359e50-19e8-4add-834a-aca726fb8ffa
-        PortDirection: Input
-        PortCapacity: Multi
-        PortType: 0
-        PortColor: {r: 0.12, g: 0.44, b: 0.81, a: 1}
+  - rid: 5390805800954626232
+  GUID: 40303c36-0c9e-4894-b77a-79856b4cbcd8
+  OutputStateGUID: b4363e63-5620-471f-858a-2cecb32aaa92
+  InputStateGUID: 07b8ca55-d07c-4b05-bd34-ccc96e43bf90
   m_Active: 1
-  m_Label: DefaultSceneA ---> DefaultSceneB
+  m_Label: DefaultSceneA ---> FeelSnake
+  references:
+    version: 2
+    RefIds:
+    - rid: 5390805800954626232
+      type: {class: StateCondition, ns: ThunderNut.WorldGraph, asm: Unity.WorldGraph}
+      data:
+        parameter: {fileID: 5897999773209992865}
+        value:
+          rid: 5390805800954626233
+    - rid: 5390805800954626233
+      type: {class: IntCondition, ns: ThunderNut.WorldGraph, asm: Unity.WorldGraph}
+      data:
+        Value: 3
+        intOptions: 0
+--- !u!114 &9144204169791985427
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4039155626588931711}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b3a3fbd8e0fe40ecb582b9ee83823f9a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  conditions:
+  - rid: 5390805800954626243
+  GUID: 07b9780e-39c1-4087-b195-50dec5d6acb9
+  OutputStateGUID: 07b8ca55-d07c-4b05-bd34-ccc96e43bf90
+  InputStateGUID: b4363e63-5620-471f-858a-2cecb32aaa92
+  m_Active: 1
+  m_Label: FeelSnake ---> DefaultSceneA
   references:
     version: 2
     RefIds:
     - rid: -2
       type: {class: , ns: , asm: }
-    - rid: 5390805756213985332
+    - rid: 5390805800954626243
       type: {class: StateCondition, ns: ThunderNut.WorldGraph, asm: Unity.WorldGraph}
       data:
         parameter: {fileID: 0}

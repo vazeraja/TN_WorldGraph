@@ -15,13 +15,25 @@ namespace ThunderNut.WorldGraph.Editor {
     public static class WSGHelpers {
         [OnOpenAsset(0)]
         public static bool OnBaseGraphOpened(int instanceID, int line) {
-            var asset = EditorUtility.InstanceIDToObject(instanceID) as WorldStateGraph;
+            var gameObject = EditorUtility.InstanceIDToObject(instanceID) as GameObject;
+            if (gameObject == null || !gameObject.TryGetComponent(out WorldGraph controller)) {
+                return false;
+            }
+            
             string path = AssetDatabase.GetAssetPath(instanceID);
 
-            if (asset == null || !path.Contains("WorldGraph"))
-                return false;
-
             return ShowWorldGraphEditorWindow(path);
+        }
+        
+        [MenuItem("Tools/ThunderNut/WorldGraph/Graph")]
+        private static void ShowWorldGraphEditorWindow() {
+            var gameObject = Resources.Load<GameObject>("WorldGraph");
+            if (gameObject == null || !gameObject.TryGetComponent(out WorldGraph controller)) {
+                return;
+            }
+            
+            string path = AssetDatabase.GetAssetPath(gameObject.GetInstanceID());
+            ShowWorldGraphEditorWindow(path);
         }
         
         private static bool ShowWorldGraphEditorWindow(string path) {

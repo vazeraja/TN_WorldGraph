@@ -1,17 +1,18 @@
 ﻿using System;
-using UnityEngine;
 
 namespace ThunderNut.WorldGraph {
 
-    public enum FloatParamOptions {
+    public enum IntParamOptions {
         GreaterThan,
-        LessThan
+        LessThan,
+        Equals,
+        NotEquals,
     }
-    public class FloatParameterField : ParameterField<float> {
-        public FloatParamOptions options = FloatParamOptions.GreaterThan;
+    public class IntParameter : ParameterField<int> {
+        public IntParamOptions options = IntParamOptions.Equals;
         
-        private const float DEFAULT_VALUE = 0f;
-        private const string DEFAULT_NAME = "FloatParameter";
+        private const int DEFAULT_VALUE = 0;
+        private const string DEFAULT_NAME = "IntParameter";
         
         public override void Dispose() {
             Value = DEFAULT_VALUE;
@@ -19,12 +20,12 @@ namespace ThunderNut.WorldGraph {
             base.Dispose();
         }
         
-        public FloatParameterField() {
+        public IntParameter() {
             GUID = Guid.NewGuid().ToString();
             Name = DEFAULT_NAME;
             Reference = $"_{DEFAULT_NAME}";
             Exposed = true;
-            ParameterType = "Float";
+            ParameterType = "Int";
             Value = DEFAULT_VALUE;
         }
     }

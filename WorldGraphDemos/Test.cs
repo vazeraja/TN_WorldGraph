@@ -8,12 +8,9 @@ using UnityEngine;
 public class Test : MonoBehaviour {
     public Snake snakeController;
 
-    private WorldGraphController worldGraphController;
-    private void Awake() {
-        worldGraphController = WorldGraph.GetWorldGraph().Controller;
-    }
+    private WorldGraph worldGraph;
 
     private void Update() {
-        worldGraphController.SetInt("_IntParameter", snakeController.SnakePoints);
+        WorldGraphManager.worldGraph.SetInt("_PointsCounter", snakeController.SnakePoints);
     }
 }

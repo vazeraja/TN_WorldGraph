@@ -55,6 +55,8 @@ namespace ThunderNut.WorldGraph.Demos {
         [HideInInspector] public int jumpsLeft;
         [HideInInspector] public bool canDash;
 
+        private int DashCount = 0;
+
         private void Awake() {
             collisionHandler = GetComponent<CollisionHandler>();
 
@@ -84,8 +86,9 @@ namespace ThunderNut.WorldGraph.Demos {
         }
 
         private void Update() {
-            
             stateMachine.Update();
+            
+            WorldGraphManager.worldGraph.SetInt("_DashCounter", DashCount);
         }
 
         private void FixedUpdate() => stateMachine.FixedUpdate();
@@ -106,7 +109,8 @@ namespace ThunderNut.WorldGraph.Demos {
         }
 
         private void OnDash(float value) {
-            Debug.Log("DASH");
+            DashCount++;
+            Debug.Log("DASH: " + DashCount);
             EnterDashState();
         }
 

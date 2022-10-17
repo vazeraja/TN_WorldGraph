@@ -7,7 +7,7 @@ namespace ThunderNut.WorldGraph {
         NotEquals,
     }
     
-    public class StringParameterField : ParameterField<string> {
+    public class StringParameter : ParameterField<string> {
         private const string DEFAULT_VALUE = "Default_Value";
         private const string DEFAULT_NAME = "StringParameter";
         
@@ -19,7 +19,7 @@ namespace ThunderNut.WorldGraph {
             base.Dispose();
         }
 
-        public StringParameterField() {
+        public StringParameter() {
             GUID = Guid.NewGuid().ToString();
             Name = DEFAULT_NAME;
             Reference = $"_{DEFAULT_NAME}";

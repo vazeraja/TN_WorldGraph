@@ -7,8 +7,5 @@ namespace ThunderNut.WorldGraph.Handles {
     [Path("Basic/DefaultHandle", "Default")]
     public class DefaultHandle : SceneHandle {
         public override Color HandleColor => WSGColors.Bisque;
-
-        public override SceneType SceneType => SceneType.Default;
     }
-
 }

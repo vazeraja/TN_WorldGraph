@@ -13,15 +13,15 @@ namespace ThunderNut.WorldGraph.Editor {
         public Action onDoubleClicked;
         private readonly List<ExposedParameter> data;
 
-        private WorldStateGraph graph;
+        private WorldGraph controller;
         private StateCondition condition;
 
-        private ExposedParameterTreeView(WorldStateGraph graph, StateCondition condition) : base(
+        private ExposedParameterTreeView(WorldGraph controller, StateCondition condition) : base(
             new TreeViewState()) {
-            this.graph = graph;
+            this.controller = controller;
             this.condition = condition;
 
-            data = graph.ExposedParameters;
+            data = controller.ExposedParameters;
 
             Reload();
         }
@@ -31,10 +31,10 @@ namespace ThunderNut.WorldGraph.Editor {
             condition.parameter = exposedParam;
 
             condition.value = condition.parameter switch {
-                StringParameterField => new StringCondition(),
-                FloatParameterField => new FloatCondition(),
-                IntParameterField => new IntCondition(),
-                BoolParameterField => new BoolCondition(),
+                StringParameter => new StringCondition(),
+                FloatParameter => new FloatCondition(),
+                IntParameter => new IntCondition(),
+                BoolParameter => new BoolCondition(),
                 _ => condition.value
             };
 
@@ -58,8 +58,8 @@ namespace ThunderNut.WorldGraph.Editor {
             return root;
         }
 
-        public static ExposedParameterTreeView Create(WorldStateGraph graph, StateCondition condition) {
-            return new ExposedParameterTreeView(graph, condition);
+        public static ExposedParameterTreeView Create(WorldGraph controller, StateCondition condition) {
+            return new ExposedParameterTreeView(controller, condition);
         }
     }
 

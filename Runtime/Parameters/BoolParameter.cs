@@ -1,18 +1,17 @@
 ﻿using System;
 
 namespace ThunderNut.WorldGraph {
-
-    public enum IntParamOptions {
-        GreaterThan,
-        LessThan,
-        Equals,
-        NotEquals,
+    
+    public enum BoolParamOptions {
+        True,
+        False,
     }
-    public class IntParameterField : ParameterField<int> {
-        public IntParamOptions options = IntParamOptions.Equals;
+    
+    public class BoolParameter : ParameterField<bool> {
+        public BoolParamOptions options = BoolParamOptions.True;
         
-        private const int DEFAULT_VALUE = 0;
-        private const string DEFAULT_NAME = "FloatParameter";
+        private const bool DEFAULT_VALUE = false;
+        private const string DEFAULT_NAME = "BoolParameter";
         
         public override void Dispose() {
             Value = DEFAULT_VALUE;
@@ -20,14 +19,15 @@ namespace ThunderNut.WorldGraph {
             base.Dispose();
         }
         
-        public IntParameterField() {
+        public BoolParameter() {
             GUID = Guid.NewGuid().ToString();
             Name = DEFAULT_NAME;
             Reference = $"_{DEFAULT_NAME}";
             Exposed = true;
-            ParameterType = "Int";
+            ParameterType = "Bool";
             Value = DEFAULT_VALUE;
         }
+        
     }
 
 }

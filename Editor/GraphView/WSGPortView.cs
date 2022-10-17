@@ -58,7 +58,7 @@ namespace ThunderNut.WorldGraph.Editor {
                 m_GraphView.RemoveElement(connectedEdge);
             }
 
-            ((WSGNodeView) nodeView).stateData.RemovePort(portData);
+            ((WSGNodeView) nodeView).sceneHandle.RemovePort(portData);
             nodeView.inputContainer.Remove(this);
         }
 

@@ -10,7 +10,7 @@ using UnityEngine.UIElements;
 namespace ThunderNut.WorldGraph.Editor {
 
     public sealed class WSGNodeView : Node {
-        public readonly SceneStateData stateData;
+        public readonly SceneHandle sceneHandle;
 
         public WSGPortView input;
         public WSGPortView output;
@@ -23,22 +23,22 @@ namespace ThunderNut.WorldGraph.Editor {
         private Button addParameterButton;
         private Button playSceneButton;
 
-        public WSGNodeView(WSGGraphView graphView, SceneStateData stateData, IEdgeConnectorListener connectorListener) :
+        public WSGNodeView(WSGGraphView graphView, SceneHandle sceneHandle, IEdgeConnectorListener connectorListener) :
             base(AssetDatabase.GetAssetPath(Resources.Load<VisualTreeAsset>("UXML/WGGraphNode"))) {
             this.graphView = graphView;
-            this.stateData = stateData;
+            this.sceneHandle = sceneHandle;
             this.connectorListener = connectorListener;
 
-            if (string.IsNullOrEmpty(stateData.SceneName)) {
-                stateData.SceneName = $"{stateData.SceneType.ToString()} Handle";
+            if (string.IsNullOrEmpty(sceneHandle.Label)) {
+                sceneHandle.Label = $"{sceneHandle.GetType()}";
             }
 
-            userData = stateData;
-            name = stateData.SceneName;
-            title = stateData.SceneName;
-            viewDataKey = stateData.GUID;
-            style.left = stateData.Position.x;
-            style.top = stateData.Position.y;
+            userData = sceneHandle;
+            name = sceneHandle.Label;
+            title = sceneHandle.Label;
+            viewDataKey = sceneHandle.GUID;
+            style.left = sceneHandle.Position.x;
+            style.top = sceneHandle.Position.y;
 
             addParameterButton = this.Q<Button>("add-parameter-button");
             addParameterButton.style.backgroundImage = Resources.Load<Texture2D>("Sprite-0001");
@@ -46,8 +46,8 @@ namespace ThunderNut.WorldGraph.Editor {
 
             SetupTitleField();
 
-            LoadDefaultPorts(stateData.Ports);
-            LoadParameterPorts(stateData.Ports);
+            LoadDefaultPorts(sceneHandle.Ports);
+            LoadParameterPorts(sceneHandle.Ports);
 
             addParameterButton.clicked += AddParameterPort;
             // playSceneButton.clicked += PlayScene;
@@ -61,42 +61,42 @@ namespace ThunderNut.WorldGraph.Editor {
             var loadedOutputPort = portDataList.Find(x => x.PortType == PortType.Default && x.PortDirection == "Output");
             var loadedInputPort = portDataList.Find(x => x.PortType == PortType.Default && x.PortDirection == "Input");
 
-            switch (stateData.SceneType) {
-                case SceneType.Default:
+            switch (sceneHandle) {
+                case DefaultHandle:
                     AddToClassList("defaultHandle");
                     portColor = new Color(0.12f, 0.44f, 0.81f);
 
-                    if (loadedOutputPort == null) outputPortData = stateData.CreatePort(viewDataKey, true, true, false, portColor);
+                    if (loadedOutputPort == null) outputPortData = sceneHandle.CreatePort(viewDataKey, true, true, false, portColor);
                     output = new WSGPortView(graphView, loadedOutputPort ?? outputPortData, connectorListener, this);
                     outputContainer.Add(output);
 
-                    if (loadedInputPort == null) inputPortData = stateData.CreatePort(viewDataKey, false, true, false, portColor);
+                    if (loadedInputPort == null) inputPortData = sceneHandle.CreatePort(viewDataKey, false, true, false, portColor);
                     input = new WSGPortView(graphView, loadedInputPort ?? inputPortData, connectorListener, this);
                     inputContainer.Add(input);
 
                     break;
-                case SceneType.Battle:
+                case BattleHandle:
                     AddToClassList("battleHandle");
                     portColor = new Color(0.94f, 0.7f, 0.31f);
 
-                    if (loadedOutputPort == null) outputPortData = stateData.CreatePort(viewDataKey, true, true, false, portColor);
+                    if (loadedOutputPort == null) outputPortData = sceneHandle.CreatePort(viewDataKey, true, true, false, portColor);
                     output = new WSGPortView(graphView, loadedOutputPort ?? outputPortData, connectorListener, this);
                     outputContainer.Add(output);
 
-                    if (loadedInputPort == null) inputPortData = stateData.CreatePort(viewDataKey, false, true, false, portColor);
+                    if (loadedInputPort == null) inputPortData = sceneHandle.CreatePort(viewDataKey, false, true, false, portColor);
                     input = new WSGPortView(graphView, loadedInputPort ?? inputPortData, connectorListener, this);
                     inputContainer.Add(input);
 
                     break;
-                case SceneType.Cutscene:
+                case CutsceneHandle:
                     AddToClassList("cutsceneHandle");
                     portColor = new Color(0.81f, 0.29f, 0.28f);
 
-                    if (loadedOutputPort == null) outputPortData = stateData.CreatePort(viewDataKey, true, true, false, portColor);
+                    if (loadedOutputPort == null) outputPortData = sceneHandle.CreatePort(viewDataKey, true, true, false, portColor);
                     output = new WSGPortView(graphView, loadedOutputPort ?? outputPortData, connectorListener, this);
                     outputContainer.Add(output);
 
-                    if (loadedInputPort == null) inputPortData = stateData.CreatePort(viewDataKey, false, true, false, portColor);
+                    if (loadedInputPort == null) inputPortData = sceneHandle.CreatePort(viewDataKey, false, true, false, portColor);
                     input = new WSGPortView(graphView, loadedInputPort ?? inputPortData, connectorListener, this);
                     inputContainer.Add(input);
 
@@ -114,7 +114,7 @@ namespace ThunderNut.WorldGraph.Editor {
         }
 
         private void AddParameterPort() {
-            var portData = stateData.CreatePort(viewDataKey, false, false, true, portColor);
+            var portData = sceneHandle.CreatePort(viewDataKey, false, false, true, portColor);
             var parameterPort = new WSGPortView(graphView, portData, connectorListener, this);
             graphView.RegisterPortBehavior(parameterPort);
 
@@ -124,8 +124,8 @@ namespace ThunderNut.WorldGraph.Editor {
         private void SetupTitleField() {
             Label titleLabel = this.Q<Label>("title-label");
             {
-                // titleLabel.Bind(new SerializedObject(sceneHandle));
-                // titleLabel.bindingPath = "HandleName";
+                titleLabel.Bind(new SerializedObject(sceneHandle));
+                titleLabel.bindingPath = "Label";
 
                 titleTextField = new TextField {isDelayed = true};
                 titleTextField.style.display = DisplayStyle.None;
@@ -154,7 +154,7 @@ namespace ThunderNut.WorldGraph.Editor {
 
                 void CloseAndSaveTitleEditor(string newTitle) {
                     // sceneHandle.HandleName = newTitle;
-                    stateData.SceneName = newTitle;
+                    sceneHandle.Label = newTitle;
 
                     // hide title TextBox
                     titleTextField.style.display = DisplayStyle.None;
@@ -166,20 +166,20 @@ namespace ThunderNut.WorldGraph.Editor {
 
                 void UpdateTitle() {
                     // title = sceneHandle.HandleName ?? sceneHandle.GetType().Name;
-                    title = stateData.SceneName ?? $"{stateData.SceneType.ToString()} Handle";
+                    title = sceneHandle.Label ?? $"{sceneHandle.GetType()} ";
                 }
             }
         }
 
         public override void OnSelected() {
             base.OnSelected();
-            graphView.DrawPropertiesInInspector(stateData);
+            graphView.DrawPropertiesInInspector(sceneHandle);
         }
 
         public override void SetPosition(Rect newPos) {
             base.SetPosition(newPos);
 
-            stateData.Position = new Vector2(newPos.xMin, newPos.yMin);
+            sceneHandle.Position = new Vector2(newPos.xMin, newPos.yMin);
         }
     }
 

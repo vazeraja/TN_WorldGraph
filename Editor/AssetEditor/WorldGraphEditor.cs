@@ -8,14 +8,16 @@ using UnityEngine;
 
 namespace ThunderNut.WorldGraph.Editor {
 
-    [CustomEditor(typeof(WorldGraphController))]
-    public class WorldGraphControllerEditor : UnityEditor.Editor {
+    [CustomEditor(typeof(WorldGraph))]
+    public class WorldGraphEditor : UnityEditor.Editor {
         private SerializedProperty sceneHandles;
         private SerializedProperty stateTransitions;
+        private SerializedProperty exposedParameters;
+        private SerializedProperty activeSceneHandle;
 
         private Dictionary<SceneHandle, UnityEditor.Editor> _editors;
 
-        private readonly List<string> typeDisplays = new List<string>(); 
+        private readonly List<string> typeDisplays = new List<string>();
         private bool _settingsMenuDropdown;
         private GUIStyle _playingStyle;
         private static bool debugView = false;
@@ -27,10 +29,12 @@ namespace ThunderNut.WorldGraph.Editor {
         private void OnEnable() {
             sceneHandles = serializedObject.FindProperty("SceneHandles");
             stateTransitions = serializedObject.FindProperty("StateTransitions");
+            exposedParameters = serializedObject.FindProperty("ExposedParameters");
+            activeSceneHandle = serializedObject.FindProperty("activeSceneHandle");
 
             // store GUI bg color
             _originalBackgroundColor = GUI.backgroundColor;
-            
+
             RepairRoutine();
 
             _editors = new Dictionary<SceneHandle, UnityEditor.Editor>();
@@ -57,14 +61,13 @@ namespace ThunderNut.WorldGraph.Editor {
             Rect helpBoxRect = GUILayoutUtility.GetLastRect();
 
             // -------------------------------------------- Settings dropdown --------------------------------------------
-            EditorGUILayout.PropertyField(serializedObject.FindProperty("stateGraph"));
+            EditorGUILayout.PropertyField(activeSceneHandle);
 
             _settingsMenuDropdown = EditorGUILayout.Foldout(_settingsMenuDropdown, "Settings", true, EditorStyles.foldout);
             if (_settingsMenuDropdown) {
                 EditorGUILayout.Space(10);
                 EditorGUILayout.LabelField("Initialization", EditorStyles.boldLabel);
-                EditorGUILayout.PropertyField(serializedObject.FindProperty("activeSceneHandle"));
-                EditorGUILayout.PropertyField(serializedObject.FindProperty("settingB"));
+                EditorGUILayout.PropertyField(serializedObject.FindProperty("Active"));
                 EditorGUILayout.PropertyField(serializedObject.FindProperty("settingC"));
 
                 EditorGUILayout.Space(10);
@@ -98,6 +101,15 @@ namespace ThunderNut.WorldGraph.Editor {
             }
 
             // -------------------------------------------- Draw list --------------------------------------------
+
+            for (int i = 0; i < exposedParameters.arraySize; i++) {
+                SerializedProperty property = exposedParameters.GetArrayElementAtIndex(i);
+
+                if (property.objectReferenceValue == null) continue; // Should not happen ...
+
+                ExposedParameter exposedParameter = property.objectReferenceValue as ExposedParameter;
+                exposedParameter!.hideFlags = debugView ? HideFlags.None : HideFlags.HideInInspector;
+            }
 
             for (int i = 0; i < stateTransitions.arraySize; i++) {
                 SerializedProperty property = stateTransitions.GetArrayElementAtIndex(i);
@@ -178,7 +190,8 @@ namespace ThunderNut.WorldGraph.Editor {
                     CreateCachedEditor(handle, handle.GetType(), ref editor);
 
                     // ((TN_MonoBehaviourEditor) editor).drawScriptField = false;
-                    ((TN_MonoBehaviourEditor) editor).OnInspectorGUI();
+                    // ((TN_MonoBehaviourEditor) editor).OnInspectorGUI();
+                    editor.OnInspectorGUI();
 
                     EditorGUI.EndDisabledGroup();
 
@@ -250,8 +263,24 @@ namespace ThunderNut.WorldGraph.Editor {
                 }
             }
 
+            for (int i = stateTransitions.arraySize - 1; i >= 0; i--) {
+                // ReSharper disable once InvertIf
+                if (stateTransitions.GetArrayElementAtIndex(i).objectReferenceValue == null) {
+                    wasRemoved = true;
+                    stateTransitions.DeleteArrayElementAtIndex(i);
+                }
+            }
+
+            for (int i = exposedParameters.arraySize - 1; i >= 0; i--) {
+                // ReSharper disable once InvertIf
+                if (exposedParameters.GetArrayElementAtIndex(i).objectReferenceValue == null) {
+                    wasRemoved = true;
+                    exposedParameters.DeleteArrayElementAtIndex(i);
+                }
+            }
+
             if (wasRemoved) {
-                GameObject gameObject = (target as WorldGraphController)?.gameObject;
+                GameObject gameObject = (target as WorldGraph)?.gameObject;
                 foreach (var c in gameObject!.GetComponents<Component>()) {
                     if (c != null) {
                         c.hideFlags = HideFlags.None;
@@ -289,117 +318,26 @@ namespace ThunderNut.WorldGraph.Editor {
                     debugView = GUILayout.Toggle(debugView, "Debug View", EditorStyles.miniButtonRight);
 
                     if (EditorGUI.EndChangeCheck()) {
-                        foreach (var f in (target as WorldGraphController)?.SceneHandles)
+                        foreach (var f in (target as WorldGraph)?.SceneHandles)
                             f.hideFlags = debugView ? HideFlags.HideInInspector : HideFlags.None;
-                        foreach (var f in (target as WorldGraphController)?.StateTransitions)
+                        foreach (var f in (target as WorldGraph)?.StateTransitions)
                             f.hideFlags = debugView ? HideFlags.HideInInspector : HideFlags.None;
                         UnityEditorInternal.InternalEditorUtility.RepaintAllViews();
                     }
                 }
 
-                if (GUILayout.Button("Initialize State Graph", EditorStyles.miniButtonRight)) {
-                    InitializeFromStateGraph();
-                }
+                if (GUILayout.Button("Initialize State Graph", EditorStyles.miniButtonRight)) { }
             }
             EditorGUILayout.EndHorizontal();
         }
 
-        private void InitializeFromStateGraph() {
-            var obj = (target as WorldGraphController)?.gameObject;
 
-            // -------------------- Remove All Scene Handles --------------------
-            for (int i = 0; i < sceneHandles.arraySize; i++) {
-                SerializedProperty property = sceneHandles.GetArrayElementAtIndex(i);
-                SceneHandle sceneHandle = property.objectReferenceValue as SceneHandle;
-
-                if (sceneHandle == null) break;
-
-                var match = (target as WorldGraphController)?.stateGraph.SceneStateData.Find(data => data.GUID == sceneHandle.StateData.GUID);
-                if (match != null) continue;
-
-                Debug.Log($"destroying {sceneHandle.Label}");
-                (target as WorldGraphController)?.SceneHandles.Remove(sceneHandle);
-                Undo.DestroyObjectImmediate(sceneHandle);
-            }
-
-            // -------------------- Remove all StateTransition's that no longer have data fields in the StateGraph --------------------
-            for (int i = 0; i < stateTransitions.arraySize; i++) {
-                SerializedProperty property = stateTransitions.GetArrayElementAtIndex(i);
-                StateTransition stateTransition = property.objectReferenceValue as StateTransition;
-
-                if (stateTransition == null) break;
-
-                var match = (target as WorldGraphController)?.stateGraph.StateTransitionData.Find(data =>
-                    data.GUID == stateTransition.data.GUID);
-                if (match != null) continue;
-
-                Debug.Log($"destroying {stateTransition.Label}");
-                (target as WorldGraphController)?.StateTransitions.Remove(stateTransition);
-                Undo.DestroyObjectImmediate(stateTransition);
-            }
-
-            // -------------------- Add All Scene Handles --------------------
-            foreach (var data in (target as WorldGraphController)?.stateGraph.SceneStateData) {
-                var match = (target as WorldGraphController)?.SceneHandles.Find(sceneHandle => sceneHandle.StateData.GUID == data.GUID);
-                if (match != null) continue;
-
-                switch (data.SceneType) {
-                    case SceneType.Default:
-                        AddHandle(typeof(DefaultHandle), data);
-                        break;
-                    case SceneType.Cutscene:
-                        AddHandle(typeof(CutsceneHandle), data);
-                        break;
-                    case SceneType.Battle:
-                        AddHandle(typeof(BattleHandle), data);
-                        break;
-                }
-            }
-
-            // ------------ Add all StateTransition's with their data fields skipping ones that already exist ------------
-            foreach (var data in (target as WorldGraphController)?.stateGraph.StateTransitionData) {
-                var match = (target as WorldGraphController)?.StateTransitions.Find(transition => transition.data.GUID == data.GUID);
-                if (match != null) continue;
-
-                AddTransition(data);
-            }
-
-            // ------------ Add all StateTransition's to their SceneHandle, if the SceneHandle doesnt already contain ------------
-            // foreach (var transition in (target as WorldGraph)?.StateTransitions) {
-            //     var match = (target as WorldGraph)?.SceneHandles.Find(handle =>
-            //         handle.StateData.GUID == transition.data.OutputStateGUID);
-            //
-            //     if (match == null || match.StateTransitions.Any(x => x.data.GUID == transition.data.GUID)) continue;
-            //     match.StateTransitions.Add(transition);
-            // }
-
-            void AddHandle(Type type, SceneStateData data) {
-                SceneHandle sceneHandle = Undo.AddComponent(obj, type) as SceneHandle;
-                sceneHandle!.hideFlags = debugView ? HideFlags.None : HideFlags.HideInInspector;
-                sceneHandle.Label = type.Name;
-                sceneHandle.StateData = data;
-
-                AddEditor(sceneHandle);
-
-                (target as WorldGraphController)?.SceneHandles.Add(sceneHandle);
-            }
-
-            void AddTransition(StateTransitionData data) {
-                StateTransition stateTransition = Undo.AddComponent(obj, typeof(StateTransition)) as StateTransition;
-                stateTransition!.hideFlags = debugView ? HideFlags.None : HideFlags.HideInInspector;
-                stateTransition.data = data;
-
-                (target as WorldGraphController)?.StateTransitions.Add(stateTransition);
-            }
-        }
-        
-        protected virtual void RepairRoutine()
-        {
-            (target as WorldGraphController)?.AutoRepair();
+        protected virtual void RepairRoutine() {
+            (target as WorldGraph)?.AutoRepair();
             serializedObject.ApplyModifiedProperties();
         }
 
-        public SceneHandle AddSceneHandle(Type type) { 
+        public SceneHandle AddSceneHandle(Type type) {
             // GameObject gameObject = (target as WorldGraph)?.gameObject;
             //
             // SceneHandle sceneHandle = Undo.AddComponent(gameObject, type) as SceneHandle;
@@ -412,8 +350,8 @@ namespace ThunderNut.WorldGraph.Editor {
             // sceneHandles.GetArrayElementAtIndex(sceneHandles.arraySize - 1).objectReferenceValue = sceneHandle;
             //
             // return sceneHandle;
-            
-            return (target as WorldGraphController)?.AddSceneHandle(type);
+
+            return (target as WorldGraph)?.AddSceneHandle(type);
         }
 
         private void RemoveSceneHandle(int id) {
@@ -424,8 +362,8 @@ namespace ThunderNut.WorldGraph.Editor {
             //
             // _editors.Remove(sceneHandle);
             // Undo.DestroyObjectImmediate(sceneHandle);
-            
-            (target as WorldGraphController)?.RemoveSceneHandle(id);
+
+            (target as WorldGraph)?.RemoveSceneHandle(id);
         }
 
         public void AddEditor(SceneHandle handle) {
