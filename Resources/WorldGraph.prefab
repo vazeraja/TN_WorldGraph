@@ -14,8 +14,6 @@ GameObject:
   - component: {fileID: 5897999773209992865}
   - component: {fileID: -5226341786215937956}
   - component: {fileID: -6863454984412421454}
-  - component: {fileID: -4593631374108855198}
-  - component: {fileID: 9144204169791985427}
   m_Layer: 0
   m_Name: WorldGraph
   m_TagString: WorldGraph
@@ -53,9 +51,7 @@ MonoBehaviour:
   SceneHandles:
   - {fileID: -5226341786215937956}
   - {fileID: -6863454984412421454}
-  StateTransitions:
-  - {fileID: -4593631374108855198}
-  - {fileID: 9144204169791985427}
+  StateTransitions: []
   ExposedParameters:
   - {fileID: -2369807397463235435}
   - {fileID: 5897999773209992865}
@@ -118,7 +114,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_GUID: 07b8ca55-d07c-4b05-bd34-ccc96e43bf90
-  Position: {x: -278, y: 37}
+  Position: {x: -273, y: 35}
   Ports:
   - OwnerNodeGUID: 07b8ca55-d07c-4b05-bd34-ccc96e43bf90
     GUID: 59a9c4de-f1be-48b3-ad14-cf592bbd96ea
@@ -221,7 +217,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_GUID: b4363e63-5620-471f-858a-2cecb32aaa92
-  Position: {x: -292, y: 222.08002}
+  Position: {x: -12, y: 101}
   Ports:
   - OwnerNodeGUID: b4363e63-5620-471f-858a-2cecb32aaa92
     GUID: 69f05d3e-f683-4f6c-a615-117725543a2e
@@ -311,66 +307,3 @@ MonoBehaviour:
       m_PostInfinity: 2
       m_RotationOrder: 4
     Initialized: 0
---- !u!114 &-4593631374108855198
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4039155626588931711}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b3a3fbd8e0fe40ecb582b9ee83823f9a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  conditions:
-  - rid: 5390805800954626232
-  GUID: 40303c36-0c9e-4894-b77a-79856b4cbcd8
-  OutputStateGUID: b4363e63-5620-471f-858a-2cecb32aaa92
-  InputStateGUID: 07b8ca55-d07c-4b05-bd34-ccc96e43bf90
-  m_Active: 1
-  m_Label: DefaultSceneA ---> FeelSnake
-  references:
-    version: 2
-    RefIds:
-    - rid: 5390805800954626232
-      type: {class: StateCondition, ns: ThunderNut.WorldGraph, asm: Unity.WorldGraph}
-      data:
-        parameter: {fileID: 5897999773209992865}
-        value:
-          rid: 5390805800954626233
-    - rid: 5390805800954626233
-      type: {class: IntCondition, ns: ThunderNut.WorldGraph, asm: Unity.WorldGraph}
-      data:
-        Value: 3
-        intOptions: 0
---- !u!114 &9144204169791985427
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4039155626588931711}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b3a3fbd8e0fe40ecb582b9ee83823f9a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  conditions:
-  - rid: 5390805800954626243
-  GUID: 07b9780e-39c1-4087-b195-50dec5d6acb9
-  OutputStateGUID: 07b8ca55-d07c-4b05-bd34-ccc96e43bf90
-  InputStateGUID: b4363e63-5620-471f-858a-2cecb32aaa92
-  m_Active: 1
-  m_Label: FeelSnake ---> DefaultSceneA
-  references:
-    version: 2
-    RefIds:
-    - rid: -2
-      type: {class: , ns: , asm: }
-    - rid: 5390805800954626243
-      type: {class: StateCondition, ns: ThunderNut.WorldGraph, asm: Unity.WorldGraph}
-      data:
-        parameter: {fileID: 0}
-        value:
-          rid: -2

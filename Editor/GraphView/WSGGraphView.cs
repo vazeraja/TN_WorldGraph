@@ -139,11 +139,13 @@ namespace ThunderNut.WorldGraph.Editor {
                         break;
                     case Edge edge:
                         // stateGraph.RemoveTransition(edge.userData as StateTransition);
+
+                        // UnityEditor.Handles.DrawAAPolyLine(3.0f, edge.output.GetPosition().center, edge.input.GetPosition().center);
                         break;
                     case BlackboardField blackboardField:
                         ExposedParameter exposedParameter = (ExposedParameter) blackboardField.userData;
                         controller.RemoveExposedParameter(exposedParameter);
-                        
+
                         ClearInspector();
                         break;
                 }
@@ -174,7 +176,7 @@ namespace ThunderNut.WorldGraph.Editor {
             foreach (var exposedParam in controller.ExposedParameters) {
                 CreateBlackboardField(exposedParam);
             }
-            
+
             ports.OfType<WSGPortView>().ToList().ForEach(RegisterPortBehavior);
         }
 
@@ -199,9 +201,9 @@ namespace ThunderNut.WorldGraph.Editor {
                 exposedParametersBlackboard.Add(new BlackboardSection {title = "Exposed Variables"});
                 exposedParametersBlackboard.editTextRequested = (_blackboard, element, newValue) => {
                     var param = (ExposedParameter) ((BlackboardField) element).userData;
-                    
+
                     param.Name = newValue;
-                    
+
                     ((BlackboardField) element).text = newValue;
                 };
 
@@ -298,7 +300,7 @@ namespace ThunderNut.WorldGraph.Editor {
 
         public void DrawPropertiesInInspector(SceneHandle sceneHandle) {
             ClearInspector();
-            
+
             sceneHandleEditor = UnityEditor.Editor.CreateEditor(sceneHandle);
 
             titleLabel.text = $"{sceneHandle.Label} Node";
@@ -327,7 +329,7 @@ namespace ThunderNut.WorldGraph.Editor {
 
         public void DrawPropertiesInInspector(StateTransition stateTransition) {
             ClearInspector();
-            
+
             stateTransitionEditor = (StateTransitionEditor) UnityEditor.Editor.CreateEditor(stateTransition);
 
             titleLabel.text = stateTransition.Label;
