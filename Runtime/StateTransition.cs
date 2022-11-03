@@ -8,10 +8,45 @@ using UnityEngine.SceneManagement;
 
 namespace ThunderNut.WorldGraph {
     
+    [Serializable]
+    public class RelayNodeData {
+        public string GUID;
+        public string OldOutputGUID;
+        public string OldInputGUID;
+        public Vector2 Position;
+
+        public PortData outputPortData;
+        public PortData inputPortData;
+        
+        public PortData CreatePort(string ownerGUID, bool isOutput, bool isMulti, Color portColor) {
+            var portData = new PortData {
+                OwnerNodeGUID = ownerGUID,
+                GUID = Guid.NewGuid().ToString(),
+
+                PortDirection = isOutput ? "Output" : "Input",
+                PortCapacity = isMulti ? "Multi" : "Single",
+                PortType = PortType.Relay,
+                PortColor = portColor,
+            };
+            
+            switch (isOutput) {
+                case true:
+                    outputPortData = portData;
+                    break;
+                case false:
+                    inputPortData = portData;
+                    break;
+            }
+
+            return portData;
+        }
+    }
+    
     [AddComponentMenu("")]
     [Serializable]
     public class StateTransition : MonoBehaviour {
 
+        public RelayNodeData Relay;
         [SerializeReference] public List<StateCondition> conditions = new List<StateCondition>();
         
         public WorldGraph Controller => GetComponent<WorldGraph>();
@@ -58,15 +93,13 @@ namespace ThunderNut.WorldGraph {
                 return m_Label;
             }
         }
-
-        public string GetOutputStateSceneName() {
-            return WorldGraph.GetSceneName(OutputState.Scene.ScenePath);
+        
+        private void OnEnable() {
+            if (InputState == null || OutputState == null) {
+                Active = false;
+            }
         }
         
-        public string GetInputStateSceneName() {
-            return WorldGraph.GetSceneName(InputState.Scene.ScenePath);
-        }
-
         public override string ToString() {
             return $"{OutputState.Label} ---> {InputState.Label}";
         }

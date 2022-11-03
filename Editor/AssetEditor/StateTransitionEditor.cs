@@ -29,6 +29,7 @@ namespace ThunderNut.WorldGraph.Editor {
         public override void OnInspectorGUI() {
             serializedObject.Update();
 
+            EditorGUILayout.Separator();
             conditionsList.DoLayoutList();
 
             serializedObject.ApplyModifiedProperties();

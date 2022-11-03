@@ -12,8 +12,7 @@ GameObject:
   - component: {fileID: 4005085632571571674}
   - component: {fileID: -2369807397463235435}
   - component: {fileID: 5897999773209992865}
-  - component: {fileID: -5226341786215937956}
-  - component: {fileID: -6863454984412421454}
+  - component: {fileID: -1991929594966705963}
   m_Layer: 0
   m_Name: WorldGraph
   m_TagString: WorldGraph
@@ -49,16 +48,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   SceneHandles:
-  - {fileID: -5226341786215937956}
-  - {fileID: -6863454984412421454}
+  - {fileID: -1991929594966705963}
   StateTransitions: []
   ExposedParameters:
   - {fileID: -2369807397463235435}
   - {fileID: 5897999773209992865}
+  RelayNodeData: []
   activeSceneHandle: {fileID: 0}
   activeTransitions: []
-  Active: 0
-  settingC: 
+  Active: 1
+  enableDoubleSidedTransitions: 0
   settingD: 
   settingE: 
 --- !u!114 &-2369807397463235435
@@ -101,7 +100,7 @@ MonoBehaviour:
   Position: {x: 0, y: 0}
   Value: 0
   options: 2
---- !u!114 &-5226341786215937956
+--- !u!114 &-1991929594966705963
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -113,43 +112,43 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4bf5aac20271450daa54a4f55e20db0a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_GUID: 07b8ca55-d07c-4b05-bd34-ccc96e43bf90
-  Position: {x: -273, y: 35}
-  Ports:
-  - OwnerNodeGUID: 07b8ca55-d07c-4b05-bd34-ccc96e43bf90
-    GUID: 59a9c4de-f1be-48b3-ad14-cf592bbd96ea
+  m_GUID: 31758926-1e6a-4267-b23c-34604bc89ad3
+  m_Position: {x: -298, y: 162}
+  m_Ports:
+  - OwnerNodeGUID: 31758926-1e6a-4267-b23c-34604bc89ad3
+    GUID: 62872d82-d4db-4c4a-b2f2-1bae18018f42
     PortDirection: Output
     PortCapacity: Multi
     PortType: 0
     PortColor: {r: 0.12, g: 0.44, b: 0.81, a: 1}
-  - OwnerNodeGUID: 07b8ca55-d07c-4b05-bd34-ccc96e43bf90
-    GUID: aa9451aa-0a87-4a2d-8fc4-1d529e46eadc
+  - OwnerNodeGUID: 31758926-1e6a-4267-b23c-34604bc89ad3
+    GUID: 6dd9ea40-ace5-4e8d-b4e7-0c0c54ced916
     PortDirection: Input
     PortCapacity: Multi
     PortType: 0
     PortColor: {r: 0.12, g: 0.44, b: 0.81, a: 1}
   Active: 1
-  Label: FeelSnake
+  Label: DefaultHandle
   Scene:
-    sceneAsset: {fileID: 102900000, guid: 3c3c000a82c344d4a824451d8abff6b6, type: 3}
-    ScenePath: Assets/Feel/FeelDemos/Snake/FeelSnake.unity
+    sceneAsset: {fileID: 0}
+    ScenePath: 
   StateTransitions: []
   LoadingScene:
-    sceneAsset: {fileID: 102900000, guid: fb3e231de7bcdc3428f955acea79180f, type: 3}
-    ScenePath: Assets/TN_WorldGraph/WorldGraphDemos/AdditiveLoadingScreenSimple.unity
-  LoadingMode: 2
+    sceneAsset: {fileID: 0}
+    ScenePath: 
+  m_LoadingModes: 2
   Priority: 4
   InterpolateProgress: 1
   SecureLoad: 1
   BeforeEntryFadeDelay: 0
   EntryFadeDuration: 0.2
   AfterEntryFadeDelay: 0
-  BeforeExitFadeDelay: 0.2
+  BeforeExitFadeDelay: 0
   ExitFadeDuration: 0.2
   ProgressInterpolationSpeed: 5
   FadeMode: 0
   EntryFadeTween:
-    MMTweenDefinitionType: 0
+    MMTweenDefinitionType: 1
     MMTweenCurve: 4
     Curve:
       serializedVersion: 2
@@ -177,110 +176,7 @@ MonoBehaviour:
       m_RotationOrder: 4
     Initialized: 0
   ExitFadeTween:
-    MMTweenDefinitionType: 0
-    MMTweenCurve: 4
-    Curve:
-      serializedVersion: 2
-      m_Curve:
-      - serializedVersion: 3
-        time: 0
-        value: 0
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0
-      - serializedVersion: 3
-        time: 1
-        value: 1
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-    Initialized: 0
---- !u!114 &-6863454984412421454
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4039155626588931711}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4bf5aac20271450daa54a4f55e20db0a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_GUID: b4363e63-5620-471f-858a-2cecb32aaa92
-  Position: {x: -12, y: 101}
-  Ports:
-  - OwnerNodeGUID: b4363e63-5620-471f-858a-2cecb32aaa92
-    GUID: 69f05d3e-f683-4f6c-a615-117725543a2e
-    PortDirection: Output
-    PortCapacity: Multi
-    PortType: 0
-    PortColor: {r: 0.12, g: 0.44, b: 0.81, a: 1}
-  - OwnerNodeGUID: b4363e63-5620-471f-858a-2cecb32aaa92
-    GUID: b927730c-7790-4c5d-81cf-952269a4cddb
-    PortDirection: Input
-    PortCapacity: Multi
-    PortType: 0
-    PortColor: {r: 0.12, g: 0.44, b: 0.81, a: 1}
-  Active: 1
-  Label: DefaultSceneA
-  Scene:
-    sceneAsset: {fileID: 102900000, guid: 2cda990e2423bbf4892e6590ba056729, type: 3}
-    ScenePath: Assets/TN_WorldGraph/WorldGraphDemos/DefaultSceneA.unity
-  StateTransitions: []
-  LoadingScene:
-    sceneAsset: {fileID: 102900000, guid: fb3e231de7bcdc3428f955acea79180f, type: 3}
-    ScenePath: Assets/TN_WorldGraph/WorldGraphDemos/AdditiveLoadingScreenSimple.unity
-  LoadingMode: 2
-  Priority: 4
-  InterpolateProgress: 1
-  SecureLoad: 1
-  BeforeEntryFadeDelay: 0
-  EntryFadeDuration: 0.2
-  AfterEntryFadeDelay: 0
-  BeforeExitFadeDelay: 0.2
-  ExitFadeDuration: 0.2
-  ProgressInterpolationSpeed: 5
-  FadeMode: 0
-  EntryFadeTween:
-    MMTweenDefinitionType: 0
-    MMTweenCurve: 4
-    Curve:
-      serializedVersion: 2
-      m_Curve:
-      - serializedVersion: 3
-        time: 0
-        value: 0
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0
-      - serializedVersion: 3
-        time: 1
-        value: 1
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-    Initialized: 0
-  ExitFadeTween:
-    MMTweenDefinitionType: 0
+    MMTweenDefinitionType: 1
     MMTweenCurve: 4
     Curve:
       serializedVersion: 2

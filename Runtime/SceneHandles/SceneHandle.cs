@@ -1,29 +1,40 @@
 ﻿using System;
 using System.Collections.Generic;
 using MoreMountains.Tools;
+using ThunderNut.WorldGraph.Attributes;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 namespace ThunderNut.WorldGraph.Handles {
 
+    public class Yeehaw { }
+
     [AddComponentMenu("")]
     [Serializable]
     public abstract class SceneHandle : MonoBehaviour {
-        [SerializeField, HideInInspector] private string m_GUID;
+        [SerializeField] private string m_GUID;
         public string GUID {
             get => m_GUID;
             set => m_GUID = value;
         }
-        
-        [SerializeField, HideInInspector] public Vector2 Position;
-        
-        [SerializeField, HideInInspector] public List<PortData> Ports = new List<PortData>();
+
+        [SerializeField] private Vector2 m_Position;
+        public Vector2 Position {
+            get => m_Position;
+            set => m_Position = value;
+        }
+
+        [SerializeField] private List<PortData> m_Ports = new List<PortData>();
+        public List<PortData> Ports {
+            get => m_Ports;
+            set => m_Ports = value;
+        }
 
         [Tooltip("The color of this SceneHandle to display in the inspector")]
         public virtual Color HandleColor => Color.white;
 
         public WorldGraph Controller => GetComponent<WorldGraph>();
-        
+
         [Tooltip("Whether or not this SceneHandle is active. SceneHandle will not work if false")]
         public bool Active = true;
 
@@ -32,9 +43,9 @@ namespace ThunderNut.WorldGraph.Handles {
 
         [Tooltip("The scene that this SceneHandle represents")]
         public SceneReference Scene;
-        
+
         [SerializeField] public List<StateTransition> StateTransitions = new List<StateTransition>();
-        
+
         /// the possible ways to load a new scene :
         /// - Direct : uses Unity's SceneManager API
         /// - SceneLoadingManager : the simple, original MM way of loading scenes
@@ -45,15 +56,21 @@ namespace ThunderNut.WorldGraph.Handles {
             AdditiveSceneLoadingManager
         }
 
-        [Header("Loading Settings")]
-        [Tooltip("The loading screen scene to use ------- HAS TO BE ADDED TO YOUR BUILD SETTINGS")]
+        [Header("Loading Settings")] [Tooltip("The loading screen scene to use ------- HAS TO BE ADDED TO YOUR BUILD SETTINGS")]
         public SceneReference LoadingScene;
+
 
         [Tooltip("The loading mode to use to load the destination scene : " +
                  "- Direct : uses Unity's SceneManager API" +
-                 "- DefaultLoadingManager : the simple, original MM way of loading scenes" +
+                 "- DefaultLoadingManager : the simple way of loading scenes" +
                  "- AdditiveSceneLoadingManager : a more advanced way of loading scenes, with (way) more options")]
-        public LoadingModes LoadingMode = LoadingModes.AdditiveSceneLoadingManager;
+        [SerializeField]
+        private LoadingModes m_LoadingModes = LoadingModes.AdditiveSceneLoadingManager;
+        [EnumControl("LoadingMode")]
+        public LoadingModes LoadingMode {
+            get => m_LoadingModes;
+            set => m_LoadingModes = value;
+        }
 
         [Tooltip("The priority to use when loading the new scenes")]
         public ThreadPriority Priority = ThreadPriority.High;
@@ -64,8 +81,7 @@ namespace ThunderNut.WorldGraph.Handles {
         [Tooltip("Perform extra checks to make sure the loading screen and destination scene are in the build settings")]
         public bool SecureLoad = true;
 
-        [Header("Loading Scene Delays")]
-        [Tooltip("A delay (in seconds) to apply before the first fade plays")]
+        [Header("Loading Scene Delays")] [Tooltip("A delay (in seconds) to apply before the first fade plays")]
         public float BeforeEntryFadeDelay = 0f;
 
         [Tooltip("The duration (in seconds) of the entry fade")]
@@ -80,8 +96,7 @@ namespace ThunderNut.WorldGraph.Handles {
         [Tooltip("the duration (in seconds) of the exit fade")]
         public float ExitFadeDuration = 0.2f;
 
-        [Header("Transitions")]
-        [Tooltip("the speed at which the progress bar should move if interpolated")]
+        [Header("Transitions")] [Tooltip("the speed at which the progress bar should move if interpolated")]
         public float ProgressInterpolationSpeed = 5f;
 
         [Tooltip("The order in which to play fades (really depends on the type of fader you have in your loading screen")]
@@ -117,12 +132,8 @@ namespace ThunderNut.WorldGraph.Handles {
             }
         }
 
-        public virtual void Enter() {
-            
-        }
-        public virtual void Exit() {
-            
-        }
+        public virtual void Enter() { }
+        public virtual void Exit() { }
 
         public PortData CreatePort(string ownerGUID, bool isOutput, bool isMulti, bool isParameter, Color portColor) {
             var portData = new PortData {

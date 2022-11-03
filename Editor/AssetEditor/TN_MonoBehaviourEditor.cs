@@ -108,11 +108,14 @@ namespace ThunderNut.WorldGraph.Editor {
                 if (!GroupData.TryGetValue(group.GroupName, out groupData)) {
                     bool groupIsOpen =
                         EditorPrefs.GetBool(string.Format($"{group.GroupName}{fieldInfoList[i].Name}{target.GetInstanceID()}"), false);
-                    GroupData.Add(group.GroupName, new InspectorGroupData {
-                        GroupAttribute = group,
-                        GroupColor = WSGColors.GetColorAt(previousGroupAttribute.GroupColorIndex),
-                        GroupHashSet = new HashSet<string> {fieldInfoList[i].Name}, GroupIsOpen = groupIsOpen
-                    });
+                    GroupData.Add(
+                        group.GroupName,
+                        new InspectorGroupData {
+                            GroupAttribute = group,
+                            GroupColor = WSGColors.GetColorAt(previousGroupAttribute.GroupColorIndex),
+                            GroupHashSet = new HashSet<string> {fieldInfoList[i].Name}, GroupIsOpen = groupIsOpen
+                        }
+                    );
                 }
                 else {
                     groupData.GroupHashSet.Add(fieldInfoList[i].Name);

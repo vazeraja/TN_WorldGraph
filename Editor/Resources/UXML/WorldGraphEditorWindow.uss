@@ -16,6 +16,14 @@ ToolbarButton:active {
     background-color: rgba(255, 255, 255, 0.15);
 }
 
+#content > #GraphView > #GraphInspectorView > #InspectorContent {
+    flex: 1;
+}
+
+#content > #GraphView > #GraphInspectorView > #InspectorContent > #content {
+    flex-direction: column;
+}
+
 #button-container {
     flex-direction: row;
     flex-wrap: wrap;

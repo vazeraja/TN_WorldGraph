@@ -13,6 +13,7 @@ namespace ThunderNut.WorldGraph.Editor {
         private SerializedProperty sceneHandles;
         private SerializedProperty stateTransitions;
         private SerializedProperty exposedParameters;
+        private SerializedProperty relayNodeData;
         private SerializedProperty activeSceneHandle;
 
         private Dictionary<SceneHandle, UnityEditor.Editor> _editors;
@@ -30,6 +31,7 @@ namespace ThunderNut.WorldGraph.Editor {
             sceneHandles = serializedObject.FindProperty("SceneHandles");
             stateTransitions = serializedObject.FindProperty("StateTransitions");
             exposedParameters = serializedObject.FindProperty("ExposedParameters");
+            relayNodeData = serializedObject.FindProperty("RelayNodeData");
             activeSceneHandle = serializedObject.FindProperty("activeSceneHandle");
 
             // store GUI bg color
@@ -68,7 +70,8 @@ namespace ThunderNut.WorldGraph.Editor {
                 EditorGUILayout.Space(10);
                 EditorGUILayout.LabelField("Initialization", EditorStyles.boldLabel);
                 EditorGUILayout.PropertyField(serializedObject.FindProperty("Active"));
-                EditorGUILayout.PropertyField(serializedObject.FindProperty("settingC"));
+                EditorGUILayout.PropertyField(serializedObject.FindProperty("enableDoubleSidedTransitions"));
+                EditorGUILayout.PropertyField(relayNodeData);
 
                 EditorGUILayout.Space(10);
                 EditorGUILayout.LabelField("Other", EditorStyles.boldLabel);

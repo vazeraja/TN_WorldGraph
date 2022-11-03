@@ -6,6 +6,7 @@ namespace ThunderNut.WorldGraph {
     public enum PortType {
         Default,
         Parameter,
+        Relay
     }
 
     [Serializable]

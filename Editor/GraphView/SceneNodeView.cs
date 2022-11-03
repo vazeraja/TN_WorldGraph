@@ -1,55 +1,99 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using ThunderNut.WorldGraph.Handles;
+﻿using UnityEngine;
 using UnityEditor;
+using System.Collections.Generic;
+using System.Reflection;
+using System.Linq;
 using UnityEditor.Experimental.GraphView;
 using UnityEditor.UIElements;
-using UnityEngine;
 using UnityEngine.UIElements;
+using ThunderNut.WorldGraph.Attributes;
+using ThunderNut.WorldGraph.Handles;
 
 namespace ThunderNut.WorldGraph.Editor {
 
-    public sealed class WSGNodeView : Node {
-        public readonly SceneHandle sceneHandle;
+    public interface ISceneNodeView {
+        public SceneHandle sceneHandle { get; set; }
+    }
+
+    public class SceneNodeView : Node, ISceneNodeView {
+        public SceneHandle sceneHandle { get; set; }
 
         public WSGPortView input;
         public WSGPortView output;
         public Color portColor;
 
         public WSGGraphView graphView;
+
+        Image m_PreviewImage;
+        VisualElement m_TitleContainer;
+        new VisualElement m_ButtonContainer;
+
+        private VisualElement m_PreviewContainer;
+        private VisualElement m_PreviewFiller;
+        private VisualElement m_ControlItems;
+        private VisualElement m_ControlsDivider;
+        private VisualElement m_DropdownItems;
+        private VisualElement m_DropdownsDivider;
         private IEdgeConnectorListener connectorListener;
 
         private TextField titleTextField;
         private Button addParameterButton;
         private Button playSceneButton;
 
-        public WSGNodeView(WSGGraphView graphView, SceneHandle sceneHandle, IEdgeConnectorListener connectorListener) :
-            base(AssetDatabase.GetAssetPath(Resources.Load<VisualTreeAsset>("UXML/WGGraphNode"))) {
+        public void Initialize(WSGGraphView graphView, SceneHandle sceneHandle, IEdgeConnectorListener connectorListener)
+            /* : base(AssetDatabase.GetAssetPath(Resources.Load<VisualTreeAsset>("UXML/WGGraphNode")))  */ {
+            styleSheets.Add(Resources.Load<StyleSheet>("UXML/SceneNodeView"));
+            AddToClassList("SceneNode");
+
+            if (sceneHandle == null)
+                return;
+
+            var contents = this.Q("contents");
+
             this.graphView = graphView;
             this.sceneHandle = sceneHandle;
             this.connectorListener = connectorListener;
+            mainContainer.style.overflow = StyleKeyword.None;
 
-            if (string.IsNullOrEmpty(sceneHandle.Label)) {
-                sceneHandle.Label = $"{sceneHandle.GetType()}";
-            }
-
+            if (string.IsNullOrEmpty(sceneHandle.Label)) sceneHandle.Label = $"{sceneHandle.GetType()}";
             userData = sceneHandle;
-            name = sceneHandle.Label;
-            title = sceneHandle.Label;
             viewDataKey = sceneHandle.GUID;
             style.left = sceneHandle.Position.x;
             style.top = sceneHandle.Position.y;
 
-            addParameterButton = this.Q<Button>("add-parameter-button");
-            addParameterButton.style.backgroundImage = Resources.Load<Texture2D>("Sprite-0001");
-            playSceneButton = this.Q<Button>("play-button");
-
             SetupTitleField();
+            UpdateTitle();
+
+            // Add disabled overlay
+            Add(new VisualElement() {name = "disabledOverlay", pickingMode = PickingMode.Ignore});
+
+            // Add controls container
+            var controlsContainer = new VisualElement {name = "controls"};
+            {
+                // controlsContainer.style.backgroundColor = new Color(0.12f, 0.44f, 0.81f);
+                m_ControlsDivider = new VisualElement {name = "divider"};
+                m_ControlsDivider.AddToClassList("horizontal");
+                controlsContainer.Add(m_ControlsDivider);
+                m_ControlItems = new VisualElement {name = "items"};
+                controlsContainer.Add(m_ControlItems);
+
+                // Instantiate control views from node
+                foreach (var propertyInfo in sceneHandle.GetType()
+                    .GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic))
+                foreach (IControlAttribute attribute in propertyInfo.GetCustomAttributes(typeof(IControlAttribute), false))
+                    m_ControlItems.Add(attribute.InstantiateControl(sceneHandle, propertyInfo));
+            }
+            if (m_ControlItems.childCount > 0)
+                contents.Add(controlsContainer);
 
             LoadDefaultPorts(sceneHandle.Ports);
             LoadParameterPorts(sceneHandle.Ports);
 
-            addParameterButton.clicked += AddParameterPort;
+            // addParameterButton = this.Q<Button>("add-parameter-button");
+            // addParameterButton.style.backgroundImage = Resources.Load<Texture2D>("Sprite-0001");
+            // playSceneButton = this.Q<Button>("play-button");
+
+            // addParameterButton.clicked += AddParameterPort;
             // playSceneButton.clicked += PlayScene;
         }
 
@@ -163,13 +207,14 @@ namespace ThunderNut.WorldGraph.Editor {
 
                     UpdateTitle();
                 }
-
-                void UpdateTitle() {
-                    // title = sceneHandle.HandleName ?? sceneHandle.GetType().Name;
-                    title = sceneHandle.Label ?? $"{sceneHandle.GetType()} ";
-                }
             }
         }
+
+        private void UpdateTitle() {
+            // title = sceneHandle.HandleName ?? sceneHandle.GetType().Name;
+            title = sceneHandle.Label ?? $"{sceneHandle.GetType()} ";
+        }
+
 
         public override void OnSelected() {
             base.OnSelected();

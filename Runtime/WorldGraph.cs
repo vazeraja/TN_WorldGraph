@@ -38,12 +38,14 @@ namespace ThunderNut.WorldGraph {
         public List<StateTransition> StateTransitions = new List<StateTransition>();
         public List<ExposedParameter> ExposedParameters = new List<ExposedParameter>();
 
+        public List<RelayNodeData> RelayNodeData = new List<RelayNodeData>();
+
         public SceneHandle activeSceneHandle;
         public List<StateTransition> activeTransitions = new List<StateTransition>();
         private List<List<Func<bool>>> activeConditions = new List<List<Func<bool>>>();
 
         public bool Active;
-        public string settingC;
+        public bool enableDoubleSidedTransitions;
         public string settingD;
         public string settingE;
 

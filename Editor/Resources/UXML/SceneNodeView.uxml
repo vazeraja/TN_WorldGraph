@@ -1,0 +1,30 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <ui:VisualElement name="node-border">
+        <ui:VisualElement name="title">
+            <ui:Label name="title-label" text="Label" class="unity-text-element unity-label" />
+            <ui:VisualElement name="title-button-container">
+                <ui:VisualElement name="collapse-button">
+                    <ui:VisualElement name="icon" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <ui:VisualElement name="title-divider" class="horizontal" />
+        <ui:VisualElement name="contents" style="background-color: rgb(43, 43, 43);">
+            <ui:VisualElement name="divider" class="horizontal" />
+            <ui:VisualElement name="button-container">
+                <ui:Button tabindex="-1" display-tooltip-when-elided="true" enable-rich-text="false" name="add-parameter-button" style="width: 15px; height: 15px; margin-left: 5px; margin-top: 6px; margin-bottom: 2px;" />
+                <ui:Button tabindex="-1" text="Play" display-tooltip-when-elided="true" enable-rich-text="true" name="play-button" />
+            </ui:VisualElement>
+            <ui:VisualElement name="top">
+                <ui:VisualElement name="input" />
+                <ui:VisualElement name="divider" class="vertical" />
+                <ui:VisualElement name="output" />
+            </ui:VisualElement>
+            <ui:VisualElement name="collapsible-area">
+                <ui:VisualElement name="divider" class="horizontal" />
+                <ui:VisualElement name="extension" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+    <ui:VisualElement name="selection-border" picking-mode="Ignore" />
+</ui:UXML>
