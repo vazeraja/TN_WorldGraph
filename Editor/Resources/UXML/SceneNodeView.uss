@@ -1,0 +1,200 @@
+SceneNodeView {
+    overflow: visible;
+}
+
+SceneNodeView.graphElement.node.SceneNode {
+    margin: 0;
+}
+
+SceneNodeView.master {
+    min-width: 200px;
+}
+
+SceneNodeView.blockData {
+    width: 200px;
+}
+
+SceneNodeView.blockData > #portInputContainer {
+    top: 6px;
+}
+
+SceneNodeView #collapsible-area {
+    width: 0;
+    height: 0;
+}
+
+SceneNodeView #previewFiller.expanded {
+    width: 200px;
+    padding-bottom: 200px;
+}
+
+
+SceneNodeView #controls {
+    background-color: aqua;
+}
+SceneNodeView #controls > #items {
+    padding-top: 4px;
+    padding-bottom: 4px;
+}
+
+SceneNodeView #title {
+    padding-top: 8px;
+    border-bottom-width: 8px;
+}
+
+SceneNodeView > #previewContainer {
+    position: absolute;
+    bottom: 4px;
+    left: 4px;
+    border-radius: 6px;
+    padding-top: 6px;
+}
+
+SceneNodeView > #previewContainer > #preview  {
+    width: 200px;
+    height: 200px;
+    align-items:center;
+}
+
+SceneNodeView > #previewContainer > #preview > #collapse {
+    background-color: #000;
+    border-color: #F0F0F0;
+    width: 0;
+    height: 0;
+    opacity: 0;
+    border-radius: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-width: 1px;
+    border-right-width: 1px;
+    margin-top: 4px;
+    align-items:center;
+    justify-content:center;
+}
+
+
+SceneNodeView:hover > #previewContainer > #preview > #collapse {
+    width: 20px;
+    height: 20px;
+    opacity: 0.6;
+}
+
+SceneNodeView > #previewContainer > #preview > #collapse > #icon  {
+    background-image : resource("GraphView/Nodes/PreviewCollapse.png");
+    width: 16px;
+    height: 16px;
+}
+
+SceneNodeView > #previewContainer > #preview > #collapse:hover {
+    opacity: 1.0;
+}
+
+SceneNodeView #previewFiller > #expand {
+    align-self: center;
+    width: 56px;
+    height: 16px;
+    flex-direction: row;
+    justify-content:center;
+}
+
+SceneNodeView #previewFiller > #expand > #icon {
+    background-image : resource("GraphView/Nodes/PreviewExpand.png");
+    width: 16px;
+    height: 16px;
+}
+
+SceneNodeView #previewFiller.collapsed > #expand:hover {
+    background-color: #2B2B2B;
+}
+
+SceneNodeView #previewFiller.expanded > #expand {
+    height: 0;
+}
+
+SceneNodeView > #resize {
+    background-image : resource("GraphView/Nodes/NodeChevronLeft.png");
+    position: absolute;
+    right: 5px;
+    bottom: 5px;
+    width: 10px;
+    height: 10px;
+    cursor: resize-up-left;
+}
+
+SceneNodeView PortInputView {
+    position: absolute;
+    left: -224px;
+}
+
+SceneNodeView > #settings-container {
+    background-color : rgb(63, 63, 63);
+}
+
+SceneNodeView.hovered #selection-border{
+    background-color:rgba(68,192,255,0.4);
+    border-color:rgba(68,192,255,1);
+    border-left-width: 2px;
+    border-right-width: 2px;
+    border-top-width: 2px;
+    border-bottom-width: 2px;
+}
+
+#settings-button {
+    width: 16px;
+    justify-content: center;
+    padding-left: 8px;
+}
+
+#settings-button > #icon {
+    width : 12px;
+    height : 12px;
+    align-self: center;
+    visibility: hidden;
+    background-image : resource("Icons/SettingsIcons");
+}
+
+.node:hover #settings-button > #icon {
+    visibility: visible;
+}
+
+#settings-button:hover > #icon {
+    align-self: center;
+    background-color: #2B2B2B;
+    background-image : resource("Icons/SettingsIcons_hover");
+}
+
+#settings-button.clicked > #icon{
+    background-color: #2B2B2B;
+    background-image : resource("Icons/SettingsIcons_hover");
+    visibility: visible;
+}
+
+.node.collapsed > #node-border > #title > #button-container > #collapse-button > #icon {
+    background-image: resource("GraphView/Nodes/NodeChevronLeft.png");
+}
+
+.node.expanded > #node-border > #title > #button-container > #collapse-button > #icon {
+    background-image : resource("GraphView/Nodes/NodeChevronDown.png");
+}
+
+SceneNodeView > #disabledOverlay {
+    border-radius: 4px;
+    position: absolute;
+    left: 4px;
+    right: 4px;
+    top: 4px;
+    bottom: 4px;
+    background-color: rgba(32, 32, 32, 0);
+}
+
+SceneNodeView.disabled #disabledOverlay {
+    background-color: rgba(32, 32, 32, 0.5);
+}
+
+SceneNodeView.disabled:hover #disabledOverlay {
+    background-color: rgba(32, 32, 32, 0.25);
+}
+
+SceneNodeView.disabled:checked #disabledOverlay {
+    background-color: rgba(32, 32, 32, 0.25);
+}
